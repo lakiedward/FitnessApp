@@ -10,6 +10,23 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Shapes
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+val Shapes = Shapes(
+    small = RoundedCornerShape(4.dp),
+    medium = RoundedCornerShape(24.dp), // For the login button
+    large = RoundedCornerShape(0.dp)
+)
+
+val smallTextStyle = TextStyle(
+    fontSize = 12.sp, // Adjust font size as needed
+    // ... other text properties like fontWeight, fontFamily, etc.
+)
+
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -18,7 +35,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = Grey900,
     secondary = PurpleGrey40,
     tertiary = Pink40
 
@@ -32,6 +49,7 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
+
 
 @Composable
 fun FitnessAppTheme(
@@ -51,8 +69,9 @@ fun FitnessAppTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
+        colorScheme = LightColorScheme, // Or your color scheme
+        typography = Typography,        // Your typography settings
+        shapes = Shapes,                // Link the custom Shapes
         content = content
     )
 }
