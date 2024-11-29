@@ -22,22 +22,40 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
+import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             FitnessAppTheme {
-                LoginScreen()
+                val navController = rememberNavController()
+                AppNavigation(navController)
+                //LoginScreen()
             }
+        }
+    }
+}
+
+@Composable
+fun AppNavigation(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = "login_screen") {
+        composable("login_screen") {
+            LoginScreen(navController)
+        }
+        composable("gender_selection_screen") {
+            GenderSelectionScreen(navController)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -200,8 +218,7 @@ fun LoginScreen() {
 
                 TextButton(
                     onClick = {
-                        val intent = Intent(context, GenderSelectionActivity::class.java)
-                        context.startActivity(intent)
+                        navController.navigate("gender_selection_screen")
                     },
 
                 ) {
