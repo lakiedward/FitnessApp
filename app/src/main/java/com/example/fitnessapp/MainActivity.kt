@@ -50,6 +50,9 @@ fun AppNavigation(navController: NavHostController) {
         composable("gender_selection_screen") {
             GenderSelectionScreen(navController)
         }
+        composable("add_age_screen") {
+            AddAgeScreen(navController)
+        }
     }
 }
 
