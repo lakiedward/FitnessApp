@@ -53,6 +53,12 @@ fun AppNavigation(navController: NavHostController) {
         composable("add_age_screen") {
             AddAgeScreen(navController)
         }
+        composable("physical_activity_level_screen") {
+            PhysicalActivityLevelScreen(navController)
+        }
+        composable("choose_sports") {
+            ChooseSportsScreen(navController)
+        }
     }
 }
 

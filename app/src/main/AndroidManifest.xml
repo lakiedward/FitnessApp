@@ -25,6 +25,8 @@
         </activity>
         <activity android:name=".GenderSelectionActivity" />
         <activity android:name=".AddAge" />
+        <activity android:name=".PhysicalActivityLevel" />
+        <activity android:name=".ChooseSports" />
 
 
 

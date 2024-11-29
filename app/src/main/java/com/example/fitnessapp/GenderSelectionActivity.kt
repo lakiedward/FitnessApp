@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -13,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -22,7 +20,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-//import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 class GenderSelectionActivity : ComponentActivity() {
@@ -39,45 +36,51 @@ class GenderSelectionActivity : ComponentActivity() {
 
 @Composable
 fun AppNavigationGenderSelectionActivity(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "login_screen") {
-        composable("login_screen") {
-            LoginScreen(navController)
-        }
+    NavHost(navController = navController, startDestination = "gender_selection_screen") {
         composable("gender_selection_screen") {
             GenderSelectionScreen(navController)
         }
         composable("add_age_screen") {
             AddAgeScreen(navController)
         }
+        composable("physical_activity_level_screen") {
+            PhysicalActivityLevelScreen(navController)
+        }
+        composable("choose_sports") {
+            ChooseSportsScreen(navController)
+        }
+
     }
 }
-
 
 @Composable
 fun GenderSelectionScreen(navController: NavHostController) {
     var selectedGender by remember { mutableStateOf<String?>(null) }
 
-    Box(modifier = Modifier.fillMaxSize()
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        IconButton(
-            onClick = { navController.navigateUp()
-            },
-            modifier = Modifier
-                //.padding(16.dp)
-                .align(Alignment.TopStart)
-        ) {
-           // Text(text = "Back", color = Color.Black)
-            Image(
-                painter = painterResource(id = R.drawable.back),
-                contentDescription = "Back",
-            )
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Back Button
+            IconButton(
+                onClick = { navController.navigateUp() },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.TopStart)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.back),
+                    contentDescription = "Back"
+                )
+            }
 
-        }
-
+            // Main Content
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp)
+                    .align(Alignment.Center), // Align content to center
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -110,11 +113,13 @@ fun GenderSelectionScreen(navController: NavHostController) {
                 // Continue Button
                 Button(
                     onClick = {
-                        navController.navigate("add_age_screen")
+                        if (selectedGender != null) {
+                            navController.navigate("add_age_screen")
+                        }
                     },
                     modifier = Modifier
-                        .width(178.dp)
-                        .height(44.dp),
+                        .fillMaxWidth(0.6f)
+                        .height(56.dp),
                     enabled = selectedGender != null,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (selectedGender != null) Color.Black else Color.Gray,
@@ -124,9 +129,8 @@ fun GenderSelectionScreen(navController: NavHostController) {
                     Text(text = "Continue")
                 }
             }
-
+        }
     }
-
 }
 
 @Composable
@@ -146,16 +150,14 @@ fun GenderOption(icon: Int, label: String, isSelected: Boolean, onClick: () -> U
                 .fillMaxSize()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center // Ensures centering
+            verticalArrangement = Arrangement.Center
         ) {
-            // Icon (e.g., male or female)
             Image(
                 painter = painterResource(id = icon),
                 contentDescription = null,
-                modifier = Modifier.size(78.dp) // Adjust size as needed
+                modifier = Modifier.size(78.dp)
             )
-            Spacer(modifier = Modifier.height(8.dp)) // Space between icon and label
-            // Label (e.g., "Male" or "Female")
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = label,
                 color = if (isSelected) Color.White else Color.Black,
@@ -165,4 +167,3 @@ fun GenderOption(icon: Int, label: String, isSelected: Boolean, onClick: () -> U
         }
     }
 }
-
