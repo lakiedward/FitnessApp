@@ -24,6 +24,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
@@ -32,22 +35,44 @@ class ChooseSports : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FitnessAppTheme {
-                //GenderSelectionScreen()
+                val navController = rememberNavController()
+                AppNavigationAddAge(navController)
             }
         }
     }
 }
 
+@Composable
+fun AppNavigationChooseSports(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = "choose_sports") {
+        composable("gender_selection_screen") {
+            GenderSelectionScreen(navController)
+        }
+        composable("add_age_screen") {
+            AddAgeScreen(navController)
+        }
+        composable("physical_activity_level_screen") {
+            PhysicalActivityLevelScreen(navController)
+        }
+        composable("choose_sports") {
+            ChooseSportsScreen(navController)
+        }
+        composable("cycling_data_insert") {
+            CyclingDataInsertScreen(navController)
+        }
+
+    }
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseSportsScreen(navController: NavHostController) {
-    // State to track selected days and their input values
     val days = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     val selectedDays = remember { mutableStateMapOf<String, Boolean>() }
     val hours = remember { mutableStateMapOf<String, String>() }
     val minutes = remember { mutableStateMapOf<String, String>() }
+    var isSportSelected by remember { mutableStateOf(false) }
 
     // Initialize the states for all days
     days.forEach { day ->
@@ -63,11 +88,8 @@ fun ChooseSportsScreen(navController: NavHostController) {
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Back Button
             IconButton(
-                onClick = {
-                    navController.navigateUp()
-                },
+                onClick = { navController.navigateUp() },
                 modifier = Modifier
                     .padding(16.dp)
                     .align(Alignment.TopStart)
@@ -78,40 +100,41 @@ fun ChooseSportsScreen(navController: NavHostController) {
                 )
             }
 
-            // Main Content
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp, vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Title for sports
                 Text(
                     text = "Choose Your Sports",
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Sports Icons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    SportsIcon(R.drawable.cycling, "Cycling")
-                    SportsIcon(R.drawable.running, "Running")
-                    SportsIcon(R.drawable.swimming, "Swimming")
+                    SportsIcon(R.drawable.cycling, "Cycling") { isSelected ->
+                        isSportSelected = isSelected
+                    }
+                    SportsIcon(R.drawable.running, "Running") { isSelected ->
+                        isSportSelected = isSelected
+                    }
+                    SportsIcon(R.drawable.swimming, "Swimming") { isSelected ->
+                        isSportSelected = isSelected
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Title for Availability
                 Text(
                     text = "Choose Your Availability",
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Availability Input Fields
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -131,20 +154,18 @@ fun ChooseSportsScreen(navController: NavHostController) {
                 }
             }
 
-            // Continue Button
             Button(
                 onClick = {
-                    // Navigate to the next screen
-                    navController.navigate("next_screen")
+                    navController.navigate("cycling_data_insert")
                 },
-                enabled = selectedDays.values.any { it }, // Enable only if any day is selected
+                enabled = selectedDays.values.any { it } && isSportSelected, // Check both conditions
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
                     .fillMaxWidth(0.6f)
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedDays.values.any { it }) Color.Black else Color.Gray,
+                    containerColor = if (selectedDays.values.any { it } && isSportSelected) Color.Black else Color.Gray,
                     contentColor = Color.White
                 )
             ) {
@@ -154,16 +175,37 @@ fun ChooseSportsScreen(navController: NavHostController) {
     }
 }
 
+
 @Composable
-fun SportsIcon(iconRes: Int, contentDescription: String) {
-    Image(
-        painter = painterResource(id = iconRes),
-        contentDescription = contentDescription,
+fun SportsIcon(iconRes: Int, contentDescription: String, onSelectionChanged: (Boolean) -> Unit) {
+    var isSelected by remember { mutableStateOf(false) }
+
+    Box(
         modifier = Modifier
-            .size(72.dp)
-            .clickable { /* Handle selection */ }
-    )
+            .size(100.dp)
+            .clickable {
+                isSelected = !isSelected
+                onSelectionChanged(isSelected) // Notify the parent of the selection change
+            }
+            .background(
+                color = if (isSelected) Color.Black else Color.Gray,
+                shape = CircleShape
+            )
+            .padding(16.dp)
+    ) {
+        Image(
+            painter = painterResource(id = iconRes),
+            contentDescription = contentDescription,
+            colorFilter = ColorFilter.tint(if (isSelected) Color.White else Color.LightGray),
+            modifier = Modifier.fillMaxSize()
+        )
+    }
 }
+
+
+
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

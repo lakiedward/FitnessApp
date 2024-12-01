@@ -59,6 +59,12 @@ fun AppNavigation(navController: NavHostController) {
         composable("choose_sports") {
             ChooseSportsScreen(navController)
         }
+        composable("cycling_data_insert") {
+            CyclingDataInsertScreen(navController)
+        }
+        composable("enter_race_day") {
+            EnterRaceDayScreen(navController)
+        }
     }
 }
 

@@ -29,6 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
+import com.example.fitnessapp.ui.theme.SectionTitle
 
 
 class AddAge : ComponentActivity() {
@@ -208,15 +209,6 @@ fun AddAgeScreen(navController: NavHostController) {
             }
         }
     }
-}
-
-@Composable
-fun SectionTitle(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-        modifier = Modifier.padding(vertical = 16.dp)
-    )
 }
 
 @Composable
