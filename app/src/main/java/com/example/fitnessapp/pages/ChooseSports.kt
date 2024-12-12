@@ -1,4 +1,4 @@
-package com.example.fitnessapp
+package com.example.fitnessapp.pages
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,11 +21,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
@@ -35,51 +35,37 @@ class ChooseSports : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FitnessAppTheme {
-                val navController = rememberNavController()
-                AppNavigationAddAge(navController)
+
             }
         }
     }
 }
 
-@Composable
-fun AppNavigationChooseSports(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "choose_sports") {
-        composable("gender_selection_screen") {
-            GenderSelectionScreen(navController)
-        }
-        composable("add_age_screen") {
-            AddAgeScreen(navController)
-        }
-        composable("physical_activity_level_screen") {
-            PhysicalActivityLevelScreen(navController)
-        }
-        composable("choose_sports") {
-            ChooseSportsScreen(navController)
-        }
-        composable("cycling_data_insert") {
-            CyclingDataInsertScreen(navController)
-        }
 
-    }
-}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChooseSportsScreen(navController: NavHostController) {
+fun ChooseSportsScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     val days = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     val selectedDays = remember { mutableStateMapOf<String, Boolean>() }
     val hours = remember { mutableStateMapOf<String, String>() }
     val minutes = remember { mutableStateMapOf<String, String>() }
-    var isSportSelected by remember { mutableStateOf(false) }
+    val selectedSports = remember { mutableStateMapOf<String, Boolean>() }
 
-    // Initialize the states for all days
+    // Initialize the states for all days and sports
     days.forEach { day ->
         if (selectedDays[day] == null) {
             selectedDays[day] = false
             hours[day] = ""
             minutes[day] = ""
+        }
+    }
+
+    val sports = listOf("Cycling", "Running", "Swimming")
+    sports.forEach { sport ->
+        if (selectedSports[sport] == null) {
+            selectedSports[sport] = false
         }
     }
 
@@ -106,6 +92,7 @@ fun ChooseSportsScreen(navController: NavHostController) {
                     .padding(horizontal = 16.dp, vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Sports Selection
                 Text(
                     text = "Choose Your Sports",
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
@@ -116,19 +103,30 @@ fun ChooseSportsScreen(navController: NavHostController) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    SportsIcon(R.drawable.cycling, "Cycling") { isSelected ->
-                        isSportSelected = isSelected
+                    SportsIcon(
+                        iconRes = R.drawable.cycling,
+                        contentDescription = "Cycling"
+                    ) { isSelected ->
+                        selectedSports["Cycling"] = isSelected
                     }
-                    SportsIcon(R.drawable.running, "Running") { isSelected ->
-                        isSportSelected = isSelected
+                    SportsIcon(
+                        iconRes = R.drawable.running, // Replace with your actual drawable resource for running
+                        contentDescription = "Running"
+                    ) { isSelected ->
+                        selectedSports["Running"] = isSelected
                     }
-                    SportsIcon(R.drawable.swimming, "Swimming") { isSelected ->
-                        isSportSelected = isSelected
+                    SportsIcon(
+                        iconRes = R.drawable.swimming, // Replace with your actual drawable resource for swimming
+                        contentDescription = "Swimming"
+                    ) { isSelected ->
+                        selectedSports["Swimming"] = isSelected
                     }
                 }
 
+
                 Spacer(modifier = Modifier.height(32.dp))
 
+                // Availability Selection
                 Text(
                     text = "Choose Your Availability",
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
@@ -143,7 +141,7 @@ fun ChooseSportsScreen(navController: NavHostController) {
                         AvailabilityRow(
                             day = day,
                             isSelected = selectedDays[day] ?: false,
-                            onDaySelected = { selectedDays[day] = !selectedDays[day]!! },
+                            onDaySelected = { selectedDays[day] = !(selectedDays[day] ?: false) },
                             hourValue = hours[day] ?: "",
                             onHourChange = { hours[day] = it },
                             minuteValue = minutes[day] ?: "",
@@ -154,18 +152,34 @@ fun ChooseSportsScreen(navController: NavHostController) {
                 }
             }
 
+            // Continue Button
             Button(
                 onClick = {
+                    val selectedSportNames = selectedSports.filterValues { it }.keys.toList()
+                    val schedule = days.mapNotNull { day ->
+                        if (selectedDays[day] == true) {
+                            mapOf(
+                                "day" to day,
+                                "hours" to (hours[day]?.toIntOrNull() ?: 0),
+                                "minutes" to (minutes[day]?.toIntOrNull() ?: 0)
+                            )
+                        } else null
+                    }
+
+                    // Save to Firestore
+                    authViewModel.saveSportsAndSchedule(selectedSportNames, schedule)
+
+                    // Navigate to the next screen
                     navController.navigate("cycling_data_insert")
                 },
-                enabled = selectedDays.values.any { it } && isSportSelected, // Check both conditions
+                enabled = selectedSports.values.any { it } && selectedDays.values.any { it },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
                     .fillMaxWidth(0.6f)
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedDays.values.any { it } && isSportSelected) Color.Black else Color.Gray,
+                    containerColor = if (selectedSports.values.any { it } && selectedDays.values.any { it }) Color.Black else Color.Gray,
                     contentColor = Color.White
                 )
             ) {
@@ -174,6 +188,7 @@ fun ChooseSportsScreen(navController: NavHostController) {
         }
     }
 }
+
 
 
 @Composable

@@ -1,35 +1,46 @@
-package com.example.fitnessapp
+package com.example.fitnessapp.pages
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.ui.theme.SectionTitle
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 
 class CyclingDataInsert : ComponentActivity() {
@@ -37,46 +48,24 @@ class CyclingDataInsert : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FitnessAppTheme {
-                val navController = rememberNavController()
-                AppNavigationAddAge(navController)
+
             }
         }
     }
 }
 
-@Composable
-fun AppNavigationCyclingDataInsert(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "choose_sports") {
-//        composable("gender_selection_screen") {
-//            GenderSelectionScreen(navController)
-//        }
-//        composable("add_age_screen") {
-//            AddAgeScreen(navController)
-//        }
-//        composable("physical_activity_level_screen") {
-//            PhysicalActivityLevelScreen(navController)
-//        }
-        composable("choose_sports") {
-            ChooseSportsScreen(navController)
-        }
-//        composable("cycling_data_insert") {
-//            CyclingDataInsertScreen(navController)
-//        }
-        composable("enter_race_day") {
-            EnterRaceDayScreen(navController)
-        }
-
-    }
-}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CyclingDataInsertScreen(navController: NavHostController) {
+fun CyclingDataInsertScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     var cyclingFtp by remember { mutableStateOf("") }
     var maxBpm by remember { mutableStateOf("") }
     var selectedRaceType by remember { mutableStateOf("") }
     val raceTypes = listOf("XCM", "XCO", "Cyclocross", "Gravel", "TT")
+    var raceDate by remember { mutableStateOf("")}
+    var expanded by remember { mutableStateOf(false) }
+
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -208,15 +197,27 @@ fun CyclingDataInsertScreen(navController: NavHostController) {
                 }
 
 
-
+                SectionTitle(title = "Enter Race Day")
+                DatePickerFieldToModal(onDateSelected = { selectedDate ->
+                    raceDate = selectedDate
+                })
 
                 Spacer(modifier = Modifier.weight(1f))
 
                 // Continue Button
                 Button(
                     onClick = {
+                        authViewModel.saveCyclingData(
+                            cyclingFtp = cyclingFtp,
+                            maxBpm = maxBpm,
+                            selectedRaceType = selectedRaceType,
+                            raceDate = raceDate
+                        )
+                        // Save to Firestore
+                        authViewModel.saveCyclingData(cyclingFtp, maxBpm, selectedRaceType, raceDate)
+
                         // Navigate to the next screen
-                        navController.navigate("enter_race_day")
+                        navController.navigate("login_screen")
                     },
                     enabled = cyclingFtp.isNotEmpty() && maxBpm.isNotEmpty() && selectedRaceType.isNotEmpty(),
                     modifier = Modifier
@@ -224,7 +225,7 @@ fun CyclingDataInsertScreen(navController: NavHostController) {
                         .fillMaxWidth(0.6f)
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (cyclingFtp.isNotEmpty() && maxBpm.isNotEmpty() && selectedRaceType.isNotEmpty()) Color.Black else Color.Gray,
+                        containerColor = if (cyclingFtp.isNotEmpty() && maxBpm.isNotEmpty() && selectedRaceType.isNotEmpty() && selectedRaceType.isNotEmpty()) Color.Black else Color.Gray,
                         contentColor = Color.White
                     )
                 ) {
@@ -235,4 +236,90 @@ fun CyclingDataInsertScreen(navController: NavHostController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerFieldToModal(modifier: Modifier = Modifier, onDateSelected: (String) -> Unit) {
+    var selectedDate by remember { mutableStateOf<Long?>(null) }
+    var showModal by remember { mutableStateOf(false) }
 
+    OutlinedTextField(
+        value = selectedDate?.let { convertMillisToDate(it) } ?: "",
+        onValueChange = { },
+        label = { Text("DOB") },
+        placeholder = { Text("MM/DD/YYYY" , style = MaterialTheme.typography.bodySmall) },
+        trailingIcon = {
+            Icon(Icons.Default.DateRange, contentDescription = "Select date")
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
+            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
+            focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
+            focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
+
+        ),
+        textStyle = MaterialTheme.typography.bodySmall,
+        //////////
+        shape = RoundedCornerShape(34.dp),
+        modifier = modifier
+            .width(259.dp)
+            .height(56.dp)
+            .pointerInput(selectedDate) {
+                awaitEachGesture {
+                    // Modifier.clickable doesn't work for text fields, so we use Modifier.pointerInput
+                    // in the Initial pass to observe events before the text field consumes them
+                    // in the Main pass.
+                    awaitFirstDown(pass = PointerEventPass.Initial)
+                    val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
+                    if (upEvent != null) {
+                        showModal = true
+                    }
+                }
+            }
+    )
+
+    if (showModal) {
+        DatePickerModal(
+            onDateSelected = { dateMillis ->
+                selectedDate = dateMillis
+                onDateSelected(selectedDate?.let { convertMillisToDate(it) } ?: "")
+                showModal = false
+            },
+            onDismiss = { showModal = false }
+        )
+    }
+}
+
+fun convertMillisToDate(millis: Long): String {
+    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    return formatter.format(Date(millis))
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerModal(
+    onDateSelected: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                onDateSelected(datePickerState.selectedDateMillis)
+                onDismiss()
+            }) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    ) {
+        DatePicker(state = datePickerState)
+    }
+}

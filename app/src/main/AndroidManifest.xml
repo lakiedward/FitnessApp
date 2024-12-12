@@ -23,11 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GenderSelectionActivity" />
-        <activity android:name=".AddAge" />
-        <activity android:name=".PhysicalActivityLevel" />
-        <activity android:name=".ChooseSports" />
-        <activity android:name=".CyclingDataInsert" />
+        <activity android:name=".pages.GenderSelectionActivity" />
+        <activity android:name=".pages.AddAge" />
+        <activity android:name=".pages.PhysicalActivityLevel" />
+        <activity android:name=".pages.ChooseSports" />
+        <activity android:name=".pages.CyclingDataInsert" />
+        <activity android:name=".pages.AddEmail" />
 
 
 

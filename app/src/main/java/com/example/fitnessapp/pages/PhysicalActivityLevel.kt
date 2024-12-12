@@ -1,32 +1,29 @@
-package com.example.fitnessapp
+package com.example.fitnessapp.pages
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
@@ -35,37 +32,19 @@ class PhysicalActivityLevel : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FitnessAppTheme {
-                //GenderSelectionScreen()
-                val navController = rememberNavController()
-                AppNavigationAddAge(navController)
+
             }
         }
     }
 }
 
-@Composable
-fun AppNavigationPhysicalActivityLevel(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "add_age_screen") {
-        composable("gender_selection_screen") {
-            GenderSelectionScreen(navController)
-        }
-        composable("add_age_screen") {
-            AddAgeScreen(navController)
-        }
-        composable("physical_activity_level_screen") {
-            PhysicalActivityLevelScreen(navController)
-        }
-        composable("choose_sports") {
-            ChooseSportsScreen(navController)
-        }
 
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PhysicalActivityLevelScreen(navController: NavHostController) {
+fun PhysicalActivityLevelScreen(navController: NavHostController, authViewModel: AuthViewModel, ) {
     var selectedLevel by remember { mutableStateOf<String?>(null) }
+    val authState = authViewModel.authState.observeAsState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -122,6 +101,7 @@ fun PhysicalActivityLevelScreen(navController: NavHostController) {
                 onClick = {
                     // Navigate to the next screen
                     if (selectedLevel != null) {
+                        authViewModel.updateFitnessLevel(selectedLevel ?: "")
                         navController.navigate("choose_sports")
                     }
                 },

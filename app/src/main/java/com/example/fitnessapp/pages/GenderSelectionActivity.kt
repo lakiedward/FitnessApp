@@ -1,4 +1,4 @@
-package com.example.fitnessapp
+package com.example.fitnessapp.pages
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +21,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.R
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 class GenderSelectionActivity : ComponentActivity() {
@@ -27,35 +30,18 @@ class GenderSelectionActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FitnessAppTheme {
-                val navController = rememberNavController()
-                AppNavigationGenderSelectionActivity(navController)
+
             }
         }
     }
 }
 
-@Composable
-fun AppNavigationGenderSelectionActivity(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "gender_selection_screen") {
-        composable("gender_selection_screen") {
-            GenderSelectionScreen(navController)
-        }
-        composable("add_age_screen") {
-            AddAgeScreen(navController)
-        }
-        composable("physical_activity_level_screen") {
-            PhysicalActivityLevelScreen(navController)
-        }
-        composable("choose_sports") {
-            ChooseSportsScreen(navController)
-        }
 
-    }
-}
 
 @Composable
-fun GenderSelectionScreen(navController: NavHostController) {
+fun GenderSelectionScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     var selectedGender by remember { mutableStateOf<String?>(null) }
+    val authState = authViewModel.authState.observeAsState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -114,6 +100,7 @@ fun GenderSelectionScreen(navController: NavHostController) {
                 Button(
                     onClick = {
                         if (selectedGender != null) {
+                            authViewModel.updateGender(selectedGender!!)
                             navController.navigate("add_age_screen")
                         }
                     },

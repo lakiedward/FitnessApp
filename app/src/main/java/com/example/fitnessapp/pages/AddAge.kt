@@ -1,11 +1,9 @@
-package com.example.fitnessapp
+package com.example.fitnessapp.pages
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,20 +11,20 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.ui.theme.SectionTitle
@@ -38,43 +36,24 @@ class AddAge : ComponentActivity() {
         setContent {
             FitnessAppTheme {
                 //GenderSelectionScreen()
-                val navController = rememberNavController()
-                AppNavigationAddAge(navController)
+
             }
         }
     }
 }
 
-@Composable
-fun AppNavigationAddAge(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "add_age_screen") {
-        composable("gender_selection_screen") {
-            GenderSelectionScreen(navController)
-        }
-        composable("add_age_screen") {
-            AddAgeScreen(navController)
-        }
-        composable("physical_activity_level_screen") {
-            PhysicalActivityLevelScreen(navController)
-        }
-        composable("choose_sports") {
-            ChooseSportsScreen(navController)
-        }
-
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddAgeScreen(navController: NavHostController) {
+fun AddAgeScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     var age by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
     var height by remember { mutableStateOf("") }
     var weightUnit by remember { mutableStateOf("Kg") }
     var heightUnit by remember { mutableStateOf("Cm") }
+    val authState = authViewModel.authState.observeAsState()
 
     val isFormComplete = age.isNotBlank() && weight.isNotBlank() && height.isNotBlank()
-
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -83,12 +62,10 @@ fun AddAgeScreen(navController: NavHostController) {
         Box(modifier = Modifier.fillMaxSize()) {
             // Back Button
             IconButton(
-                onClick = {
-                    navController.navigateUp()
-                },
+                onClick = { navController.navigateUp() },
                 modifier = Modifier
                     .padding(16.dp)
-                    .align(Alignment.TopStart) // Proper usage of align within Box
+                    .align(Alignment.TopStart)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.back),
@@ -100,35 +77,24 @@ fun AddAgeScreen(navController: NavHostController) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 32.dp)
-                    .align(Alignment.TopCenter), // Align the content to the top center
+                    .padding(horizontal = 16.dp, vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Age Input Section
+                // Age Input
                 SectionTitle(title = "How Old Are You?")
                 OutlinedTextField(
                     value = age,
                     onValueChange = { age = it },
-                    label = { Text("Enter Age", style = MaterialTheme.typography.bodySmall) },
+                    label = { Text("Enter Age") },
                     modifier = Modifier
                         .width(259.dp)
-                        .height(56.dp), // Adjusted height for better usability
+                        .height(56.dp),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    shape = RoundedCornerShape(34.dp),
-                    textStyle = MaterialTheme.typography.bodySmall,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
-                        focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
-
-                    )
+                    shape = RoundedCornerShape(34.dp)
                 )
 
-                // Weight Input Section
+                // Weight Input
                 SectionTitle(title = "What Is Your Weight?")
                 ToggleButtonsRow(
                     options = listOf("Kg", "Lb"),
@@ -144,20 +110,10 @@ fun AddAgeScreen(navController: NavHostController) {
                         .height(56.dp),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    shape = RoundedCornerShape(34.dp),
-                    textStyle = MaterialTheme.typography.bodySmall,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
-                        focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
-
-                    )
+                    shape = RoundedCornerShape(34.dp)
                 )
 
-                // Height Input Section
+                // Height Input
                 SectionTitle(title = "What Is Your Height?")
                 ToggleButtonsRow(
                     options = listOf("Cm", "Ft"),
@@ -173,28 +129,25 @@ fun AddAgeScreen(navController: NavHostController) {
                         .height(56.dp),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    shape = RoundedCornerShape(34.dp),
-                    textStyle = MaterialTheme.typography.bodySmall,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
-                        focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
-
-                    )
+                    shape = RoundedCornerShape(34.dp)
                 )
             }
-
 
             // Continue Button
             Button(
                 onClick = {
+                    val convertedWeight = if (weightUnit == "Lb") weight.toDouble() * 0.453592 else weight.toDouble()
+                    val convertedHeight = if (heightUnit == "Ft") height.toDouble() * 30.48 else height.toDouble()
+
+                    authViewModel.updatePhysicalAttributes(
+                        age = age.toInt(),
+                        weight = convertedWeight,
+                        height = convertedHeight
+                    )
                     // Navigate to the next screen
                     navController.navigate("physical_activity_level_screen")
                 },
-                enabled = isFormComplete, // Enable only if all fields are filled
+                enabled = isFormComplete,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
@@ -210,6 +163,7 @@ fun AddAgeScreen(navController: NavHostController) {
         }
     }
 }
+
 
 @Composable
 fun ToggleButtonsRow(
