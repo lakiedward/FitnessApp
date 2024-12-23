@@ -22,9 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
@@ -167,7 +164,7 @@ fun ChooseSportsScreen(navController: NavHostController, authViewModel: AuthView
                     }
 
                     // Save to Firestore
-                    authViewModel.saveSportsAndSchedule(selectedSportNames, schedule)
+                    //authViewModel.saveSportsAndSchedule(selectedSportNames, schedule)
 
                     // Navigate to the next screen
                     navController.navigate("cycling_data_insert")

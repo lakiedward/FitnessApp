@@ -1,5 +1,6 @@
 package com.example.fitnessapp.pages
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.fitnessapp.R
 import com.example.fitnessapp.AuthViewModel
+//import com.example.fitnessapp.api.CyclingPlanGenerator
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +52,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState = authViewModel.authState.observeAsState()
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -123,7 +127,19 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
 
             // Login Button
             Button(
-                onClick = { /* Handle login logic */
+                onClick = {
+                    val userData = mapOf(
+                        "weight" to 70,
+                        "height" to 175,
+                        "age" to 30,
+                        "fitness_level" to "Intermediate",
+                        "training_goal" to "Improve endurance",
+                        "race_type" to "Road"
+                    )
+
+                    // Apel către API
+
+                    /* Handle login logic */
                 },
                 modifier = Modifier
                     .width(178.dp)

@@ -19,9 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
@@ -101,7 +98,7 @@ fun PhysicalActivityLevelScreen(navController: NavHostController, authViewModel:
                 onClick = {
                     // Navigate to the next screen
                     if (selectedLevel != null) {
-                        authViewModel.updateFitnessLevel(selectedLevel ?: "")
+                        //authViewModel.updateFitnessLevel(selectedLevel ?: "")
                         navController.navigate("choose_sports")
                     }
                 },

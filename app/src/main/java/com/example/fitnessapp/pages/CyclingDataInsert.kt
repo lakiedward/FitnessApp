@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -19,26 +18,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.ui.theme.SectionTitle
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -207,14 +199,14 @@ fun CyclingDataInsertScreen(navController: NavHostController, authViewModel: Aut
                 // Continue Button
                 Button(
                     onClick = {
-                        authViewModel.saveCyclingData(
-                            cyclingFtp = cyclingFtp,
-                            maxBpm = maxBpm,
-                            selectedRaceType = selectedRaceType,
-                            raceDate = raceDate
-                        )
-                        // Save to Firestore
-                        authViewModel.saveCyclingData(cyclingFtp, maxBpm, selectedRaceType, raceDate)
+//                        authViewModel.saveCyclingData(
+//                            cyclingFtp = cyclingFtp,
+//                            maxBpm = maxBpm,
+//                            selectedRaceType = selectedRaceType,
+//                            raceDate = raceDate
+//                        )
+//                        // Save to Firestore
+//                        authViewModel.saveCyclingData(cyclingFtp, maxBpm, selectedRaceType, raceDate)
 
                         // Navigate to the next screen
                         navController.navigate("login_screen")

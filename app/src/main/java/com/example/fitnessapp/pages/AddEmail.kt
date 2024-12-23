@@ -19,7 +19,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
@@ -199,7 +198,7 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                             errorMessage = "Passwords do not match"
                         } else {
                             errorMessage = null // Clear error message
-                            authViewModel.signup(email, password, name)
+                            authViewModel.signup(email, password)
                             // Navigate to next screen
                             navController.navigate("gender_selection_screen")
                         }

@@ -20,9 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
@@ -139,11 +136,11 @@ fun AddAgeScreen(navController: NavHostController, authViewModel: AuthViewModel)
                     val convertedWeight = if (weightUnit == "Lb") weight.toDouble() * 0.453592 else weight.toDouble()
                     val convertedHeight = if (heightUnit == "Ft") height.toDouble() * 30.48 else height.toDouble()
 
-                    authViewModel.updatePhysicalAttributes(
-                        age = age.toInt(),
-                        weight = convertedWeight,
-                        height = convertedHeight
-                    )
+//                    authViewModel.updatePhysicalAttributes(
+//                        age = age.toInt(),
+//                        weight = convertedWeight,
+//                        height = convertedHeight
+//                    )
                     // Navigate to the next screen
                     navController.navigate("physical_activity_level_screen")
                 },

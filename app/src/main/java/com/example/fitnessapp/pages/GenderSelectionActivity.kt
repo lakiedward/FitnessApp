@@ -18,9 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
@@ -100,7 +97,7 @@ fun GenderSelectionScreen(navController: NavHostController, authViewModel: AuthV
                 Button(
                     onClick = {
                         if (selectedGender != null) {
-                            authViewModel.updateGender(selectedGender!!)
+                            authViewModel.updateGender(username= "edy" , selectedGender!!)
                             navController.navigate("add_age_screen")
                         }
                     },

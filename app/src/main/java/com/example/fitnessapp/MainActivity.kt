@@ -1,28 +1,20 @@
 package com.example.fitnessapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.api.ApiConfig
+import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.pages.AddAgeScreen
 import com.example.fitnessapp.pages.AddEmailScreen
 import com.example.fitnessapp.pages.CheckYourEmailScreen
@@ -39,6 +31,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val authViewModel : AuthViewModel by viewModels()
         setContent {
+            //ApiConfig.initialize(applicationContext)
+
+            // Testare cheie API
+            //Log.d("API_KEY", "Cheia API este: ${ApiConfig.apiKey}")
             FitnessAppTheme {
                 val navController = rememberNavController()
                 AppNavigation(navController, authViewModel)

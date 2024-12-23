@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
 }
 
+
+
 android {
     namespace = "com.example.fitnessapp"
     compileSdk = 35
@@ -19,6 +21,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -27,6 +30,9 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+
+
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -42,6 +48,14 @@ android {
 
 dependencies {
 
+    implementation(libs.okhttp) // OkHttp for HTTP requests
+    implementation(libs.logging.interceptor) // Logging for debugging network calls
+    implementation(libs.retrofit) // Retrofit for API calls
+    implementation(libs.converter.gson) // Gson for parsing JSON responses
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -61,4 +75,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 }
