@@ -45,7 +45,7 @@ fun InfiniteCalendarPage(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            TopBar()
+            TopBar("Calendar")
 
             Column(
                 modifier = Modifier

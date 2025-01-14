@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.fitnessapp.api.ApiService
 import com.example.fitnessapp.api.RetrofitClient
+import com.example.fitnessapp.model.RaceModel
+import com.example.fitnessapp.model.RacesModelResponse
 import com.example.fitnessapp.model.TrainingPlan
 import com.example.fitnessapp.model.TrainingPlanGenerate
 import com.example.fitnessapp.model.TrainingPlanResponse
@@ -24,8 +26,12 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
     private val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
+
     private val _trainingPlan = MutableLiveData<List<TrainingPlan>>()
     val trainingPlan: LiveData<List<TrainingPlan>> get() = _trainingPlan
+
+    private val _races = MutableLiveData<List<RaceModel>>()
+    val races: LiveData<List<RaceModel>> get() = _races
 
     fun signup(email: String, password: String) {
         val user = User(email, password)
@@ -222,7 +228,31 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
         })
     }
 
+    fun getRaces() {
+        val token = getToken()
+        if (token == null) {
+            _authState.value = AuthState.Error("Token is missing. Please log in again.")
+            return
+        }
 
+        apiService.getRaces("Bearer $token").enqueue(object : Callback<RacesModelResponse> {
+            override fun onResponse(call: Call<RacesModelResponse>, response: Response<RacesModelResponse>) {
+                if (response.isSuccessful) {
+                    val data = response.body()?.data ?: emptyList()
+                    Log.d("AuthViewModel", "Training Plans fetched: $data")
+                    _races.postValue(data) // Actualizează datele din LiveData
+                } else {
+                    Log.e("AuthViewModel", "Failed to fetch training plans: ${response.message()}")
+                    _authState.value = AuthState.Error("Failed to fetch training plans: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<RacesModelResponse>, t: Throwable) {
+                Log.e("AuthViewModel", "Error fetching training plans: ${t.message}")
+                _authState.value = AuthState.Error("Error fetching training plans: ${t.message}")
+            }
+        })
+    }
 
 
 

@@ -17,13 +17,10 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.R
-import com.example.fitnessapp.model.TrainingPlan
 import com.example.fitnessapp.AuthViewModel
 import java.time.LocalDate
 
@@ -43,7 +40,7 @@ fun HomeScreen(navController: NavController, authViewModel: AuthViewModel) {
                 .fillMaxSize()
         ) {
             // Top Bar
-            TopBar()
+            TopBar("Home")
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -180,7 +177,7 @@ fun PerformanceCard(title: String, value: String, unit: String, color: Color) {
 }
 
 @Composable
-fun TopBar() {
+fun TopBar(titlu: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -205,7 +202,7 @@ fun TopBar() {
 
         // Title in the center
         Text(
-            text = "Home",
+            text = titlu,
             color = Color.White,
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold
@@ -253,7 +250,7 @@ fun BottomNavigationBar(navController: NavController) {
         )
         BottomBarItem(
             navController,
-            "season",
+            "season_screen",
             R.drawable.ic_season,
             "Season"
         )

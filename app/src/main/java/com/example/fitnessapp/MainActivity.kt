@@ -23,6 +23,7 @@ import com.example.fitnessapp.pages.HomeScreen
 import com.example.fitnessapp.pages.InfiniteCalendarPage
 import com.example.fitnessapp.pages.LoginScreen
 import com.example.fitnessapp.pages.PhysicalActivityLevelScreen
+import com.example.fitnessapp.pages.SeasonScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
         // Creează AuthViewModel
         val authViewModel = AuthViewModel(sharedPreferences)
         authViewModel.getTrainingPlans()
+        authViewModel.getRaces()
 
 
         setContent {
@@ -81,6 +83,9 @@ fun AppNavigation(navController: NavHostController, authViewModel: AuthViewModel
         }
         composable("calendar_screen"){
             InfiniteCalendarPage(navController, authViewModel)
+        }
+        composable("season_screen") {
+            SeasonScreen(navController, authViewModel)
         }
 
     }

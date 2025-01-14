@@ -1,7 +1,7 @@
 package com.example.fitnessapp.api
 
 
-import com.example.fitnessapp.model.TrainingPlan
+import com.example.fitnessapp.model.RacesModelResponse
 import com.example.fitnessapp.model.TrainingPlanGenerate
 import com.example.fitnessapp.model.TrainingPlanResponse
 import com.example.fitnessapp.model.User
@@ -59,4 +59,6 @@ interface ApiService {
     @GET("training/get_training_plan")
     fun getTrainingPlan(@Header("Authorization") token: String): Call<TrainingPlanResponse>
 
+    @GET("race/get_races")
+    fun getRaces(@Header("Authorization") token: String): Call<RacesModelResponse>
 }
