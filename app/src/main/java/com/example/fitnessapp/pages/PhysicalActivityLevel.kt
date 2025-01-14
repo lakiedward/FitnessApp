@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
+import com.example.fitnessapp.model.UserDetalis
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
@@ -39,9 +40,8 @@ class PhysicalActivityLevel : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PhysicalActivityLevelScreen(navController: NavHostController, authViewModel: AuthViewModel, ) {
+fun PhysicalActivityLevelScreen(navController: NavHostController, userDetalis: MutableState<UserDetalis> ) {
     var selectedLevel by remember { mutableStateOf<String?>(null) }
-    val authState = authViewModel.authState.observeAsState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -98,8 +98,9 @@ fun PhysicalActivityLevelScreen(navController: NavHostController, authViewModel:
                 onClick = {
                     // Navigate to the next screen
                     if (selectedLevel != null) {
-                        //authViewModel.updateFitnessLevel(selectedLevel ?: "")
-                        navController.navigate("choose_sports")
+                        userDetalis.value = userDetalis.value.copy(fitnessLevel = selectedLevel!!)
+                        //authViewModel.addUserDetails(userDetalis.value.varsta, userDetalis.value.inaltime, userDetalis.value.greutate, userDetalis.value.fitnessLevel, userDetalis.value.gender)
+                        navController.navigate("choose_discipline")
                     }
                 },
                 enabled = selectedLevel != null, // Enable only if a level is selected

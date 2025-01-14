@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
+import com.example.fitnessapp.model.UserWeekAvailability
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
@@ -152,19 +153,18 @@ fun ChooseSportsScreen(navController: NavHostController, authViewModel: AuthView
             // Continue Button
             Button(
                 onClick = {
-                    val selectedSportNames = selectedSports.filterValues { it }.keys.toList()
-                    val schedule = days.mapNotNull { day ->
+                    val availabilityList = days.mapNotNull { day ->
                         if (selectedDays[day] == true) {
-                            mapOf(
-                                "day" to day,
-                                "hours" to (hours[day]?.toIntOrNull() ?: 0),
-                                "minutes" to (minutes[day]?.toIntOrNull() ?: 0)
+                            UserWeekAvailability(
+                                day = day,
+                                hours = hours[day]?.toIntOrNull() ?: 0,
+                                minutes = minutes[day]?.toIntOrNull() ?: 0
                             )
                         } else null
                     }
 
-                    // Save to Firestore
-                    //authViewModel.saveSportsAndSchedule(selectedSportNames, schedule)
+                    // Trimite lista către ViewModel
+                    authViewModel.addWeekAvailability(availabilityList)
 
                     // Navigate to the next screen
                     navController.navigate("cycling_data_insert")

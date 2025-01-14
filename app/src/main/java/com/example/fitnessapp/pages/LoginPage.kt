@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
@@ -26,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -40,9 +42,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.fitnessapp.AuthState
 import com.example.fitnessapp.R
 import com.example.fitnessapp.AuthViewModel
-//import com.example.fitnessapp.api.CyclingPlanGenerator
 
 
 
@@ -128,18 +130,8 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             // Login Button
             Button(
                 onClick = {
-                    val userData = mapOf(
-                        "weight" to 70,
-                        "height" to 175,
-                        "age" to 30,
-                        "fitness_level" to "Intermediate",
-                        "training_goal" to "Improve endurance",
-                        "race_type" to "Road"
-                    )
-
-                    // Apel către API
-
-                    /* Handle login logic */
+                   authViewModel.login(email, password)
+                   //navController.navigate("home_screen")
                 },
                 modifier = Modifier
                     .width(178.dp)
@@ -150,6 +142,31 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 )
             ) {
                 Text("Log in", style = MaterialTheme.typography.bodyMedium)
+            }
+
+            // Handle authentication state
+            authState.value?.let { state ->
+                when (state) {
+                    is AuthState.Loading -> {
+                        CircularProgressIndicator()
+                    }
+                    is AuthState.Authenticated -> {
+                        LaunchedEffect(Unit) {
+                            navController.navigate("home_screen") {
+                                popUpTo("login_screen") { inclusive = true }
+                            }
+                        }
+                    }
+                    is AuthState.Error -> {
+                        Text(
+                            text = state.message,
+                            color = Color.Red
+                        )
+                    }
+                    else -> {
+                        // Do nothing if no state or unauthenticated
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))

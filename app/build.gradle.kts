@@ -48,10 +48,12 @@ android {
 
 dependencies {
 
-    implementation(libs.okhttp) // OkHttp for HTTP requests
-    implementation(libs.logging.interceptor) // Logging for debugging network calls
-    implementation(libs.retrofit) // Retrofit for API calls
-    implementation(libs.converter.gson) // Gson for parsing JSON responses
+//    implementation(libs.okhttp) // OkHttp for HTTP requests
+//    implementation(libs.logging.interceptor) // Logging for debugging network calls
+//    implementation(libs.retrofit) // Retrofit for API calls
+//    implementation(libs.converter.gson) // Gson for parsing JSON responses
+   // implementation(libs.okhttp)
+
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
     implementation(libs.retrofit)

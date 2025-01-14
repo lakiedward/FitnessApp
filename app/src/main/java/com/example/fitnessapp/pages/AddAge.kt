@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
+import com.example.fitnessapp.model.UserDetalis
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.ui.theme.SectionTitle
@@ -42,13 +43,12 @@ class AddAge : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddAgeScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<UserDetalis>) {
     var age by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
     var height by remember { mutableStateOf("") }
     var weightUnit by remember { mutableStateOf("Kg") }
     var heightUnit by remember { mutableStateOf("Cm") }
-    val authState = authViewModel.authState.observeAsState()
 
     val isFormComplete = age.isNotBlank() && weight.isNotBlank() && height.isNotBlank()
 
@@ -133,14 +133,18 @@ fun AddAgeScreen(navController: NavHostController, authViewModel: AuthViewModel)
             // Continue Button
             Button(
                 onClick = {
-                    val convertedWeight = if (weightUnit == "Lb") weight.toDouble() * 0.453592 else weight.toDouble()
-                    val convertedHeight = if (heightUnit == "Ft") height.toDouble() * 30.48 else height.toDouble()
+                    val convertedWeight = if (weightUnit == "Lb")
+                        (weight.toFloat() * 0.453592f).toFloat() // Explicitly cast to Float
+                    else
+                        weight.toFloat() // Already a Float
+                    val convertedHeight = if (heightUnit == "Ft")
+                        (height.toFloat() * 30.48f).toFloat() // Explicitly cast to Float
+                    else
+                        height.toFloat() // Already a Float
+                    var varsta = age.toInt()
 
-//                    authViewModel.updatePhysicalAttributes(
-//                        age = age.toInt(),
-//                        weight = convertedWeight,
-//                        height = convertedHeight
-//                    )
+                    userDetalis.value = userDetalis.value.copy(varsta = varsta, greutate = convertedWeight, inaltime = convertedHeight)
+
                     // Navigate to the next screen
                     navController.navigate("physical_activity_level_screen")
                 },

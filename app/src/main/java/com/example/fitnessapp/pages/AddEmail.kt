@@ -3,6 +3,7 @@ package com.example.fitnessapp.pages
 
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -79,7 +80,6 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                 var passwordVisible by remember { mutableStateOf(false) }
                 var confirmPasswordVisible by remember { mutableStateOf(false) }
                 var errorMessage by remember { mutableStateOf<String?>(null) } // For error message
-                val authState = authViewModel.authState.observeAsState()
 
                 // Name Field with User Icon
                 OutlinedTextField(
@@ -199,7 +199,6 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                         } else {
                             errorMessage = null // Clear error message
                             authViewModel.signup(email, password)
-                            // Navigate to next screen
                             navController.navigate("gender_selection_screen")
                         }
                     },

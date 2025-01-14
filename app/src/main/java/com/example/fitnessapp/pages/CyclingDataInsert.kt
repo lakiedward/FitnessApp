@@ -1,6 +1,9 @@
 package com.example.fitnessapp.pages
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -54,9 +57,8 @@ fun CyclingDataInsertScreen(navController: NavHostController, authViewModel: Aut
     var cyclingFtp by remember { mutableStateOf("") }
     var maxBpm by remember { mutableStateOf("") }
     var selectedRaceType by remember { mutableStateOf("") }
-    val raceTypes = listOf("XCM", "XCO", "Cyclocross", "Gravel", "TT")
     var raceDate by remember { mutableStateOf("")}
-    var expanded by remember { mutableStateOf(false) }
+    //var expanded by remember { mutableStateOf(false) }
 
 
     Surface(
@@ -140,55 +142,6 @@ fun CyclingDataInsertScreen(navController: NavHostController, authViewModel: Aut
                     )
                 )
 
-
-                SectionTitle(title = "Select What Type Of Race You Are Training For")
-
-                // Dropdown for Race Type
-                var expanded by remember { mutableStateOf(false) }
-
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded } // Toggle dropdown visibility
-                ) {
-                    OutlinedTextField(
-                        value = selectedRaceType,
-                        onValueChange = {},
-                        label = { Text("Select What Type Of Race You Are Training For", style = MaterialTheme.typography.bodySmall) },
-                        //placeholder = { Text("Select Race Type", style = MaterialTheme.typography.bodySmall) },
-                        readOnly = true,
-                        modifier = Modifier
-                            .menuAnchor()
-                            .width(259.dp)
-                            .height(56.dp),
-                        shape = RoundedCornerShape(34.dp),
-                        textStyle = MaterialTheme.typography.bodySmall,
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
-                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
-                            focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
-                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
-                            focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
-
-                        )// Required for proper anchoring
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        raceTypes.forEach { raceType ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedRaceType = raceType
-                                    expanded = false
-                                },
-                                text = { Text(raceType) }
-                            )
-                        }
-                    }
-                }
-
-
                 SectionTitle(title = "Enter Race Day")
                 DatePickerFieldToModal(onDateSelected = { selectedDate ->
                     raceDate = selectedDate
@@ -199,25 +152,35 @@ fun CyclingDataInsertScreen(navController: NavHostController, authViewModel: Aut
                 // Continue Button
                 Button(
                     onClick = {
-//                        authViewModel.saveCyclingData(
-//                            cyclingFtp = cyclingFtp,
-//                            maxBpm = maxBpm,
-//                            selectedRaceType = selectedRaceType,
-//                            raceDate = raceDate
-//                        )
-//                        // Save to Firestore
-//                        authViewModel.saveCyclingData(cyclingFtp, maxBpm, selectedRaceType, raceDate)
+                        val ftpValue = cyclingFtp.toIntOrNull()
+                        val bpmValue = maxBpm.toIntOrNull()
 
-                        // Navigate to the next screen
-                        navController.navigate("login_screen")
+                        if (ftpValue != null && bpmValue != null) {
+                            authViewModel.addOrUpdateTrainingData(ftp = ftpValue, max_bpm = bpmValue)
+                            authViewModel.addRace(raceDate)
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                // Step 3: Generate training plan
+                                authViewModel.genearteTrainingPlan(raceDate)
+
+                                // Navigate to the login screen
+                                navController.navigate("login_screen")
+                            }, 1000)
+                        } else {
+                            // Arată un mesaj de eroare (exemplu: Toast) dacă valorile nu sunt valide
+                            Toast.makeText(
+                                navController.context,
+                                "Please enter valid numbers for FTP and Max BPM.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     },
-                    enabled = cyclingFtp.isNotEmpty() && maxBpm.isNotEmpty() && selectedRaceType.isNotEmpty(),
+                    enabled = cyclingFtp.isNotEmpty() && maxBpm.isNotEmpty(),
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth(0.6f)
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (cyclingFtp.isNotEmpty() && maxBpm.isNotEmpty() && selectedRaceType.isNotEmpty() && selectedRaceType.isNotEmpty()) Color.Black else Color.Gray,
+                        containerColor = if (cyclingFtp.isNotEmpty() && maxBpm.isNotEmpty()) Color.Black else Color.Gray,
                         contentColor = Color.White
                     )
                 ) {

@@ -1,15 +1,11 @@
 package com.example.fitnessapp.pages
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,25 +16,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
+import com.example.fitnessapp.model.UserDetalis
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
-
-class GenderSelectionActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            FitnessAppTheme {
-
-            }
-        }
-    }
-}
-
 
 
 @Composable
-fun GenderSelectionScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+fun GenderSelectionScreen(navController: NavHostController, userDetalis: MutableState<UserDetalis>) {
     var selectedGender by remember { mutableStateOf<String?>(null) }
-    val authState = authViewModel.authState.observeAsState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -97,7 +81,8 @@ fun GenderSelectionScreen(navController: NavHostController, authViewModel: AuthV
                 Button(
                     onClick = {
                         if (selectedGender != null) {
-                            authViewModel.updateGender(username= "edy" , selectedGender!!)
+                            //authViewModel.updateGender(selectedGender!!)
+                            userDetalis.value = userDetalis.value.copy(gender = selectedGender!!)
                             navController.navigate("add_age_screen")
                         }
                     },
