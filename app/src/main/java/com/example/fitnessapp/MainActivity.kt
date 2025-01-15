@@ -24,6 +24,7 @@ import com.example.fitnessapp.pages.InfiniteCalendarPage
 import com.example.fitnessapp.pages.LoginScreen
 import com.example.fitnessapp.pages.PhysicalActivityLevelScreen
 import com.example.fitnessapp.pages.SeasonScreen
+import com.example.fitnessapp.pages.WorkoutScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -35,8 +36,8 @@ class MainActivity : ComponentActivity() {
         val sharedPreferences = getSharedPreferences("fitness_app_prefs", Context.MODE_PRIVATE)
         // Creează AuthViewModel
         val authViewModel = AuthViewModel(sharedPreferences)
-        authViewModel.getTrainingPlans()
-        authViewModel.getRaces()
+        //authViewModel.getTrainingPlans()
+       //authViewModel.getRaces()
 
 
         setContent {
@@ -86,6 +87,9 @@ fun AppNavigation(navController: NavHostController, authViewModel: AuthViewModel
         }
         composable("season_screen") {
             SeasonScreen(navController, authViewModel)
+        }
+        composable("workout_screen") {
+            WorkoutScreen(navController)
         }
 
     }

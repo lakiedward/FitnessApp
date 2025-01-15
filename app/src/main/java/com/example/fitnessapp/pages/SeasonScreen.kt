@@ -34,7 +34,7 @@ fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
                 .fillMaxSize()
         ) {
             // Top Bar
-            TopBar("Season")
+            TopBar("Season", navController)
 
             Column(
                 modifier = Modifier

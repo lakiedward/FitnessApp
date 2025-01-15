@@ -31,6 +31,9 @@ fun HomeScreen(navController: NavController, authViewModel: AuthViewModel) {
     val trainingPlans by authViewModel.trainingPlan.observeAsState(emptyList())
     val todayWorkout = trainingPlans.find { it.date == today }
 
+    authViewModel.getTrainingPlans()
+    authViewModel.getRaces()
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.White
@@ -40,7 +43,7 @@ fun HomeScreen(navController: NavController, authViewModel: AuthViewModel) {
                 .fillMaxSize()
         ) {
             // Top Bar
-            TopBar("Home")
+            TopBar("Home", navController)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -177,7 +180,7 @@ fun PerformanceCard(title: String, value: String, unit: String, color: Color) {
 }
 
 @Composable
-fun TopBar(titlu: String) {
+fun TopBar(titlu: String, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,7 +189,9 @@ fun TopBar(titlu: String) {
     ) {
         // Profile Icon on the left
         IconButton(
-            onClick = { /* Profile action */ },
+            onClick = {
+                navController.navigate("workout_screen")
+            },
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(start = 16.dp)
@@ -212,15 +217,17 @@ fun TopBar(titlu: String) {
 
         // Notifications Icon on the right
         IconButton(
-            onClick = { /* Notifications action */ },
+            onClick = {
+                navController.navigate("workout_screen")
+            },
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = 16.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.bell), // Replace with your notification icon
+                painter = painterResource(id = R.drawable.ic_record_white_no_text), // Replace with your notification icon
                 contentDescription = "Notifications",
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(64.dp)
             )
         }
     }

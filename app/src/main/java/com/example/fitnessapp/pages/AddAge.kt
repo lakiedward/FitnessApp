@@ -88,7 +88,17 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                         .height(56.dp),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    shape = RoundedCornerShape(34.dp)
+                    shape = RoundedCornerShape(34.dp),
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
+                        focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
+
+                    )
                 )
 
                 // Weight Input
@@ -107,7 +117,17 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                         .height(56.dp),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    shape = RoundedCornerShape(34.dp)
+                    shape = RoundedCornerShape(34.dp),
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
+                        focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
+
+                    )
                 )
 
                 // Height Input
@@ -126,7 +146,17 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                         .height(56.dp),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    shape = RoundedCornerShape(34.dp)
+                    shape = RoundedCornerShape(34.dp),
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
+                        focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
+
+                    )
                 )
             }
 

@@ -161,6 +161,21 @@ fun SetNewPasswordScreen(navController: NavHostController) {
                 ) {
                     Text(text = "Update Password")
                 }
+                Button(
+                    onClick = {
+                        // Navigate or handle reset password logic
+                        navController.navigate("login_screen")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(0.6f)
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (newPassword.isNotEmpty() && confirmedNewPassword.isNotEmpty()) Color.Black else Color.Gray,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(text = "Update Password")
+                }
 
             }
 

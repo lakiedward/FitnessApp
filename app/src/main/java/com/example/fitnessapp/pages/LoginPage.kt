@@ -1,6 +1,5 @@
 package com.example.fitnessapp.pages
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
