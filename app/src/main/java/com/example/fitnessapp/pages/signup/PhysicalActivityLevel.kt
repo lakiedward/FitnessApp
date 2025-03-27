@@ -1,4 +1,4 @@
-package com.example.fitnessapp.pages
+package com.example.fitnessapp.pages.signup
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
 import com.example.fitnessapp.model.UserDetalis
 //import androidx.navigation.NavHostController
@@ -99,7 +97,6 @@ fun PhysicalActivityLevelScreen(navController: NavHostController, userDetalis: M
                     // Navigate to the next screen
                     if (selectedLevel != null) {
                         userDetalis.value = userDetalis.value.copy(fitnessLevel = selectedLevel!!)
-                        //authViewModel.addUserDetails(userDetalis.value.varsta, userDetalis.value.inaltime, userDetalis.value.greutate, userDetalis.value.fitnessLevel, userDetalis.value.gender)
                         navController.navigate("choose_discipline")
                     }
                 },

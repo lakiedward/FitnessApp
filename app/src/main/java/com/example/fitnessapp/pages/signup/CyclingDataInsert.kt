@@ -1,4 +1,4 @@
-package com.example.fitnessapp.pages
+package com.example.fitnessapp.pages.signup
 
 import android.os.Bundle
 import android.os.Handler
@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
+import com.example.fitnessapp.model.ChoosedSports
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.ui.theme.SectionTitle
@@ -53,20 +54,22 @@ class CyclingDataInsert : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CyclingDataInsertScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+fun CyclingDataInsertScreen(
+    navController: NavHostController,
+    authViewModel: AuthViewModel,
+    choosedSports: MutableState<ChoosedSports>
+) {
     var cyclingFtp by remember { mutableStateOf("") }
     var maxBpm by remember { mutableStateOf("") }
-    var selectedRaceType by remember { mutableStateOf("") }
-    var raceDate by remember { mutableStateOf("")}
-    //var expanded by remember { mutableStateOf(false) }
-
+    var selectedRaceType by remember { mutableStateOf("") } // Neutilizat în codul actual
+    var raceDate by remember { mutableStateOf("") } // Neutilizat în codul actual
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Back Button
+            // Back Button (rămâne în stânga sus)
             IconButton(
                 onClick = { navController.navigateUp() },
                 modifier = Modifier
@@ -79,113 +82,120 @@ fun CyclingDataInsertScreen(navController: NavHostController, authViewModel: Aut
                 )
             }
 
+            // Conținutul centrat (imagine și câmpuri de text)
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .align(Alignment.Center), // Centrează vertical și orizontal
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                // Cycling Icon
                 Image(
-                    painter = painterResource(id = R.drawable.cycling), // Replace with your cycling icon resource
+                    painter = painterResource(id = R.drawable.cycling),
                     contentDescription = "Cycling Icon",
                     modifier = Modifier
                         .size(100.dp)
                         .padding(bottom = 16.dp)
                 )
-                SectionTitle(title = "Enter Cycling Ftp")
+
+                SectionTitle(title = "Enter Cycling FTP")
                 OutlinedTextField(
                     value = cyclingFtp,
                     onValueChange = { cyclingFtp = it },
-                    label = { Text("Enter Cycling Ftp", style = MaterialTheme.typography.bodySmall) },
-                    placeholder = { Text("Watts" , style = MaterialTheme.typography.bodySmall) },
+                    label = { Text("Enter Cycling FTP", style = MaterialTheme.typography.bodySmall) },
+                    placeholder = { Text("Watts", style = MaterialTheme.typography.bodySmall) },
                     modifier = Modifier
                         .width(259.dp)
-                        .height(56.dp), // Adjusted height for better usability
+                        .height(56.dp),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     shape = RoundedCornerShape(34.dp),
                     textStyle = MaterialTheme.typography.bodySmall,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
-                        focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
-
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
 
-                SectionTitle(title = "Enter Maximum Bpm")
+                Spacer(modifier = Modifier.height(16.dp)) // Spațiu între câmpuri
 
+                SectionTitle(title = "Enter Maximum BPM")
                 OutlinedTextField(
                     value = maxBpm,
                     onValueChange = { maxBpm = it },
-                    label = { Text("Enter Maximum Bpm", style = MaterialTheme.typography.bodySmall) },
-                    placeholder = { Text("Bpm", style = MaterialTheme.typography.bodySmall) },
+                    label = { Text("Enter Maximum BPM", style = MaterialTheme.typography.bodySmall) },
+                    placeholder = { Text("BPM", style = MaterialTheme.typography.bodySmall) },
                     modifier = Modifier
                         .width(259.dp)
-                        .height(56.dp), // Adjusted height for better usability
+                        .height(56.dp),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     shape = RoundedCornerShape(34.dp),
                     textStyle = MaterialTheme.typography.bodySmall,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
-                        focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
-
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
+            }
 
-                SectionTitle(title = "Enter Race Day")
-                DatePickerFieldToModal(onDateSelected = { selectedDate ->
-                    raceDate = selectedDate
-                })
+            // Butonul Continue (centrat orizontal, jos)
+            Button(
+                onClick = {
+                    val ftpValue = cyclingFtp.toIntOrNull()
+                    val bpmValue = maxBpm.toIntOrNull()
 
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Continue Button
-                Button(
-                    onClick = {
-                        val ftpValue = cyclingFtp.toIntOrNull()
-                        val bpmValue = maxBpm.toIntOrNull()
-
+                    if (!choosedSports.value.running) {
                         if (ftpValue != null && bpmValue != null) {
-                            authViewModel.addOrUpdateTrainingData(ftp = ftpValue, max_bpm = bpmValue)
-                            authViewModel.addRace(raceDate)
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                // Step 3: Generate training plan
-                                authViewModel.genearteTrainingPlan(raceDate)
-
-                                // Navigate to the login screen
-                                navController.navigate("login_screen")
-                            }, 1000)
+                            authViewModel.addOrUpdateTrainingData(
+                                ftp = ftpValue,
+                                max_bpm = bpmValue
+                            )
+                            navController.navigate("plan_length_screen")
                         } else {
-                            // Arată un mesaj de eroare (exemplu: Toast) dacă valorile nu sunt valide
                             Toast.makeText(
                                 navController.context,
                                 "Please enter valid numbers for FTP and Max BPM.",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-                    },
-                    enabled = cyclingFtp.isNotEmpty() && maxBpm.isNotEmpty(),
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(0.6f)
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (cyclingFtp.isNotEmpty() && maxBpm.isNotEmpty()) Color.Black else Color.Gray,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text(text = "Continue")
-                }
+                    } else {
+                        if (ftpValue != null && bpmValue != null) {
+                            authViewModel.addOrUpdateTrainingData(
+                                ftp = ftpValue,
+                                max_bpm = bpmValue
+                            )
+                            navController.navigate("running_data_insert")
+                        } else {
+                            Toast.makeText(
+                                navController.context,
+                                "Please enter valid numbers for FTP and Max BPM.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                },
+                enabled = cyclingFtp.isNotEmpty() && maxBpm.isNotEmpty(),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter) // Centrat orizontal, jos
+                    .padding(16.dp)
+                    .fillMaxWidth(0.6f)
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (cyclingFtp.isNotEmpty() && maxBpm.isNotEmpty()) Color.Black else Color.Gray,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(text = "Continue")
             }
         }
     }
@@ -200,7 +210,7 @@ fun DatePickerFieldToModal(modifier: Modifier = Modifier, onDateSelected: (Strin
     OutlinedTextField(
         value = selectedDate?.let { convertMillisToDate(it) } ?: "",
         onValueChange = { },
-        label = { Text("DOB") },
+        label = { Text("Race Date") },
         placeholder = { Text("MM/DD/YYYY" , style = MaterialTheme.typography.bodySmall) },
         trailingIcon = {
             Icon(Icons.Default.DateRange, contentDescription = "Select date")

@@ -1,4 +1,4 @@
-package com.example.fitnessapp.pages
+package com.example.fitnessapp.pages.signup
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -14,10 +14,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
 import com.example.fitnessapp.model.UserDetalis
-import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 
 @Composable

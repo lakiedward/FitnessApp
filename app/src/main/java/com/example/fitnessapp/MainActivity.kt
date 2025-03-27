@@ -13,18 +13,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.model.UserDetalis
-import com.example.fitnessapp.pages.AddAgeScreen
-import com.example.fitnessapp.pages.AddEmailScreen
-import com.example.fitnessapp.pages.ChooseDisciplineScreen
-import com.example.fitnessapp.pages.ChooseSportsScreen
-import com.example.fitnessapp.pages.CyclingDataInsertScreen
-import com.example.fitnessapp.pages.GenderSelectionScreen
+import com.example.fitnessapp.model.ChoosedSports
+import com.example.fitnessapp.pages.signup.AddAgeScreen
+import com.example.fitnessapp.pages.signup.AddEmailScreen
+import com.example.fitnessapp.pages.signup.ChooseDisciplineScreen
+import com.example.fitnessapp.pages.signup.ChooseSportsScreen
+import com.example.fitnessapp.pages.signup.CyclingDataInsertScreen
+import com.example.fitnessapp.pages.signup.GenderSelectionScreen
 import com.example.fitnessapp.pages.HomeScreen
 import com.example.fitnessapp.pages.InfiniteCalendarPage
 import com.example.fitnessapp.pages.LoginScreen
-import com.example.fitnessapp.pages.PhysicalActivityLevelScreen
+import com.example.fitnessapp.pages.signup.PhysicalActivityLevelScreen
+import com.example.fitnessapp.pages.signup.RunningDataInsertScreen
 import com.example.fitnessapp.pages.SeasonScreen
 import com.example.fitnessapp.pages.WorkoutScreen
+import com.example.fitnessapp.pages.signup.PlanLengthScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -44,7 +47,8 @@ class MainActivity : ComponentActivity() {
             FitnessAppTheme {
                 val navController = rememberNavController()
                 val userDetalis = remember { mutableStateOf(UserDetalis(0, 0f, 0f, "", "", "")) }
-                AppNavigation(navController, authViewModel, userDetalis)
+                val choosedSports = remember { mutableStateOf(ChoosedSports()) }
+                AppNavigation(navController, authViewModel, userDetalis, choosedSports)
             }
         }
     }
@@ -53,8 +57,9 @@ class MainActivity : ComponentActivity() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppNavigation(navController: NavHostController, authViewModel: AuthViewModel, userDetalis: MutableState<UserDetalis>) {
-    NavHost(navController = navController, startDestination = "login_screen") {
+fun AppNavigation(navController: NavHostController, authViewModel: AuthViewModel, userDetalis: MutableState<UserDetalis>, choosedSports: MutableState<ChoosedSports>) {
+    NavHost(navController = navController, startDestination = "login_screen" +
+            "") {
         composable("login_screen") {
             LoginScreen(navController, authViewModel)
         }
@@ -68,13 +73,19 @@ fun AppNavigation(navController: NavHostController, authViewModel: AuthViewModel
             PhysicalActivityLevelScreen(navController, userDetalis)
         }
         composable("choose_sports") {
-            ChooseSportsScreen(navController, authViewModel)
+            ChooseSportsScreen(navController, authViewModel, choosedSports)
         }
         composable("choose_discipline") {
             ChooseDisciplineScreen(navController, authViewModel, userDetalis)
         }
         composable("cycling_data_insert") {
-            CyclingDataInsertScreen(navController, authViewModel)
+            CyclingDataInsertScreen(navController, authViewModel, choosedSports)
+        }
+        composable("running_data_insert") {
+            RunningDataInsertScreen(navController, authViewModel, choosedSports)
+        }
+        composable("plan_length_screen") {
+            PlanLengthScreen(navController, authViewModel, choosedSports)
         }
         composable("enter_add_email") {
             AddEmailScreen(navController, authViewModel)
@@ -91,6 +102,9 @@ fun AppNavigation(navController: NavHostController, authViewModel: AuthViewModel
         composable("workout_screen") {
             WorkoutScreen(navController)
         }
+//        composable("swimming_data_insert") {
+//            SwimmingDataInsertScreen(navController, authViewModel)
+//        }
 
     }
 }

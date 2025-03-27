@@ -1,4 +1,4 @@
-package com.example.fitnessapp.pages
+package com.example.fitnessapp.pages.signup
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,6 +7,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -24,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
+import com.example.fitnessapp.model.ChoosedSports
 import com.example.fitnessapp.model.UserWeekAvailability
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
@@ -41,10 +44,13 @@ class ChooseSports : ComponentActivity() {
 
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChooseSportsScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+fun ChooseSportsScreen(
+    navController: NavHostController,
+    authViewModel: AuthViewModel,
+    choosedSports: MutableState<ChoosedSports>
+) {
     val days = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     val selectedDays = remember { mutableStateMapOf<String, Boolean>() }
     val hours = remember { mutableStateMapOf<String, String>() }
@@ -71,12 +77,11 @@ fun ChooseSportsScreen(navController: NavHostController, authViewModel: AuthView
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
             IconButton(
                 onClick = { navController.navigateUp() },
                 modifier = Modifier
                     .padding(16.dp)
-                    .align(Alignment.TopStart)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.back),
@@ -86,8 +91,9 @@ fun ChooseSportsScreen(navController: NavHostController, authViewModel: AuthView
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 32.dp),
+                    .padding(horizontal = 16.dp, vertical = 32.dp)
+                    .fillMaxWidth()
+                    .weight(1f), //adaugam greutate aici pentru a ocupa spatiul disponibil
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Sports Selection
@@ -108,19 +114,18 @@ fun ChooseSportsScreen(navController: NavHostController, authViewModel: AuthView
                         selectedSports["Cycling"] = isSelected
                     }
                     SportsIcon(
-                        iconRes = R.drawable.running, // Replace with your actual drawable resource for running
+                        iconRes = R.drawable.running,
                         contentDescription = "Running"
                     ) { isSelected ->
                         selectedSports["Running"] = isSelected
                     }
                     SportsIcon(
-                        iconRes = R.drawable.swimming, // Replace with your actual drawable resource for swimming
+                        iconRes = R.drawable.swimming,
                         contentDescription = "Swimming"
                     ) { isSelected ->
                         selectedSports["Swimming"] = isSelected
                     }
                 }
-
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -131,11 +136,11 @@ fun ChooseSportsScreen(navController: NavHostController, authViewModel: AuthView
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(), //am eliminat .weight(1f)
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    days.forEach { day ->
+                    items(days) { day ->
                         AvailabilityRow(
                             day = day,
                             isSelected = selectedDays[day] ?: false,
@@ -148,45 +153,54 @@ fun ChooseSportsScreen(navController: NavHostController, authViewModel: AuthView
                         )
                     }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             }
-
-            // Continue Button
-            Button(
-                onClick = {
-                    val availabilityList = days.mapNotNull { day ->
-                        if (selectedDays[day] == true) {
-                            UserWeekAvailability(
-                                day = day,
-                                hours = hours[day]?.toIntOrNull() ?: 0,
-                                minutes = minutes[day]?.toIntOrNull() ?: 0
-                            )
-                        } else null
-                    }
-
-                    // Trimite lista către ViewModel
-                    authViewModel.addWeekAvailability(availabilityList)
-
-                    // Navigate to the next screen
-                    navController.navigate("cycling_data_insert")
-                },
-                enabled = selectedSports.values.any { it } && selectedDays.values.any { it },
+            Row(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-                    .fillMaxWidth(0.6f)
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedSports.values.any { it } && selectedDays.values.any { it }) Color.Black else Color.Gray,
-                    contentColor = Color.White
-                )
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = "Continue")
+                // Continue Button
+                Button(
+                    onClick = {
+                        val availabilityList = days.mapNotNull { day ->
+                            if (selectedDays[day] == true) {
+                                UserWeekAvailability(
+                                    day = day,
+                                    hours = hours[day]?.toIntOrNull() ?: 0,
+                                    minutes = minutes[day]?.toIntOrNull() ?: 0
+                                )
+                            } else null
+                        }
+                        val selectedSportsList = selectedSports.filter { it.value }.keys.toList()
+                        choosedSports.value = ChoosedSports(selectedSportsList)
+                        authViewModel.addWeekAvailability(availabilityList)
+                        if (choosedSports.value.cycling) {
+                            navController.navigate("cycling_data_insert")
+                        }
+                        else if (choosedSports.value.running) {
+                            navController.navigate("running_data_insert")
+                        }
+//                        if (choosedSports.value.swimming) {
+//                            navController.navigate("swimming_data_insert")
+//                        }
+                    },
+                    enabled = selectedSports.values.any { it } && selectedDays.values.any { it },
+                    modifier = Modifier
+                        .fillMaxWidth(0.6f)
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedSports.values.any { it } && selectedDays.values.any { it }) Color.Black else Color.Gray,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(text = "Continue")
+                }
             }
         }
     }
 }
-
-
 
 @Composable
 fun SportsIcon(iconRes: Int, contentDescription: String, onSelectionChanged: (Boolean) -> Unit) {
@@ -197,7 +211,7 @@ fun SportsIcon(iconRes: Int, contentDescription: String, onSelectionChanged: (Bo
             .size(100.dp)
             .clickable {
                 isSelected = !isSelected
-                onSelectionChanged(isSelected) // Notify the parent of the selection change
+                onSelectionChanged(isSelected)
             }
             .background(
                 color = if (isSelected) Color.Black else Color.Gray,
@@ -213,11 +227,6 @@ fun SportsIcon(iconRes: Int, contentDescription: String, onSelectionChanged: (Bo
         )
     }
 }
-
-
-
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
