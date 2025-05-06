@@ -1,8 +1,9 @@
-package com.example.fitnessapp.pages
+package com.example.fitnessapp.pages.home
 
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -40,6 +41,13 @@ fun InfiniteCalendarPage(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+                    .background(Color.Black)
+            )
+
             TopBar("Calendar", navController)
 
             Column(

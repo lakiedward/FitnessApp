@@ -20,14 +20,16 @@ import com.example.fitnessapp.pages.signup.ChooseDisciplineScreen
 import com.example.fitnessapp.pages.signup.ChooseSportsScreen
 import com.example.fitnessapp.pages.signup.CyclingDataInsertScreen
 import com.example.fitnessapp.pages.signup.GenderSelectionScreen
-import com.example.fitnessapp.pages.HomeScreen
-import com.example.fitnessapp.pages.InfiniteCalendarPage
+import com.example.fitnessapp.pages.home.HomeScreen
+import com.example.fitnessapp.pages.home.InfiniteCalendarPage
 import com.example.fitnessapp.pages.LoginScreen
 import com.example.fitnessapp.pages.signup.PhysicalActivityLevelScreen
 import com.example.fitnessapp.pages.signup.RunningDataInsertScreen
-import com.example.fitnessapp.pages.SeasonScreen
-import com.example.fitnessapp.pages.WorkoutScreen
+import com.example.fitnessapp.pages.home.SeasonScreen
+import com.example.fitnessapp.pages.home.WorkoutScreen
+import com.example.fitnessapp.pages.more.MoreScreen
 import com.example.fitnessapp.pages.signup.PlanLengthScreen
+import com.example.fitnessapp.pages.loading.LoadingScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -35,31 +37,39 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Obține SharedPreferences
         val sharedPreferences = getSharedPreferences("fitness_app_prefs", Context.MODE_PRIVATE)
-        // Creează AuthViewModel
         val authViewModel = AuthViewModel(sharedPreferences)
-        //authViewModel.getTrainingPlans()
-       //authViewModel.getRaces()
-
 
         setContent {
-            FitnessAppTheme {
-                val navController = rememberNavController()
+            FitnessAppTheme(darkTheme = false) {
+            val navController = rememberNavController()
                 val userDetalis = remember { mutableStateOf(UserDetalis(0, 0f, 0f, "", "", "")) }
                 val choosedSports = remember { mutableStateOf(ChoosedSports()) }
+
+//                SideEffect {
+//                    WindowCompat.setDecorFitsSystemWindows(window, false)
+//                    window.statusBarColor = android.graphics.Color.BLACK
+//                    WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
+//                }
+
                 AppNavigation(navController, authViewModel, userDetalis, choosedSports)
             }
         }
     }
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        FitnessSignInHelper.handleActivityResult(requestCode, resultCode)
+//    }
+
 }
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigation(navController: NavHostController, authViewModel: AuthViewModel, userDetalis: MutableState<UserDetalis>, choosedSports: MutableState<ChoosedSports>) {
-    NavHost(navController = navController, startDestination = "login_screen" +
-            "") {
+    NavHost(navController = navController, startDestination = "login_screen") {
         composable("login_screen") {
             LoginScreen(navController, authViewModel)
         }
@@ -102,6 +112,13 @@ fun AppNavigation(navController: NavHostController, authViewModel: AuthViewModel
         composable("workout_screen") {
             WorkoutScreen(navController)
         }
+        composable("more") {
+            MoreScreen(navController)
+        }
+        composable("loading_screen") {
+            LoadingScreen(navController, authViewModel)
+        }
+
 //        composable("swimming_data_insert") {
 //            SwimmingDataInsertScreen(navController, authViewModel)
 //        }

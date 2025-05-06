@@ -48,12 +48,11 @@ android {
 
 dependencies {
 
-//    implementation(libs.okhttp) // OkHttp for HTTP requests
-//    implementation(libs.logging.interceptor) // Logging for debugging network calls
-//    implementation(libs.retrofit) // Retrofit for API calls
-//    implementation(libs.converter.gson) // Gson for parsing JSON responses
-   // implementation(libs.okhttp)
 
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.0")
+    implementation(libs.play.services.auth)
+    implementation(libs.play.services.fitness)
     implementation(libs.play.services.maps.v1810)
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("org.osmdroid:osmdroid-android:6.1.15")
@@ -76,6 +75,8 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)
     implementation(libs.androidx.compilercommon)
+    implementation(libs.play.services.fitness)
+    implementation(libs.androidx.benchmark.macro)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

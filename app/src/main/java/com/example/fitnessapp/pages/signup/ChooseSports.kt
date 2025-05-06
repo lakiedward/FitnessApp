@@ -1,8 +1,6 @@
 package com.example.fitnessapp.pages.signup
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,8 +11,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,23 +24,7 @@ import com.example.fitnessapp.AuthViewModel
 import com.example.fitnessapp.R
 import com.example.fitnessapp.model.ChoosedSports
 import com.example.fitnessapp.model.UserWeekAvailability
-//import androidx.navigation.NavHostController
-import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
-class ChooseSports : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            FitnessAppTheme {
-
-            }
-        }
-    }
-}
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseSportsScreen(
     navController: NavHostController,
@@ -57,111 +37,91 @@ fun ChooseSportsScreen(
     val minutes = remember { mutableStateMapOf<String, String>() }
     val selectedSports = remember { mutableStateMapOf<String, Boolean>() }
 
-    // Initialize the states for all days and sports
     days.forEach { day ->
-        if (selectedDays[day] == null) {
-            selectedDays[day] = false
-            hours[day] = ""
-            minutes[day] = ""
-        }
+        selectedDays.putIfAbsent(day, false)
+        hours.putIfAbsent(day, "")
+        minutes.putIfAbsent(day, "")
     }
 
     val sports = listOf("Cycling", "Running", "Swimming")
     sports.forEach { sport ->
-        if (selectedSports[sport] == null) {
-            selectedSports[sport] = false
-        }
+        selectedSports.putIfAbsent(sport, false)
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(modifier = Modifier.fillMaxSize()) {
             IconButton(
                 onClick = { navController.navigateUp() },
-                modifier = Modifier
-                    .padding(16.dp)
+                modifier = Modifier.padding(16.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.back),
-                    contentDescription = "Back"
-                )
+                Image(painter = painterResource(id = R.drawable.back), contentDescription = "Back")
             }
 
-            Column(
+            Box(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 32.dp)
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
                     .fillMaxWidth()
-                    .weight(1f), //adaugam greutate aici pentru a ocupa spatiul disponibil
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Sports Selection
-                Text(
-                    text = "Choose Your Sports",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                Column {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "Choose Your Sports",
+                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                    }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    SportsIcon(
-                        iconRes = R.drawable.cycling,
-                        contentDescription = "Cycling"
-                    ) { isSelected ->
-                        selectedSports["Cycling"] = isSelected
-                    }
-                    SportsIcon(
-                        iconRes = R.drawable.running,
-                        contentDescription = "Running"
-                    ) { isSelected ->
-                        selectedSports["Running"] = isSelected
-                    }
-                    SportsIcon(
-                        iconRes = R.drawable.swimming,
-                        contentDescription = "Swimming"
-                    ) { isSelected ->
-                        selectedSports["Swimming"] = isSelected
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        SportsIcon(R.drawable.cycling, "Cycling") { selectedSports["Cycling"] = it }
+                        SportsIcon(R.drawable.running, "Running") { selectedSports["Running"] = it }
+                        SportsIcon(R.drawable.swimming, "Swimming") { selectedSports["Swimming"] = it }
                     }
                 }
+            }
 
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // Availability Selection
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text(
                     text = "Choose Your Availability",
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth(), //am eliminat .weight(1f)
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(days) { day ->
-                        AvailabilityRow(
-                            day = day,
-                            isSelected = selectedDays[day] ?: false,
-                            onDaySelected = { selectedDays[day] = !(selectedDays[day] ?: false) },
-                            hourValue = hours[day] ?: "",
-                            onHourChange = { hours[day] = it },
-                            minuteValue = minutes[day] ?: "",
-                            onMinuteChange = { minutes[day] = it },
-                            isInputEnabled = selectedDays[day] == true
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
             }
-            Row(
+
+            LazyColumn(
                 modifier = Modifier
+                    .weight(1f)
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.Center
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Continue Button
+                items(days) { day ->
+                    AvailabilityRow(
+                        day = day,
+                        isSelected = selectedDays[day] ?: false,
+                        onDaySelected = { selectedDays[day] = !(selectedDays[day] ?: false) },
+                        hourValue = hours[day] ?: "",
+                        onHourChange = { hours[day] = it },
+                        minuteValue = minutes[day] ?: "",
+                        onMinuteChange = { minutes[day] = it },
+                        isInputEnabled = selectedDays[day] == true
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AnimatedArrow(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Button(
                     onClick = {
                         val availabilityList = days.mapNotNull { day ->
@@ -176,19 +136,13 @@ fun ChooseSportsScreen(
                         val selectedSportsList = selectedSports.filter { it.value }.keys.toList()
                         choosedSports.value = ChoosedSports(selectedSportsList)
                         authViewModel.addWeekAvailability(availabilityList)
-                        if (choosedSports.value.cycling) {
-                            navController.navigate("cycling_data_insert")
-                        }
-                        else if (choosedSports.value.running) {
-                            navController.navigate("running_data_insert")
-                        }
-//                        if (choosedSports.value.swimming) {
-//                            navController.navigate("swimming_data_insert")
-//                        }
+                        if (choosedSports.value.cycling) navController.navigate("cycling_data_insert")
+                        else if (choosedSports.value.running) navController.navigate("running_data_insert")
                     },
                     enabled = selectedSports.values.any { it } && selectedDays.values.any { it },
                     modifier = Modifier
-                        .fillMaxWidth(0.6f)
+                        .padding(16.dp)
+                        .width(200.dp)
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (selectedSports.values.any { it } && selectedDays.values.any { it }) Color.Black else Color.Gray,
@@ -200,6 +154,29 @@ fun ChooseSportsScreen(
             }
         }
     }
+}
+
+@Composable
+fun AnimatedArrow(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "arrow_animation")
+    val offsetY by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = "offsetY"
+    )
+
+    Icon(
+        painter = painterResource(id = R.drawable.ic_down_arrow),
+        contentDescription = "Scroll down",
+        tint = Color.Gray,
+        modifier = modifier
+            .padding(bottom = 12.dp)
+            .size(24.dp)
+            .offset(y = offsetY.dp)
+    )
 }
 
 @Composable
@@ -228,7 +205,6 @@ fun SportsIcon(iconRes: Int, contentDescription: String, onSelectionChanged: (Bo
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AvailabilityRow(
     day: String,
@@ -249,20 +225,12 @@ fun AvailabilityRow(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.clickable { onDaySelected() }
         ) {
-            RadioButton(
-                selected = isSelected,
-                onClick = onDaySelected
-            )
+            RadioButton(selected = isSelected, onClick = onDaySelected)
             Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = day,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-            )
+            Text(text = day, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
         }
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
                 value = hourValue,
                 onValueChange = onHourChange,
@@ -270,7 +238,7 @@ fun AvailabilityRow(
                 modifier = Modifier.width(80.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                enabled = isInputEnabled // Enable only if the day is selected
+                enabled = isInputEnabled
             )
             OutlinedTextField(
                 value = minuteValue,
@@ -279,7 +247,7 @@ fun AvailabilityRow(
                 modifier = Modifier.width(80.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                enabled = isInputEnabled // Enable only if the day is selected
+                enabled = isInputEnabled
             )
         }
     }

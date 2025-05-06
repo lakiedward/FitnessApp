@@ -1,4 +1,4 @@
-package com.example.fitnessapp.pages
+package com.example.fitnessapp.pages.forgotpassword
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

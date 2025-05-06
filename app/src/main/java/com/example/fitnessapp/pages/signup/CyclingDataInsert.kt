@@ -225,7 +225,6 @@ fun DatePickerFieldToModal(modifier: Modifier = Modifier, onDateSelected: (Strin
 
         ),
         textStyle = MaterialTheme.typography.bodySmall,
-        //////////
         shape = RoundedCornerShape(34.dp),
         modifier = modifier
             .width(259.dp)

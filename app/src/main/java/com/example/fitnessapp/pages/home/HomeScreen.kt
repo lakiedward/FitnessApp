@@ -1,9 +1,10 @@
-package com.example.fitnessapp.pages
+package com.example.fitnessapp.pages.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +43,12 @@ fun HomeScreen(navController: NavController, authViewModel: AuthViewModel) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+                    .background(Color.Black)
+            )
             // Top Bar
             TopBar("Home", navController)
 
@@ -150,7 +157,8 @@ fun PerformanceCard(title: String, value: String, unit: String, color: Color) {
     Card(
         modifier = Modifier
             .width(160.dp)
-            .height(120.dp),
+            .height(120.dp)
+            .border(1.dp, Color.LightGray, shape = RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F0FF))
     ) {

@@ -1,4 +1,4 @@
-package com.example.fitnessapp.pages
+package com.example.fitnessapp.pages.home
 
 import android.Manifest
 import android.content.Context

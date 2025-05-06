@@ -1,4 +1,4 @@
-package com.example.fitnessapp.pages
+package com.example.fitnessapp.pages.home
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,18 +21,24 @@ import com.example.fitnessapp.model.RaceModel
 
 @Composable
 fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
-    val races = authViewModel.races.observeAsState(emptyList()) // Observing races LiveData
+    val races = authViewModel.races.observeAsState(emptyList())
 
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color.White),
+        color = Color.White
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            // Top Bar
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+                    .background(Color.White) // was Color.Black
+            )
             TopBar("Season", navController)
 
             Column(
@@ -44,17 +49,14 @@ fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Current Training Phase
                 CurrentTrainingPhase()
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Fitness Score Graph
                 FitnessScoreGraph()
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // LazyColumn for races
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -68,7 +70,6 @@ fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Add Race Button
                 Button(
                     onClick = { /* Handle Add Race */ },
                     modifier = Modifier
@@ -85,7 +86,6 @@ fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
             }
 
             BottomNavigationBar(navController)
-
         }
     }
 }
@@ -133,7 +133,7 @@ fun FitnessScoreGraph() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F0FF))
+        colors = CardDefaults.cardColors(containerColor = Color.White) // was light violet
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -173,7 +173,7 @@ fun RaceRow(race: RaceModel) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F0FF))
+        colors = CardDefaults.cardColors(containerColor = Color.White) // was light violet
     ) {
         Row(
             modifier = Modifier
@@ -183,10 +183,6 @@ fun RaceRow(race: RaceModel) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-//                Text(
-//                    text = race.race_name,
-//                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-//                )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = race.race_date,
@@ -196,5 +192,3 @@ fun RaceRow(race: RaceModel) {
         }
     }
 }
-
-

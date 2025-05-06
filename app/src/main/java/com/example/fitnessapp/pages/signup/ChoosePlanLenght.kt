@@ -21,6 +21,8 @@ import com.example.fitnessapp.model.ChoosedSports
 import com.example.fitnessapp.ui.theme.SectionTitle
 
 
+
+
 @Composable
 fun PlanLengthScreen(
     navController: NavHostController,
@@ -67,11 +69,8 @@ fun PlanLengthScreen(
             Button(
                 onClick = {
                     Handler(Looper.getMainLooper()).postDelayed({
-                        // Step 3: Generate training plan
-                        authViewModel.genearteTrainingPlan(raceDate) // Notă: "genearte" pare o greșeală, corect este "generate"
-
-                        // Navigate to the login screen
-                        navController.navigate("login_screen")
+                        authViewModel.genearteTrainingPlan(raceDate)
+                        navController.navigate("loading_screen")
                     }, 1000)
                 },
                 modifier = Modifier

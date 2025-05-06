@@ -46,14 +46,13 @@ import com.example.fitnessapp.R
 import com.example.fitnessapp.AuthViewModel
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState = authViewModel.authState.observeAsState()
-    val context = LocalContext.current
+    //val activity = LocalContext.current as? Activity
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -174,7 +173,10 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             TextButton(onClick = {
                 navController.navigate("enter_forgot_password")
                 /* Navigate to Forgot Password */ }) {
-                Text("Forgot password?")
+                Text(
+                    text = "Forgot password?",
+                    color = MaterialTheme.colorScheme.primary,
+                    )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -205,7 +207,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Social Media Login
+             //Social Media Login
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -219,7 +221,9 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     )
                 }
                 Spacer(modifier = Modifier.width(13.dp))
-                IconButton(onClick = { /* Google Login */ },
+                IconButton(onClick = {
+
+                },
                     modifier = Modifier.size(50.dp)) {
                     //Icon(painterResource(id = R.drawable.googlelogo), contentDescription = "Google")
                     Image(

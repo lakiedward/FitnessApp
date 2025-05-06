@@ -1,4 +1,4 @@
-package com.example.fitnessapp.pages
+package com.example.fitnessapp.pages.forgotpassword
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,13 +24,12 @@ import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
-class CheckYourEmail : ComponentActivity() {
+class ForgotPassword : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             FitnessAppTheme {
-                //val navController = rememberNavController()
-                //AppNavigationAddAge(navController)
+
             }
         }
     }
@@ -39,7 +38,7 @@ class CheckYourEmail : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CheckYourEmailScreen(navController: NavHostController) {
+fun ForgotPasswordScreen(navController: NavHostController) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -64,35 +63,45 @@ fun CheckYourEmailScreen(navController: NavHostController) {
                     .padding(horizontal = 16.dp, vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.weight(1f))
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Title
                 Text(
-                    text = "Check your email",
-                    fontSize = 24.sp,
+                    text = "Forgot password",
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                // Description
+                // Subtitle
                 Text(
-                    text = "We sent a reset link to contact@dscode...com.\nEnter the 5-digit code mentioned in the email.",
-                    fontSize = 16.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 32.dp),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    text = "Please enter your email to reset the password",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(bottom = 24.dp),
+                    lineHeight = 20.sp
                 )
 
-                var code by remember { mutableStateOf("") }
+                // Email Input Field
+                var email by remember { mutableStateOf("") }
                 OutlinedTextField(
-                    value = code,
-                    onValueChange = { code = it },
-                    label = { Text("Enter the code") },
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Your Email") },
                     modifier = Modifier.width(330.dp)
                         .height(66.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     shape = RoundedCornerShape(34.dp),
                     singleLine = true,
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.user),
+                            contentDescription = "Email Icon",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -101,17 +110,18 @@ fun CheckYourEmailScreen(navController: NavHostController) {
                 Button(
                     onClick = {
                         // Navigate or handle reset password logic
-                        navController.navigate("enter_set_new_password")
+                        navController.navigate("enter_check_your_email")
                     },
+                    enabled = email.isNotEmpty(),
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (code.isNotEmpty()) Color.Black else Color.Gray,
+                        containerColor = if (email.isNotEmpty()) Color.Black else Color.Gray,
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = "Verify Code")
+                    Text(text = "Reset Password")
                 }
             }
         }
