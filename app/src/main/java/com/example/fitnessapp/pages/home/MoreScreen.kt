@@ -21,8 +21,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavController
 import com.example.fitnessapp.R
 import com.example.fitnessapp.pages.home.BottomNavigationBar
@@ -63,7 +61,7 @@ fun MoreScreen(navController: NavController) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.logo),
+                        painter = painterResource(id = R.drawable.iclogo),
                         contentDescription = "Profile Picture",
                         modifier = Modifier
                             .size(80.dp)

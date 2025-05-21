@@ -1,8 +1,6 @@
 package com.example.fitnessapp.pages.signup
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,7 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.R
 import com.example.fitnessapp.model.ChoosedSports
 //import androidx.navigation.NavHostController

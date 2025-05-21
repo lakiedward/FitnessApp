@@ -1,5 +1,6 @@
 package com.example.fitnessapp.mock
 import android.content.SharedPreferences
+import android.util.Log
 
 class SharedPreferencesMock : SharedPreferences {
 
@@ -109,5 +110,21 @@ class SharedPreferencesMock : SharedPreferences {
         override fun apply() {
             // No-op for mock
         }
+    }
+
+    fun getJwtToken(): String? {
+        val token = getString("jwt_token", null)
+        Log.d("JWT_DEBUG", "[AuthManager] getJwtToken() called, value=$token")
+        return token
+    }
+
+    fun saveJwtToken(token: String) {
+        Log.d("JWT_DEBUG", "[AuthManager] saveJwtToken() called, saving value=$token")
+        edit().putString("jwt_token", token).apply()
+    }
+
+    fun handleAuthCode(code: String) {
+        Log.d("STRAVA_FLOW", "handleAuthCode() called with code=$code")
+        // ... restul codului
     }
 }

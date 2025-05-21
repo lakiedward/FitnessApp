@@ -1,14 +1,14 @@
 package com.example.fitnessapp.pages.signup
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,23 +16,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.viewmodel.AuthState
+import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.R
 import com.example.fitnessapp.model.UserDetalis
-//import androidx.navigation.NavHostController
-import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.ui.theme.SectionTitle
-
-class ChooseDiscipline : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            FitnessAppTheme {
-
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +38,25 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
         "10 Km Running",
         "5 Km Running"
     )
+
+    val authState by authViewModel.authState.observeAsState()
+    var navigateNext by remember { mutableStateOf(false) }
+    LaunchedEffect(authState) {
+        if (authState is AuthState.Authenticated) {
+            navigateNext = true
+        }
+    }
+
+    LaunchedEffect(navigateNext) {
+        if (navigateNext) {
+            navController.navigate("choose_sports")
+            authViewModel.resetAuthState()
+            navigateNext = false
+        }
+    }
+
+
+
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -90,7 +97,7 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
                     OutlinedTextField(
                         value = selectedRaceType,
                         onValueChange = {},
-                       // label = { Text("", style = MaterialTheme.typography.bodySmall) },
+                        // label = { Text("", style = MaterialTheme.typography.bodySmall) },
                         readOnly = true,
                         modifier = Modifier
                             .menuAnchor()
@@ -124,8 +131,14 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
             Button(
                 onClick = {
                     userDetalis.value = userDetalis.value.copy(discipline = selectedRaceType)
-                    authViewModel.addUserDetails(userDetalis.value.varsta, userDetalis.value.inaltime, userDetalis.value.greutate, userDetalis.value.fitnessLevel, userDetalis.value.gender, userDetalis.value.discipline)
-                    navController.navigate("choose_sports")
+                    authViewModel.addUserDetails(
+                        userDetalis.value.varsta,
+                        userDetalis.value.inaltime,
+                        userDetalis.value.greutate,
+                        userDetalis.value.fitnessLevel,
+                        userDetalis.value.gender,
+                        userDetalis.value.discipline
+                    )
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -139,6 +152,26 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
             ) {
                 Text(text = "Continue")
             }
+
+            if (authState is AuthState.Loading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.4f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator(color = Color.White)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Saving your preferences...",
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            }
+
         }
     }
 }

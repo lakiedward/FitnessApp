@@ -1,80 +1,139 @@
 package com.example.fitnessapp
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
-import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.model.UserDetalis
 import com.example.fitnessapp.model.ChoosedSports
-import com.example.fitnessapp.pages.signup.AddAgeScreen
-import com.example.fitnessapp.pages.signup.AddEmailScreen
-import com.example.fitnessapp.pages.signup.ChooseDisciplineScreen
-import com.example.fitnessapp.pages.signup.ChooseSportsScreen
-import com.example.fitnessapp.pages.signup.CyclingDataInsertScreen
-import com.example.fitnessapp.pages.signup.GenderSelectionScreen
-import com.example.fitnessapp.pages.home.HomeScreen
-import com.example.fitnessapp.pages.home.InfiniteCalendarPage
+import com.example.fitnessapp.pages.signup.*
+import com.example.fitnessapp.pages.home.*
 import com.example.fitnessapp.pages.LoginScreen
-import com.example.fitnessapp.pages.signup.PhysicalActivityLevelScreen
-import com.example.fitnessapp.pages.signup.RunningDataInsertScreen
-import com.example.fitnessapp.pages.home.SeasonScreen
-import com.example.fitnessapp.pages.home.WorkoutScreen
-import com.example.fitnessapp.pages.more.MoreScreen
-import com.example.fitnessapp.pages.signup.PlanLengthScreen
 import com.example.fitnessapp.pages.loading.LoadingScreen
-
+import com.example.fitnessapp.pages.more.AppIntegrationsScreen
+import com.example.fitnessapp.pages.more.MoreScreen
+import com.example.fitnessapp.pages.strava.StravaActivitiesScreen
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
+import com.example.fitnessapp.viewmodel.StravaViewModel
+import com.example.fitnessapp.viewmodel.StravaViewModelFactory
+import android.net.Uri
+import com.example.fitnessapp.viewmodel.AuthViewModel
 
 class MainActivity : ComponentActivity() {
+    private lateinit var authViewModel: AuthViewModel
+    private val stravaViewModel: StravaViewModel by viewModels {
+        StravaViewModelFactory(applicationContext)
+    }
+
+    // Variabilă pentru codul Strava primit când userul nu e logat
+    private var pendingStravaCode: String? = null
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val sharedPreferences = getSharedPreferences("fitness_app_prefs", Context.MODE_PRIVATE)
-        val authViewModel = AuthViewModel(sharedPreferences)
+        authViewModel = AuthViewModel(sharedPreferences)
+
+        // Observer clasic pentru LiveData
+        authViewModel.authState.observe(this) { state ->
+            if (state is com.example.fitnessapp.viewmodel.AuthState.Authenticated && pendingStravaCode != null) {
+                stravaViewModel.handleAuthCode(pendingStravaCode!!)
+                pendingStravaCode = null
+            }
+        }
+
+        // Handle the intent that started this activity
+        handleIntent(intent)
+        handleStravaCode(intent)
 
         setContent {
             FitnessAppTheme(darkTheme = false) {
-            val navController = rememberNavController()
+                val navController = rememberNavController()
                 val userDetalis = remember { mutableStateOf(UserDetalis(0, 0f, 0f, "", "", "")) }
                 val choosedSports = remember { mutableStateOf(ChoosedSports()) }
-
-//                SideEffect {
-//                    WindowCompat.setDecorFitsSystemWindows(window, false)
-//                    window.statusBarColor = android.graphics.Color.BLACK
-//                    WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
-//                }
-
-                AppNavigation(navController, authViewModel, userDetalis, choosedSports)
+                AppNavigation(navController, authViewModel, userDetalis, choosedSports, stravaViewModel)
             }
         }
     }
 
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//
-//        FitnessSignInHelper.handleActivityResult(requestCode, resultCode)
-//    }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+        handleStravaCode(intent)
+    }
 
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.action == Intent.ACTION_VIEW) {
+            val uri: Uri? = intent.data
+            if (uri?.scheme == "fitnessapp" && uri.host == "strava" && uri.path?.startsWith("/callback") == true) {
+                // Extract the authorization code from the URI
+                val code = uri.getQueryParameter("code")
+                if (code != null) {
+                    Log.d("MainActivity", "Received Strava authorization code: $code")
+                    // Handle the auth code
+                    stravaViewModel.handleAuthCode(code)
+                } else {
+                    Log.e("MainActivity", "No authorization code found in callback URI")
+                }
+            }
+        }
+    }
+
+    private fun handleStravaCode(intent: Intent?) {
+        val code = intent?.getStringExtra("strava_code")
+        if (!code.isNullOrEmpty()) {
+            // Verific dacă userul e logat (există JWT)
+            val jwt = getJwtToken()
+            if (!jwt.isNullOrEmpty()) {
+                stravaViewModel.handleAuthCode(code)
+            } else {
+                // Salvez codul pentru a-l procesa după login
+                pendingStravaCode = code
+            }
+        }
+    }
+
+    // Helper pentru a verifica dacă există JWT (poți adapta după implementarea ta)
+    private fun getJwtToken(): String? {
+        val sharedPreferences = getSharedPreferences("fitness_app_prefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("jwt_token", null)
+    }
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppNavigation(navController: NavHostController, authViewModel: AuthViewModel, userDetalis: MutableState<UserDetalis>, choosedSports: MutableState<ChoosedSports>) {
+fun AppNavigation(
+    navController: NavHostController,
+    authViewModel: AuthViewModel,
+    userDetalis: MutableState<UserDetalis>,
+    choosedSports: MutableState<ChoosedSports>,
+    stravaViewModel: StravaViewModel
+) {
     NavHost(navController = navController, startDestination = "login_screen") {
         composable("login_screen") {
             LoginScreen(navController, authViewModel)
         }
         composable("gender_selection_screen") {
             GenderSelectionScreen(navController, userDetalis)
+        }
+        composable("app_integrations") {
+            AppIntegrationsScreen(
+                onNavigateToStravaActivities = { navController.navigate("strava_activities") },
+                authViewModel = authViewModel,
+                stravaViewModel = stravaViewModel,
+                navController = navController
+            )
         }
         composable("add_age_screen") {
             AddAgeScreen(navController, userDetalis)
@@ -118,11 +177,13 @@ fun AppNavigation(navController: NavHostController, authViewModel: AuthViewModel
         composable("loading_screen") {
             LoadingScreen(navController, authViewModel)
         }
-
-//        composable("swimming_data_insert") {
-//            SwimmingDataInsertScreen(navController, authViewModel)
-//        }
-
+        composable("strava_activities") {
+            StravaActivitiesScreen(
+                stravaViewModel = stravaViewModel,
+                authViewModel = authViewModel,
+                onNavigateBack = { navController.navigateUp() }
+            )
+        }
     }
 }
 

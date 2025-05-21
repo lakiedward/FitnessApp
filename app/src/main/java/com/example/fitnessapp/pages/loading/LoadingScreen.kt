@@ -7,7 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
 import androidx.compose.runtime.livedata.observeAsState
 import com.example.fitnessapp.model.TrainingPlan

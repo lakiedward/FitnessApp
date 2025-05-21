@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,7 +22,12 @@ import java.time.format.TextStyle
 import java.util.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import com.example.fitnessapp.AuthViewModel
+import androidx.compose.runtime.remember
+import com.example.fitnessapp.viewmodel.AuthViewModel
+import com.example.fitnessapp.components.TrainingChart
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -33,6 +39,7 @@ fun InfiniteCalendarPage(
     Log.d("CalendarScreen", "Training Plans: $trainingPlans") // Debugging aici
     val today = LocalDate.now()
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = Int.MAX_VALUE / 2)
+    val coroutineScope = rememberCoroutineScope()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -49,6 +56,47 @@ fun InfiniteCalendarPage(
             )
 
             TopBar("Calendar", navController)
+
+            // Observăm ziua vizibilă și derivăm luna
+            val firstVisibleDay = remember {
+                derivedStateOf {
+                    today.plusDays((listState.firstVisibleItemIndex - Int.MAX_VALUE / 2).toLong())
+                }
+            }
+            val currentMonthYear by remember {
+                derivedStateOf {
+                    val day = firstVisibleDay.value
+                    day.month.getDisplayName(TextStyle.FULL, Locale.getDefault()).replaceFirstChar { it.uppercaseChar() } + " " + day.year
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF333333))
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = currentMonthYear,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, color = Color.White)
+                )
+
+                TextButton(
+                    onClick = {
+                        // Scroll la ziua de azi
+                        val todayIndex = Int.MAX_VALUE / 2
+                        coroutineScope.launch {
+                            listState.animateScrollToItem(todayIndex)
+                        }
+                    }
+                ) {
+                    Text("Today", color = Color.White)
+                }
+            }
+
+
 
             Column(
                 modifier = Modifier
@@ -85,36 +133,54 @@ fun InfiniteCalendarPage(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarDayItem(day: LocalDate, isToday: Boolean, training: TrainingPlan?) {
-    Row(
+    Log.d("CalendarChart", "steps = ${training?.steps}")
+
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(vertical = 6.dp, horizontal = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F0F0)), // Gri deschis
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = day.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
-            )
-            Text(
-                text = day.toString(),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontSize = 14.sp,
-                    color = if (isToday) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                )
-            )
-        }
-        Column(modifier = Modifier.weight(2f)) {
-            if (training != null) {
+        Column(modifier = Modifier.padding(12.dp)) {
+
+            // 🟡 Ziua + ziua lunii
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = training.workout_name,
+                    text = day.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = training.description,
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, color = Color.Gray),
-                    maxLines = 2
+                    text = day.dayOfMonth.toString(),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 14.sp,
+                        color = if (isToday) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    )
                 )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // 🟩 Interior: descriere + grafic
+            if (training != null) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE0E0E0)), // Gri contrastant
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = training.description,
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp, color = Color.DarkGray)
+                        )
+
+                        training.steps?.let {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            TrainingChart(steps = it)
+                        }
+                    }
+                }
             } else {
                 Text(
                     text = "No training planned",
@@ -124,6 +190,8 @@ fun CalendarDayItem(day: LocalDate, isToday: Boolean, training: TrainingPlan?) {
         }
     }
 }
+
+
 
 
 

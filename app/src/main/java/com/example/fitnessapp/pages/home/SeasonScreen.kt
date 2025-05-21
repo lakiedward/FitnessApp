@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.model.RaceModel
 
 @Composable

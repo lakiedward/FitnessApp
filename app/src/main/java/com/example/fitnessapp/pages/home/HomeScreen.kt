@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.fitnessapp.R
-import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.viewmodel.AuthViewModel
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -188,29 +188,53 @@ fun PerformanceCard(title: String, value: String, unit: String, color: Color) {
 }
 
 @Composable
-fun TopBar(titlu: String, navController: NavController) {
+fun TopBar(
+    titlu: String,
+    navController: NavController,
+    showBackButton: Boolean = false,
+    showProfileIcon: Boolean = true,
+    showNotificationIcon: Boolean = true
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.Black)
             .padding(vertical = 8.dp)
     ) {
-        // Profile Icon on the left
-        IconButton(
-            onClick = {
-                navController.navigate("workout_screen")
-            },
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 16.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo), // Replace with your profile icon
-                contentDescription = "Profile",
+        // Back button or Profile Icon on the left
+        if (showBackButton) {
+            IconButton(
+                onClick = {
+                    navController.popBackStack()
+                },
                 modifier = Modifier
-                    .size(40.dp)
-                    .background(Color.Gray, CircleShape)
-            )
+                    .align(Alignment.CenterStart)
+                    .padding(start = 16.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_back),
+                    contentDescription = "Back",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        } else if (showProfileIcon) {
+            IconButton(
+                onClick = {
+                    navController.navigate("workout_screen")
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 16.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.iclogo),
+                    contentDescription = "Profile",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(Color.Gray, CircleShape)
+                )
+            }
         }
 
         // Title in the center
@@ -224,19 +248,21 @@ fun TopBar(titlu: String, navController: NavController) {
         )
 
         // Notifications Icon on the right
-        IconButton(
-            onClick = {
-                navController.navigate("workout_screen")
-            },
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 16.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_record_white_no_text), // Replace with your notification icon
-                contentDescription = "Notifications",
-                modifier = Modifier.size(64.dp)
-            )
+        if (showNotificationIcon) {
+            IconButton(
+                onClick = {
+                    navController.navigate("workout_screen")
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_record_white_no_text),
+                    contentDescription = "Notifications",
+                    modifier = Modifier.size(64.dp)
+                )
+            }
         }
     }
 }

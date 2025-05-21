@@ -14,7 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.R
 import com.example.fitnessapp.model.ChoosedSports
 import com.example.fitnessapp.ui.theme.SectionTitle
@@ -120,8 +120,13 @@ fun RunningDataInsertScreen(
                     val runningRaceTime10KmInt = runningRaceTime10Km.toIntOrNull()
 
                     if (runningRaceTime5KmInt != null || runningRaceTime10KmInt != null) {
+                        authViewModel.saveRunningData(
+                            best5km = runningRaceTime5KmInt,
+                            best10km = runningRaceTime10KmInt
+                        )
                         navController.navigate("plan_length_screen")
-                    } else {
+                    }
+                    else {
                         Toast.makeText(
                             navController.context,
                             "Please enter valid numbers for race times.",

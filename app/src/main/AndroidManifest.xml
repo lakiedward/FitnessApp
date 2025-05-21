@@ -14,9 +14,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/logo"
+        android:icon="@drawable/iclogo"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/logo"
+        android:roundIcon="@drawable/iclogo"
         android:supportsRtl="true"
         android:theme="@style/Theme.FitnessApp"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -34,6 +34,32 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".StravaCallbackActivity"
+            android:exported="true">
+            <!-- Intent filter for HTTP scheme (NO autoVerify for localhost) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="http"
+                    android:host="localhost"
+                    android:port="8080"
+                    android:pathPrefix="/strava/callback" />
+            </intent-filter>
+            <!-- Intent filter for custom scheme -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="fitnessapp"
+                    android:host="strava"
+                    android:pathPrefix="/callback" />
             </intent-filter>
         </activity>
     </application>

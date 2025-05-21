@@ -20,10 +20,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.R
 import com.example.fitnessapp.model.ChoosedSports
 import com.example.fitnessapp.model.UserWeekAvailability
+import android.util.Log
+
 
 @Composable
 fun ChooseSportsScreen(
@@ -133,9 +135,14 @@ fun ChooseSportsScreen(
                                 )
                             } else null
                         }
+
                         val selectedSportsList = selectedSports.filter { it.value }.keys.toList()
                         choosedSports.value = ChoosedSports(selectedSportsList)
+
+                        Log.d("ChooseSports", "Selected sports: $selectedSportsList")
                         authViewModel.addWeekAvailability(availabilityList)
+                        authViewModel.saveUserSports(selectedSportsList)
+
                         if (choosedSports.value.cycling) navController.navigate("cycling_data_insert")
                         else if (choosedSports.value.running) navController.navigate("running_data_insert")
                     },

@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.R
 import com.example.fitnessapp.model.ChoosedSports
 import com.example.fitnessapp.ui.theme.SectionTitle
@@ -69,7 +69,7 @@ fun PlanLengthScreen(
             Button(
                 onClick = {
                     Handler(Looper.getMainLooper()).postDelayed({
-                        authViewModel.genearteTrainingPlan(raceDate)
+                        authViewModel.generateTrainingPlanBySport(raceDate)
                         navController.navigate("loading_screen")
                     }, 1000)
                 },

@@ -35,16 +35,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.fitnessapp.AuthState
+import com.example.fitnessapp.viewmodel.AuthState
 import com.example.fitnessapp.R
-import com.example.fitnessapp.AuthViewModel
-
+import com.example.fitnessapp.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +50,6 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState = authViewModel.authState.observeAsState()
-    //val activity = LocalContext.current as? Activity
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -67,7 +64,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
         ) {
             // Logo
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = painterResource(id = R.drawable.iclogo),
                 contentDescription = "App Logo",
                 modifier = Modifier.size(200.dp)
             )
@@ -81,22 +78,20 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 label = { Text("Email", style = MaterialTheme.typography.bodySmall) },
                 modifier = Modifier
                     .width(259.dp)
-                    .height(56.dp), // Adjusted height for better usability
+                    .height(56.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 shape = RoundedCornerShape(34.dp),
                 textStyle = MaterialTheme.typography.bodySmall,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
-                    focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
-
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                 )
             )
-
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -107,19 +102,18 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 label = { Text("Password", style = MaterialTheme.typography.bodySmall) },
                 modifier = Modifier
                     .width(259.dp)
-                    .height(56.dp), // Adjusted height for better usability
+                    .height(56.dp),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 shape = RoundedCornerShape(34.dp),
                 textStyle = MaterialTheme.typography.bodySmall,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
-                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
-                    focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
-
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                 )
             )
 
@@ -128,15 +122,14 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             // Login Button
             Button(
                 onClick = {
-                   authViewModel.login(email, password)
-                   //navController.navigate("home_screen")
+                    authViewModel.login(email, password)
                 },
                 modifier = Modifier
                     .width(178.dp)
                     .height(44.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black, // Set background color to black
-                    contentColor = Color.White   // Set text color to white
+                    containerColor = Color.Black,
+                    contentColor = Color.White
                 )
             ) {
                 Text("Log in", style = MaterialTheme.typography.bodyMedium)
@@ -172,11 +165,11 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             // Forgot Password
             TextButton(onClick = {
                 navController.navigate("enter_forgot_password")
-                /* Navigate to Forgot Password */ }) {
+            }) {
                 Text(
                     text = "Forgot password?",
                     color = MaterialTheme.colorScheme.primary,
-                    )
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -207,37 +200,38 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
 
             Spacer(modifier = Modifier.height(24.dp))
 
-             //Social Media Login
+            // Social Media Login
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                IconButton(onClick = { /* Facebook Login */ },
-                    modifier = Modifier.size(50.dp)) {
-                    //Icon(painterResource(id = R.drawable.facebooklogo), contentDescription = "Facebook")
+                IconButton(
+                    onClick = { /* Facebook Login */ },
+                    modifier = Modifier.size(50.dp)
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.facebooklogo),
                         contentDescription = "Facebook Logo"
                     )
                 }
                 Spacer(modifier = Modifier.width(13.dp))
-                IconButton(onClick = {
-
-                },
-                    modifier = Modifier.size(50.dp)) {
-                    //Icon(painterResource(id = R.drawable.googlelogo), contentDescription = "Google")
+                IconButton(
+                    onClick = { /* Google Login */ },
+                    modifier = Modifier.size(50.dp)
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.googlelogo),
-                        contentDescription = "Google Logo",
+                        contentDescription = "Google Logo"
                     )
                 }
                 Spacer(modifier = Modifier.width(13.dp))
-                IconButton(onClick = { /* Apple Login */ },
-                    modifier = Modifier.size(50.dp)) {
-                    //Icon(painterResource(id = R.drawable.applelogo), contentDescription = "Apple")
+                IconButton(
+                    onClick = { /* Apple Login */ },
+                    modifier = Modifier.size(50.dp)
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.applelogo),
-                        contentDescription = "Apple Logo",
+                        contentDescription = "Apple Logo"
                     )
                 }
             }
@@ -246,21 +240,23 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
 
             // Sign Up
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Don’t have an account?", style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary)
-                val context = LocalContext.current
-
+                Text(
+                    "Don't have an account?",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
                 TextButton(
                     onClick = {
                         navController.navigate("enter_add_email")
-                    },
-
-                    ) {
-                    Text("Sign in", style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary)
+                    }
+                ) {
+                    Text(
+                        "Sign in",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
-
             }
         }
     }
-}
+} 

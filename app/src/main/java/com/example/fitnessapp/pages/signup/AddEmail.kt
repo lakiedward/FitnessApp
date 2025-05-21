@@ -1,15 +1,12 @@
 package com.example.fitnessapp.pages.signup
 
-
-
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,25 +15,24 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.fitnessapp.AuthViewModel
+import com.example.fitnessapp.viewmodel.AuthState
+import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.R
-//import androidx.navigation.NavHostController
-import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
-class AddEmail : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            FitnessAppTheme {
 
-            }
-        }
-    }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+
+    val authState by authViewModel.authState.observeAsState()
+
+    LaunchedEffect(authState) {
+        if (authState is AuthState.Authenticated) {
+            navController.navigate("gender_selection_screen")
+            authViewModel.resetAuthState()
+        }
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -195,9 +191,8 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                         if (password != confirmPassword) {
                             errorMessage = "Passwords do not match"
                         } else {
-                            errorMessage = null // Clear error message
+                            errorMessage = null
                             authViewModel.signup(email, password)
-                            navController.navigate("gender_selection_screen")
                         }
                     },
                     modifier = Modifier
@@ -209,6 +204,24 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                     )
                 ) {
                     Text(text = "Create an Account")
+                }
+            }
+            if (authState is AuthState.Loading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.4f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator(color = Color.White)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Creating your account...",
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             }
         }
