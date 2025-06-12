@@ -13,7 +13,10 @@ class AuthManager(private val context: Context) {
 
     fun getJwtToken(): String? {
         val token = prefs.getString("jwt_token", null)
-        Log.d("JWT_DEBUG", "[AuthManager] getJwtToken() called, value=$token")
+        Log.d("JWT_DEBUG", "[AuthManager] getJwtToken() called")
+        Log.d("JWT_DEBUG", "[AuthManager] Token exists: ${!token.isNullOrEmpty()}")
+        Log.d("JWT_DEBUG", "[AuthManager] Token length: ${token?.length}")
+        Log.d("JWT_DEBUG", "[AuthManager] Token first 10 chars: ${token?.take(10)}...")
         return token
     }
 
@@ -39,8 +42,22 @@ class AuthManager(private val context: Context) {
         prefs.edit().remove("strava_token").apply()
     }
 
+    fun clearAllStravaData() {
+        Log.d("AuthManager", "Clearing all Strava data from SharedPreferences")
+        prefs.edit()
+            .remove("strava_token")
+            .apply()
+        Log.d("AuthManager", "All Strava data cleared")
+    }
+
     fun saveJwtToken(token: String) {
-        Log.d("JWT_DEBUG", "[AuthManager] saveJwtToken() called, saving value=$token")
+        Log.d("JWT_DEBUG", "[AuthManager] saveJwtToken() called")
+        Log.d("JWT_DEBUG", "[AuthManager] Token length: ${token.length}")
+        Log.d("JWT_DEBUG", "[AuthManager] Token first 10 chars: ${token.take(10)}...")
         prefs.edit().putString("jwt_token", token).apply()
+        // Verify the token was saved
+        val savedToken = prefs.getString("jwt_token", null)
+        Log.d("JWT_DEBUG", "[AuthManager] Token saved successfully: ${savedToken != null}")
+        Log.d("JWT_DEBUG", "[AuthManager] Saved token length: ${savedToken?.length}")
     }
 } 

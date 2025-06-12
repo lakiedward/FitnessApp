@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -116,7 +117,8 @@ fun InfiniteCalendarPage(
                         CalendarDayItem(
                             day = day,
                             isToday = day == today,
-                            training = trainingForDay
+                            training = trainingForDay,
+                            navController = navController
                         )
                     }
                 }
@@ -132,14 +134,28 @@ fun InfiniteCalendarPage(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarDayItem(day: LocalDate, isToday: Boolean, training: TrainingPlan?) {
+fun CalendarDayItem(
+    day: LocalDate,
+    isToday: Boolean,
+    training: TrainingPlan?,
+    navController: NavController
+) {
     Log.d("CalendarChart", "steps = ${training?.steps}")
 
-    Card(
-        modifier = Modifier
+    val cardModifier = if (training != null) {
+        Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp, horizontal = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F0F0)), // Gri deschis
+            .padding(vertical = 6.dp, horizontal = 8.dp)
+            .clickable { navController.navigate("loading_training/${training.id}") }
+    } else {
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp, horizontal = 8.dp)
+    }
+
+    Card(
+        modifier = cardModifier,
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F0F0)),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {

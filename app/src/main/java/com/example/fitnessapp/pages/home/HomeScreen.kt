@@ -8,6 +8,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -23,17 +25,39 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.fitnessapp.R
 import com.example.fitnessapp.viewmodel.AuthViewModel
+import com.example.fitnessapp.viewmodel.StravaViewModel
+import com.example.fitnessapp.viewmodel.StravaViewModelFactory
+import com.example.fitnessapp.viewmodel.HomeViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.LocalDate
+import androidx.compose.ui.platform.LocalContext
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(navController: NavController, authViewModel: AuthViewModel) {
+fun HomeScreen(navController: NavController, authViewModel: AuthViewModel, stravaViewModel: StravaViewModel) {
     val today = LocalDate.now().toString()
     val trainingPlans by authViewModel.trainingPlan.observeAsState(emptyList())
     val todayWorkout = trainingPlans.find { it.date == today }
+    val userTrainingData by authViewModel.userTrainingData.observeAsState()
+    val homeViewModel: HomeViewModel = viewModel()
 
-    authViewModel.getTrainingPlans()
-    authViewModel.getRaces()
+    // Sync data when screen is first displayed
+    LaunchedEffect(Unit) {
+        authViewModel.getTrainingPlans()
+        authViewModel.getRaces()
+        authViewModel.getUserTrainingData()
+        stravaViewModel.syncCheck()
+        
+        // Fetch FTP estimate
+        val token = authViewModel.getToken()
+        if (!token.isNullOrEmpty()) {
+            homeViewModel.fetchFTPEstimate(token)
+        }
+    }
+
+    val ftpEstimate by homeViewModel.ftpEstimate.observeAsState()
+    val isLoading by homeViewModel.isLoading.observeAsState()
+    val error by homeViewModel.error.observeAsState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -137,7 +161,114 @@ fun HomeScreen(navController: NavController, authViewModel: AuthViewModel) {
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         PerformanceCard(title = "Fitness score", value = "46", unit = "", color = Color.Green)
-                        PerformanceCard(title = "Calories", value = "456", unit = "Kcal", color = Color.Yellow)
+                        PerformanceCard(
+                            title = "FTP",
+                            value = if (isLoading == true) "..." else ftpEstimate?.estimatedFTP?.toInt()?.toString() ?: userTrainingData?.ftp?.toString() ?: "-",
+                            unit = "W",
+                            color = Color.Yellow
+                        )
+                    }
+                }
+
+                // Display FTP estimate details if available
+                ftpEstimate?.let { ftp ->
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E8))
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = "FTP Estimate Details",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = Color.Black
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column {
+                                    Text(
+                                        text = "Confidence",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = "${(ftp.confidence * 100).toInt()}%",
+                                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = Color.Black
+                                    )
+                                }
+                                Column {
+                                    Text(
+                                        text = "Method",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = ftp.method,
+                                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = Color.Black
+                                    )
+                                }
+                            }
+                            
+                            ftp.fthrValue?.let { fthr ->
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "FTHR: ${fthr.toInt()} bpm",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.Gray
+                                )
+                            }
+                            
+                            ftp.notes?.let { notes ->
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = notes,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.Gray,
+                                    maxLines = 2
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Display error if any
+                error?.let { errorMessage ->
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Error loading FTP: $errorMessage",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Red
+                            )
+                            IconButton(onClick = { homeViewModel.clearError() }) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "Dismiss",
+                                    tint = Color.Red
+                                )
+                            }
+                        }
                     }
                 }
             }

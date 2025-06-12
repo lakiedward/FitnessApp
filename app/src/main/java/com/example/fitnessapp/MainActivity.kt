@@ -20,19 +20,24 @@ import com.example.fitnessapp.pages.signup.*
 import com.example.fitnessapp.pages.home.*
 import com.example.fitnessapp.pages.LoginScreen
 import com.example.fitnessapp.pages.loading.LoadingScreen
+import com.example.fitnessapp.pages.loading.LoadingTrainingScreen
 import com.example.fitnessapp.pages.more.AppIntegrationsScreen
 import com.example.fitnessapp.pages.more.MoreScreen
 import com.example.fitnessapp.pages.strava.StravaActivitiesScreen
+import com.example.fitnessapp.pages.strava.StravaSyncLoadingScreen
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.viewmodel.StravaViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModelFactory
 import android.net.Uri
+import androidx.compose.runtime.livedata.observeAsState
 import com.example.fitnessapp.viewmodel.AuthViewModel
+import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
 
 class MainActivity : ComponentActivity() {
     private lateinit var authViewModel: AuthViewModel
-    private val stravaViewModel: StravaViewModel by viewModels {
-        StravaViewModelFactory(applicationContext)
+    private val stravaViewModel: StravaViewModel by lazy {
+        StravaViewModel.getInstance(applicationContext)
     }
 
     // Variabilă pentru codul Strava primit când userul nu e logat
@@ -48,7 +53,13 @@ class MainActivity : ComponentActivity() {
         // Observer clasic pentru LiveData
         authViewModel.authState.observe(this) { state ->
             if (state is com.example.fitnessapp.viewmodel.AuthState.Authenticated && pendingStravaCode != null) {
-                stravaViewModel.handleAuthCode(pendingStravaCode!!)
+                lifecycleScope.launch {
+                    try {
+                        stravaViewModel.handleAuthCode(pendingStravaCode!!)
+                    } catch (e: Exception) {
+                        Log.e("MainActivity", "Error handling Strava auth code", e)
+                    }
+                }
                 pendingStravaCode = null
             }
         }
@@ -60,7 +71,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             FitnessAppTheme(darkTheme = false) {
                 val navController = rememberNavController()
-                val userDetalis = remember { mutableStateOf(UserDetalis(0, 0f, 0f, "", "", "")) }
+                val userDetalis = remember { mutableStateOf(UserDetalis(0, 0f, 0f, "", "")) }
                 val choosedSports = remember { mutableStateOf(ChoosedSports()) }
                 AppNavigation(navController, authViewModel, userDetalis, choosedSports, stravaViewModel)
             }
@@ -82,7 +93,13 @@ class MainActivity : ComponentActivity() {
                 if (code != null) {
                     Log.d("MainActivity", "Received Strava authorization code: $code")
                     // Handle the auth code
-                    stravaViewModel.handleAuthCode(code)
+                    lifecycleScope.launch {
+                        try {
+                            stravaViewModel.handleAuthCode(code)
+                        } catch (e: Exception) {
+                            Log.e("MainActivity", "Error handling Strava auth code", e)
+                        }
+                    }
                 } else {
                     Log.e("MainActivity", "No authorization code found in callback URI")
                 }
@@ -96,7 +113,13 @@ class MainActivity : ComponentActivity() {
             // Verific dacă userul e logat (există JWT)
             val jwt = getJwtToken()
             if (!jwt.isNullOrEmpty()) {
-                stravaViewModel.handleAuthCode(code)
+                lifecycleScope.launch {
+                    try {
+                        stravaViewModel.handleAuthCode(code)
+                    } catch (e: Exception) {
+                        Log.e("MainActivity", "Error handling Strava auth code", e)
+                    }
+                }
             } else {
                 // Salvez codul pentru a-l procesa după login
                 pendingStravaCode = code
@@ -138,8 +161,13 @@ fun AppNavigation(
         composable("add_age_screen") {
             AddAgeScreen(navController, userDetalis)
         }
-        composable("physical_activity_level_screen") {
-            PhysicalActivityLevelScreen(navController, userDetalis)
+        composable("strava_auth_screen") {
+            StravaAuthScreen(
+                onContinue = { navController.navigate("choose_discipline") },
+                authViewModel = authViewModel,
+                stravaViewModel = stravaViewModel,
+                navController = navController
+            )
         }
         composable("choose_sports") {
             ChooseSportsScreen(navController, authViewModel, choosedSports)
@@ -160,7 +188,7 @@ fun AppNavigation(
             AddEmailScreen(navController, authViewModel)
         }
         composable("home_screen"){
-            HomeScreen(navController, authViewModel)
+            HomeScreen(navController, authViewModel, stravaViewModel)
         }
         composable("calendar_screen"){
             InfiniteCalendarPage(navController, authViewModel)
@@ -183,6 +211,38 @@ fun AppNavigation(
                 authViewModel = authViewModel,
                 onNavigateBack = { navController.navigateUp() }
             )
+        }
+        composable("strava_sync_loading") {
+            StravaSyncLoadingScreen(
+                onNavigateBack = { navController.navigateUp() },
+                onSyncComplete = { navController.navigateUp() },
+                stravaViewModel = stravaViewModel,
+                authViewModel = authViewModel
+            )
+        }
+        composable("training_detail/{trainingId}") { backStackEntry ->
+            val trainingId = backStackEntry.arguments?.getString("trainingId")?.toIntOrNull()
+            val trainingPlans by authViewModel.trainingPlan.observeAsState(emptyList())
+            val training = trainingPlans.find { it.id == trainingId }
+            if (training != null) {
+                TrainingDetailScreen(
+                    training = training,
+                    navController = navController,
+                    authViewModel = authViewModel
+                )
+            }
+        }
+        composable("loading_training/{trainingId}") { backStackEntry ->
+            val trainingId = backStackEntry.arguments?.getString("trainingId")?.toIntOrNull()
+            val trainingPlans by authViewModel.trainingPlan.observeAsState(emptyList())
+            val training = trainingPlans.find { it.id == trainingId }
+            if (training != null) {
+                LoadingTrainingScreen(
+                    training = training,
+                    navController = navController,
+                    authViewModel = authViewModel
+                )
+            }
         }
     }
 }

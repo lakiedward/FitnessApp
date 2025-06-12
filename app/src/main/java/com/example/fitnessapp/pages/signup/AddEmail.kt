@@ -18,8 +18,12 @@ import androidx.navigation.NavHostController
 import com.example.fitnessapp.viewmodel.AuthState
 import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.R
+import android.util.Patterns
 
-
+// Email validation function
+private fun isValidEmail(email: String): Boolean {
+    return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+}
 
 @Composable
 fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewModel) {
@@ -104,6 +108,7 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                         .height(66.dp),
                     shape = RoundedCornerShape(34.dp),
                     singleLine = true,
+                    isError = email.isNotEmpty() && !isValidEmail(email),
                     leadingIcon = {
                         Icon(
                             painter = painterResource(id = R.drawable.user),
@@ -112,6 +117,16 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                         )
                     }
                 )
+                
+                // Show email validation error
+                if (email.isNotEmpty() && !isValidEmail(email)) {
+                    Text(
+                        text = "Please enter a valid email address",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -188,12 +203,34 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                 // Continue Button
                 Button(
                     onClick = {
+                        // Reset error message
+                        errorMessage = null
+                        
+                        // Validate email format
+                        if (!isValidEmail(email)) {
+                            errorMessage = "Please enter a valid email address"
+                            return@Button
+                        }
+                        
+                        // Validate password match
                         if (password != confirmPassword) {
                             errorMessage = "Passwords do not match"
-                        } else {
-                            errorMessage = null
-                            authViewModel.signup(email, password)
+                            return@Button
                         }
+                        
+                        // Validate required fields
+                        if (name.isBlank()) {
+                            errorMessage = "Please enter your name"
+                            return@Button
+                        }
+                        
+                        if (password.isBlank()) {
+                            errorMessage = "Please enter a password"
+                            return@Button
+                        }
+                        
+                        // All validations passed, proceed with signup
+                        authViewModel.signup(email, password)
                     },
                     modifier = Modifier
                         .fillMaxWidth(0.6f)

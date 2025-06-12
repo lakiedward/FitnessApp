@@ -74,7 +74,8 @@ fun AppIntegrationsScreen(
     val handleConnect: () -> Unit = {
         scope.launch {
             try {
-                val authUrl = stravaViewModel.getAuthUrl()
+                val authUrl = stravaViewModel.connect()
+                Log.d(TAG, "Opening Strava auth URL: $authUrl")
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authUrl))
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
@@ -226,7 +227,13 @@ fun AppIntegrationsScreen(
                                             modifier = Modifier.fillMaxWidth()
                                         ) {
                                             Text("Disconnect")
-                            }
+                                        }
+                                        TextButton(
+                                            onClick = { stravaViewModel.refreshStravaToken() },
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text("Refresh Token")
+                                        }
                         }
                     }
                 }

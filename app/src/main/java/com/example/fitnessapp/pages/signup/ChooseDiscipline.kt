@@ -135,7 +135,6 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
                         userDetalis.value.varsta,
                         userDetalis.value.inaltime,
                         userDetalis.value.greutate,
-                        userDetalis.value.fitnessLevel,
                         userDetalis.value.gender,
                         userDetalis.value.discipline
                     )

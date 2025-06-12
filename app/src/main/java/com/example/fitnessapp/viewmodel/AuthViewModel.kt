@@ -44,12 +44,15 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
     private val _races = MutableLiveData<List<RaceModel>>()
     val races: LiveData<List<RaceModel>> get() = _races
 
+    private val _userTrainingData = MutableLiveData<UserTrainigData?>()
+    val userTrainingData: LiveData<UserTrainigData?> get() = _userTrainingData
+
     fun initUserDataAfterAuth() {
         val token = getToken()
         if (token != null) {
             getTrainingPlans()
-            getRaces() // doar dacă ai nevoie și de curse
-            // poți adăuga și alte apeluri precum: getUserProfile(), getCyclingData()
+            getRaces()
+            getUserTrainingData()
         } else {
             _authState.value = AuthState.Error("Token is missing. Please log in again.")
         }
@@ -134,7 +137,7 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
     }
 
 
-    fun addUserDetails(varsta: Int, inaltime: Float, greutate: Float, fitnessLevel: String, gender: String, discipline: String) {
+    fun addUserDetails(varsta: Int, inaltime: Float, greutate: Float, gender: String, discipline: String) {
         val token = getToken()
         _authState.value = AuthState.Loading
 
@@ -144,7 +147,7 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             return
         }
 
-        val details = UserDetalis(varsta, inaltime, greutate, fitnessLevel, gender, discipline)
+        val details = UserDetalis(varsta, inaltime, greutate, gender, discipline)
         apiService.addUserDetails("Bearer $token", details).enqueue(object : Callback<Map<String, String>> {
             override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
                 if (response.isSuccessful) {
@@ -372,20 +375,41 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
         })
     }
 
+    fun getUserTrainingData() {
+        val token = getToken()
+        if (token == null) {
+            _authState.value = AuthState.Error("Token is missing. Please log in again.")
+            return
+        }
+
+        apiService.getUserTrainingData("Bearer $token").enqueue(object : Callback<UserTrainigData> {
+            override fun onResponse(call: Call<UserTrainigData>, response: Response<UserTrainigData>) {
+                if (response.isSuccessful) {
+                    _userTrainingData.value = response.body()
+                } else {
+                    Log.e("AuthViewModel", "Failed to fetch user training data: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<UserTrainigData>, t: Throwable) {
+                Log.e("AuthViewModel", "Error fetching user training data: ${t.message}")
+            }
+        })
+    }
+
     fun resetAuthState() {
         _authState.value = AuthState.Idle
+    }
+
+    fun getToken(): String? {
+        val token = sharedPreferences.getString("jwt_token", null)
+        Log.d("AuthViewModel", "Retrieved token: $token")
+        return token
     }
 
     private fun saveToken(token: String) {
         sharedPreferences.edit().putString("jwt_token", token).apply()
         Log.d("AuthViewModel", "Token saved successfully: $token")
-    }
-
-
-    private fun getToken(): String? {
-        val token = sharedPreferences.getString("jwt_token", null)
-        Log.d("AuthViewModel", "Retrieved token: $token")
-        return token
     }
 
 }

@@ -4,12 +4,15 @@ import com.example.fitnessapp.model.StravaActivity
 import com.example.fitnessapp.model.StravaAthlete
 import com.example.fitnessapp.model.StravaToken
 import com.example.fitnessapp.model.SyncResult
+import com.example.fitnessapp.model.FTPEstimate
 import retrofit2.Call
 import retrofit2.http.*
 
 interface StravaApiService {
     @GET("strava/connect-mobile")
-    suspend fun getAuthUrl(): Map<String, String>
+    suspend fun getAuthUrl(
+        @Header("Authorization") jwtToken: String
+    ): Map<String, String>
 
     @GET("strava/callback")
     fun exchangeCodeForToken(
@@ -19,7 +22,8 @@ interface StravaApiService {
 
     @GET("strava/athlete")
     fun getAthlete(
-        @Header("Authorization") jwtToken: String
+        @Header("Authorization") jwtToken: String,
+        @Header("X-Strava-Token") stravaToken: String
     ): Call<StravaAthlete>
 
     @GET("strava/activities")
@@ -44,8 +48,24 @@ interface StravaApiService {
         @Header("Authorization") jwtToken: String
     ): retrofit2.Response<SyncResult>
 
-    @GET("strava/activities-db")
-    suspend fun getStravaActivitiesFromDb(
+    @GET("strava/sync-check")
+    suspend fun syncCheck(
         @Header("Authorization") jwtToken: String
-    ): retrofit2.Response<List<StravaActivity>>
+    ): retrofit2.Response<SyncResult>
+
+    @GET("strava/sync-live")
+    suspend fun syncLive(
+        @Header("Authorization") jwtToken: String
+    ): retrofit2.Response<String>
+
+    @GET("strava/ftp-estimate")
+    suspend fun estimateFtp(
+        @Header("Authorization") jwtToken: String,
+        @Query("days") days: Int = 30
+    ): FTPEstimate
+
+    @GET("strava/ftp-estimate-db")
+    suspend fun getLastFtpEstimateFromDb(
+        @Header("Authorization") jwtToken: String
+    ): FTPEstimate
 } 

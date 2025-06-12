@@ -215,12 +215,51 @@ data class StravaAthleteSegmentStats(
 )
 
 data class FTPEstimate(
-    val date: Date,
+    @SerializedName("date")
+    val date: String,
+    @SerializedName("estimated_ftp")
     val estimatedFTP: Float,
+    @SerializedName("confidence")
     val confidence: Float,  // 0-1 scale
+    @SerializedName("source_activities")
     val sourceActivities: List<Long>,  // List of activity IDs
-    val method: String,  // e.g., "20min_test", "ramp_test", "activity_analysis"
-    val notes: String? = null
+    @SerializedName("method")
+    val method: String,  // e.g., "fthr_based+ftp_estimators"
+    @SerializedName("notes")
+    val notes: String? = null,
+    @SerializedName("confidence_metrics")
+    val confidenceMetrics: Map<String, Any>? = null,
+    @SerializedName("fthr_value")
+    val fthrValue: Float? = null,
+    @SerializedName("fthr_source")
+    val fthrSource: String? = null,
+    @SerializedName("fthr_age_days")
+    val fthrAgeDays: Int? = null,
+    @SerializedName("weekly_ftp")
+    val weeklyFTP: List<WeeklyFTP>? = null
+)
+
+data class WeeklyFTP(
+    @SerializedName("week")
+    val week: String,
+    @SerializedName("week_end")
+    val weekEnd: String,
+    @SerializedName("ftp_20min_est")
+    val ftp20minEst: Float,
+    @SerializedName("ftp_hr_est")
+    val ftpHrEst: Float,
+    @SerializedName("ftp_tss_est")
+    val ftpTssEst: Float,
+    @SerializedName("ftp_final")
+    val ftpFinal: Float,
+    @SerializedName("ftp_final_wkg")
+    val ftpFinalWkg: Float,
+    @SerializedName("categorie")
+    val categorie: String,
+    @SerializedName("tss_week")
+    val tssWeek: Float,
+    @SerializedName("stare_saptamana")
+    val stareSaptamana: String
 )
 
 data class StravaUserData(

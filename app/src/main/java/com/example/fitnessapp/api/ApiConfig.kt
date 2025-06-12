@@ -1,6 +1,6 @@
 package com.example.fitnessapp.api
 
 object ApiConfig {
-    const val BASE_URL = "http://192.168.60.159:8000/"
+    const val BASE_URL = "https://fitnessapp-production-60ee.up.railway.app/"
 // Replace with your server's IP/URL
 }

@@ -48,6 +48,11 @@ interface ApiService {
         @Body trainingData: UserTrainigData
     ): Call<Map<String, String>>
 
+    @GET("training/user_training_data")
+    fun getUserTrainingData(
+        @Header("Authorization") token: String
+    ): Call<UserTrainigData>
+
     @POST("race/add_race")
     fun addRace(
         @Header("Authorization") token: String,

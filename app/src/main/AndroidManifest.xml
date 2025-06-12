@@ -46,9 +46,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="http"
-                    android:host="localhost"
-                    android:port="8080"
+                    android:scheme="https"
+                    android:host="fitnessapp-production-60ee.up.railway.app"
                     android:pathPrefix="/strava/callback" />
             </intent-filter>
             <!-- Intent filter for custom scheme -->

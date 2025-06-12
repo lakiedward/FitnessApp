@@ -25,6 +25,7 @@ fun StravaActivitiesScreen(
     val activities by stravaViewModel.stravaActivities.collectAsState()
     val authState by authViewModel.authState.observeAsState()
     val jwtToken = (authState as? AuthState.Authenticated)?.jwtToken
+    val ftpEstimate by stravaViewModel.ftpEstimate.collectAsState()
 
     // Fetch activities when JWT changes
     LaunchedEffect(jwtToken) {
@@ -51,6 +52,10 @@ fun StravaActivitiesScreen(
                 .padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
             Button(
                 onClick = {
                     if (!jwtToken.isNullOrEmpty()) {
@@ -60,6 +65,30 @@ fun StravaActivitiesScreen(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text("Fetch Activities")
+                }
+                Button(
+                    onClick = { stravaViewModel.estimateFtp() },
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text("Estimează FTP")
+                }
+            }
+            if (ftpEstimate != null) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("FTP estimat: ${ftpEstimate?.estimatedFTP?.toInt() ?: "-"} W", style = MaterialTheme.typography.titleMedium)
+                        Text("Încredere: ${(ftpEstimate?.confidence?.times(100)?.toInt() ?: 0)}%", style = MaterialTheme.typography.bodySmall)
+                        Text("Metodă: ${ftpEstimate?.method ?: "-"}", style = MaterialTheme.typography.bodySmall)
+                        if (!ftpEstimate?.notes.isNullOrEmpty()) {
+                            Text("Note: ${ftpEstimate?.notes}", style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                }
             }
 
             if (activities.isEmpty()) {

@@ -174,7 +174,7 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                     userDetalis.value = userDetalis.value.copy(varsta = varsta, greutate = convertedWeight, inaltime = convertedHeight)
 
                     // Navigate to the next screen
-                    navController.navigate("physical_activity_level_screen")
+                    navController.navigate("strava_auth_screen")
                 },
                 enabled = isFormComplete,
                 modifier = Modifier
