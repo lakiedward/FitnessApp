@@ -23,17 +23,90 @@ import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.api.ApiConfig
 import kotlinx.coroutines.delay
 import android.util.Log
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import kotlinx.coroutines.GlobalScope
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import java.net.URL
 import java.net.HttpURLConnection
+
+// Function to estimate all FTHR types - defined outside Composable
+suspend fun estimateAllFthrTypes(jwtToken: String) {
+    // Estimate running FTHR
+    try {
+        val runningFthrResponse = withContext(Dispatchers.IO) {
+            val url = URL("${ApiConfig.BASE_URL}strava/estimate-running-fthr")
+            val conn = url.openConnection() as HttpURLConnection
+            conn.requestMethod = "GET"
+            conn.setRequestProperty("Authorization", "Bearer $jwtToken")
+            conn.setRequestProperty("Content-Type", "application/json")
+            conn.connectTimeout = 60000
+            conn.readTimeout = 60000
+            if (conn.responseCode == 200) {
+                val responseBody = conn.inputStream.bufferedReader().use { it.readText() }
+                Log.d("StravaSyncLoading", "Running FTHR estimate: $responseBody")
+                responseBody
+            } else {
+                val errorBody = conn.errorStream?.bufferedReader()?.use { it.readText() }
+                Log.e("StravaSyncLoading", "Running FTHR estimate failed: ${conn.responseCode} - $errorBody")
+                null
+            }
+        }
+    } catch (e: Exception) {
+        Log.e("StravaSyncLoading", "Error estimating running FTHR", e)
+    }
+    
+    // Estimate swimming FTHR
+    try {
+        val swimmingFthrResponse = withContext(Dispatchers.IO) {
+            val url = URL("${ApiConfig.BASE_URL}strava/estimate-swimming-fthr")
+            val conn = url.openConnection() as HttpURLConnection
+            conn.requestMethod = "GET"
+            conn.setRequestProperty("Authorization", "Bearer $jwtToken")
+            conn.setRequestProperty("Content-Type", "application/json")
+            conn.connectTimeout = 60000
+            conn.readTimeout = 60000
+            if (conn.responseCode == 200) {
+                val responseBody = conn.inputStream.bufferedReader().use { it.readText() }
+                Log.d("StravaSyncLoading", "Swimming FTHR estimate: $responseBody")
+                responseBody
+            } else {
+                val errorBody = conn.errorStream?.bufferedReader()?.use { it.readText() }
+                Log.e("StravaSyncLoading", "Swimming FTHR estimate failed: ${conn.responseCode} - $errorBody")
+                null
+            }
+        }
+    } catch (e: Exception) {
+        Log.e("StravaSyncLoading", "Error estimating swimming FTHR", e)
+    }
+    
+    // Estimate other FTHR
+    try {
+        val otherFthrResponse = withContext(Dispatchers.IO) {
+            val url = URL("${ApiConfig.BASE_URL}strava/estimate-other-fthr")
+            val conn = url.openConnection() as HttpURLConnection
+            conn.requestMethod = "GET"
+            conn.setRequestProperty("Authorization", "Bearer $jwtToken")
+            conn.setRequestProperty("Content-Type", "application/json")
+            conn.connectTimeout = 60000
+            conn.readTimeout = 60000
+            if (conn.responseCode == 200) {
+                val responseBody = conn.inputStream.bufferedReader().use { it.readText() }
+                Log.d("StravaSyncLoading", "Other FTHR estimate: $responseBody")
+                responseBody
+            } else {
+                val errorBody = conn.errorStream?.bufferedReader()?.use { it.readText() }
+                Log.e("StravaSyncLoading", "Other FTHR estimate failed: ${conn.responseCode} - $errorBody")
+                null
+            }
+        }
+    } catch (e: Exception) {
+        Log.e("StravaSyncLoading", "Error estimating other FTHR", e)
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,9 +119,9 @@ fun StravaSyncLoadingScreen(
     var syncProgress by remember { mutableFloatStateOf(0f) }
     var currentStep by remember { mutableStateOf("Pregătire sincronizare...") }
     var activitiesSynced by remember { mutableIntStateOf(0) }
-    var totalActivities by remember { mutableIntStateOf(0) }
     var isCompleted by remember { mutableStateOf(false) }
     var ftpEstimate by remember { mutableStateOf<Float?>(null) }
+    var fthrEstimate by remember { mutableStateOf<Int?>(null) }
     var syncError by remember { mutableStateOf<String?>(null) }
     var currentActivityName by remember { mutableStateOf<String?>(null) }
     
@@ -59,7 +132,6 @@ fun StravaSyncLoadingScreen(
     LaunchedEffect(stravaActivities) {
         if (stravaActivities.isNotEmpty()) {
             Log.d("StravaSyncLoading", "Real activities updated: ${stravaActivities.size}")
-            totalActivities = stravaActivities.size
             activitiesSynced = stravaActivities.size
         }
     }
@@ -156,7 +228,6 @@ fun StravaSyncLoadingScreen(
                                         isCompleted = true
                                         currentStep = "Sincronizare completă!"
                                         activitiesSynced = activitiesCount
-                                        totalActivities = activitiesCount
                                     }
                                     break
                                 }
@@ -183,7 +254,6 @@ fun StravaSyncLoadingScreen(
                                     withContext(Dispatchers.Main) {
                                         currentActivityName = activityName
                                         activitiesSynced = activitiesCount
-                                        totalActivities = maxOf(totalActivities, activitiesCount)
                                         
                                         // Update progress based on activities synced
                                         if (activitiesCount <= 10) {
@@ -210,6 +280,103 @@ fun StravaSyncLoadingScreen(
                     Log.d("StravaSyncLoading", "Refreshing activities...")
                     withContext(Dispatchers.Main) {
                         stravaViewModel.refreshActivities()
+                    }
+                    
+                    // Estimate FTHR after successful sync
+                    Log.d("StravaSyncLoading", "Estimating FTHR after successful sync...")
+                    withContext(Dispatchers.Main) {
+                        currentStep = "Estimare FTHR din activități recente..."
+                        syncProgress = 0.95f
+                    }
+                    
+                    // Make direct FTHR estimation request
+                    try {
+                        val fthrResponse = withContext(Dispatchers.IO) {
+                            val fthrUrl = "${ApiConfig.BASE_URL}strava/estimate-cycling-fthr"
+                            Log.d("StravaSyncLoading", "FTHR estimate URL: $fthrUrl")
+                            
+                            val fthrConnection = URL(fthrUrl).openConnection() as HttpURLConnection
+                            fthrConnection.requestMethod = "GET"
+                            fthrConnection.setRequestProperty("Authorization", "Bearer $jwtToken")
+                            fthrConnection.setRequestProperty("Content-Type", "application/json")
+                            fthrConnection.connectTimeout = 60000 // 60 seconds
+                            fthrConnection.readTimeout = 60000 // 60 seconds
+                            
+                            Log.d("StravaSyncLoading", "Making FTHR estimate request...")
+                            Log.d("StravaSyncLoading", "FTHR response code: ${fthrConnection.responseCode}")
+                            
+                            if (fthrConnection.responseCode == 200) {
+                                val responseBody = fthrConnection.inputStream.bufferedReader().use { it.readText() }
+                                Log.d("StravaSyncLoading", "FTHR estimate response: $responseBody")
+                                
+                                val fthrData = gson.fromJson(responseBody, JsonObject::class.java)
+                                val estimatedFthr = fthrData.get("estimated_fthr")?.asInt
+                                val activitiesUsed = fthrData.get("activities_used")?.asInt
+                                val maxHrObserved = fthrData.get("max_hr_observed")?.asInt
+                                
+                                Log.d("StravaSyncLoading", "FTHR estimate parsed: ${estimatedFthr} bpm (activities: ${activitiesUsed}, max HR: ${maxHrObserved})")
+                                
+                                withContext(Dispatchers.Main) {
+                                    fthrEstimate = estimatedFthr
+                                    currentStep = "FTHR estimat: ${estimatedFthr} bpm"
+                                }
+                                
+                                fthrData
+                            } else {
+                                val errorBody = fthrConnection.errorStream?.bufferedReader()?.use { it.readText() }
+                                Log.e("StravaSyncLoading", "FTHR estimate failed: ${fthrConnection.responseCode} - $errorBody")
+                                null
+                            }
+                        }
+                        
+                        if (fthrResponse != null) {
+                            Log.d("StravaSyncLoading", "FTHR estimation completed successfully")
+                        } else {
+                            Log.w("StravaSyncLoading", "FTHR estimation failed, but sync was successful")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("StravaSyncLoading", "Error estimating FTHR", e)
+                        // Don't fail the sync if FTHR estimation fails
+                    }
+                    
+                    delay(1000) // Small delay to show FTHR estimation step
+                    
+                    // Also estimate running, swimming, and other FTHR (non-blocking, log errors)
+                    estimateAllFthrTypes(jwtToken)
+
+                    // Call /strava/calculate-hrtss to recompute missing HrTSS values
+                    try {
+                        val hrtssResponse = withContext(Dispatchers.IO) {
+                            val url = URL("${ApiConfig.BASE_URL}strava/calculate-hrtss")
+                            val conn = url.openConnection() as HttpURLConnection
+                            conn.requestMethod = "POST"
+                            conn.setRequestProperty("Authorization", "Bearer $jwtToken")
+                            conn.setRequestProperty("Content-Type", "application/json")
+                            conn.connectTimeout = 60000
+                            conn.readTimeout = 60000
+                            if (conn.responseCode == 200) {
+                                val responseBody = conn.inputStream.bufferedReader().use { it.readText() }
+                                Log.d("StravaSyncLoading", "HrTSS calculation response: $responseBody")
+                                responseBody
+                            } else {
+                                val errorBody = conn.errorStream?.bufferedReader()?.use { it.readText() }
+                                Log.e("StravaSyncLoading", "HrTSS calculation failed: ${conn.responseCode} - $errorBody")
+                                null
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("StravaSyncLoading", "Error calling calculate-hrtss endpoint", e)
+                    }
+                    
+                    // Estimate FTP after FTHR estimation
+                    Log.d("StravaSyncLoading", "Estimating FTP after FTHR estimation...")
+                    withContext(Dispatchers.Main) {
+                        currentStep = "Estimare FTP din datele de putere..."
+                        syncProgress = 0.98f
+                    }
+                    
+                    withContext(Dispatchers.Main) {
+                        stravaViewModel.fetchFtpEstimateAfterSync()
                     }
                     
                     delay(2000)
@@ -264,12 +431,24 @@ fun StravaSyncLoadingScreen(
                 )
             }
             
-            Text(
-                text = "Strava Sync Live",
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
+            // Strava Logo and Title
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_strava),
+                    contentDescription = "Strava",
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.Unspecified
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Sync Live",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             
             // Placeholder pentru simetrie
             Spacer(modifier = Modifier.width(48.dp))
@@ -339,46 +518,14 @@ fun StravaSyncLoadingScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
-                        text = "$activitiesSynced activități sincronizate",
+                        text = "$activitiesSynced activities synchronized",
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.Gray
                     )
                     
-                    if (ftpEstimate != null) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F9FF))
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "FTP Estimat",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "${ftpEstimate!!.toInt()}W",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    color = Color(0xFF2563EB),
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "Bazat pe ${activitiesSynced} activități",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.Gray
-                                )
-                            }
-                        }
-                    }
-                    
                 } else {
                     // Loading State
                     CircularProgressIndicator(
-                        progress = { syncProgress },
                         modifier = Modifier.size(72.dp),
                         color = Color(0xFF6366F1),
                         strokeWidth = 6.dp,
@@ -414,9 +561,21 @@ fun StravaSyncLoadingScreen(
                         )
                     }
                     
+                    if (fthrEstimate != null && currentStep.contains("FTHR estimat")) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Text(
+                            text = "FTHR estimat: ${fthrEstimate} bpm",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(0xFFD97706),
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    
                     Spacer(modifier = Modifier.height(16.dp))
                     
-                    // Progress info
+                    // Progress info without progress bar
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC))
@@ -424,30 +583,10 @@ fun StravaSyncLoadingScreen(
                         Column(
                             modifier = Modifier.padding(16.dp)
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Progres",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "${(syncProgress * 100).toInt()}%",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF6366F1)
-                                )
-                            }
-                            
-                            Spacer(modifier = Modifier.height(8.dp))
-                            
-                            LinearProgressIndicator(
-                                progress = { syncProgress },
-                                modifier = Modifier.fillMaxWidth(),
-                                color = Color(0xFF6366F1),
-                                trackColor = Color(0xFF6366F1).copy(alpha = 0.2f)
+                            Text(
+                                text = "Status Sincronizare",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
                             )
                             
                             if (activitiesSynced > 0) {
@@ -458,12 +597,12 @@ fun StravaSyncLoadingScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "Activități",
+                                        text = "Synced Activities",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = Color.Gray
                                     )
                                     Text(
-                                        text = "$activitiesSynced${if (totalActivities > 0) " / $totalActivities" else ""}",
+                                        text = "$activitiesSynced",
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Medium
                                     )

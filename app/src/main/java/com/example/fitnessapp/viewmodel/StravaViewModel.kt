@@ -112,24 +112,12 @@ class StravaViewModel(private val context: Context) : ViewModel() {
             .build()
         apiService = retrofit.create(StravaApiService::class.java)
         
-        // Initial check
+        // Initial check only - don't start periodic checks
         Log.d("STRAVA_DEBUG", "[init] Performing initial connection check")
         checkConnectionStatus()
         
-        // Periodic checks
-        viewModelScope.launch {
-            Log.d("STRAVA_DEBUG", "=== PERIODIC CONNECTION CHECKS STARTED ===")
-            while (true) {
-                Log.d("STRAVA_DEBUG", "[init] Waiting ${minCheckInterval}ms before next check")
-                delay(minCheckInterval)
-                Log.d("STRAVA_DEBUG", "[init] Delay completed, checking connection status")
-                Log.d("STRAVA_DEBUG", "[init] Current state before check: ${_stravaState.value}")
-                Log.d("STRAVA_DEBUG", "[init] isOAuthInProgress: $isOAuthInProgress")
-                Log.d("STRAVA_DEBUG", "[init] justCompletedOAuth: $justCompletedOAuth")
-                checkConnectionStatus()
-                Log.d("STRAVA_DEBUG", "[init] Connection check completed")
-            }
-        }
+        // Don't start periodic checks - they're not needed after successful connection
+        Log.d("STRAVA_DEBUG", "[init] Skipping periodic connection checks to avoid unnecessary API calls")
     }
 
     private fun setStravaState(newState: StravaState) {
@@ -751,8 +739,10 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 }
                 
                 Log.d("STRAVA_DEBUG", "[refreshActivities] Making API call to get activities")
-                val response = withContext(Dispatchers.IO) {
-                    apiService.getActivities("Bearer $jwtToken").execute()
+                val response = withTimeout(180000) { // 3 minutes timeout for activity refresh
+                    withContext(Dispatchers.IO) {
+                        apiService.getActivities("Bearer $jwtToken").execute()
+                    }
                 }
                 
                 Log.d("STRAVA_DEBUG", "[refreshActivities] Response code: ${response.code()}")
@@ -770,6 +760,9 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                     // Don't set error state, just log the warning
                     Log.w("STRAVA_DEBUG", "[refreshActivities] Failed to refresh activities: $errorBody")
                 }
+            } catch (e: TimeoutCancellationException) {
+                Log.e("STRAVA_DEBUG", "[refreshActivities] Activity refresh timed out after 3 minutes", e)
+                Log.w("STRAVA_DEBUG", "[refreshActivities] Failed to refresh activities: timeout")
             } catch (e: Exception) {
                 Log.e("STRAVA_DEBUG", "[refreshActivities] Exception during activity refresh", e)
                 // Don't set error state, just log the warning
@@ -796,8 +789,10 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         viewModelScope.launch {
             Log.d("STRAVA_DEBUG", "fetchStravaActivities() called with JWT: $jwtToken")
             try {
-                val response = withContext(Dispatchers.IO) {
-                    apiService.getActivities("Bearer $jwtToken").execute()
+                val response = withTimeout(180000) { // 3 minutes timeout for activity fetch
+                    withContext(Dispatchers.IO) {
+                        apiService.getActivities("Bearer $jwtToken").execute()
+                    }
                 }
                 if (response.isSuccessful) {
                     val activities = response.body() ?: emptyList()
@@ -806,6 +801,8 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 } else {
                     Log.e("STRAVA_DEBUG", "Failed to fetch activities: "+response.errorBody()?.string())
                 }
+            } catch (e: TimeoutCancellationException) {
+                Log.e("STRAVA_DEBUG", "Activity fetch timed out after 3 minutes", e)
             } catch (e: Exception) {
                 Log.e("STRAVA_DEBUG", "Exception fetching activities", e)
             }
@@ -859,8 +856,15 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         viewModelScope.launch {
             try {
                 val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
-                val result = apiService.estimateFtp("Bearer $jwtToken")
+                val result = withTimeout(300000) { // 5 minutes timeout for FTP estimation
+                    withContext(Dispatchers.IO) {
+                        apiService.estimateFtp("Bearer $jwtToken")
+                    }
+                }
                 _ftpEstimate.value = result
+            } catch (e: TimeoutCancellationException) {
+                Log.e("StravaViewModel", "FTP estimation timed out after 5 minutes", e)
+                _ftpEstimate.value = null
             } catch (e: Exception) {
                 Log.e("StravaViewModel", "Error estimating FTP", e)
                 _ftpEstimate.value = null
@@ -876,6 +880,31 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 _ftpEstimate.value = result
             } catch (e: Exception) {
                 Log.e("StravaViewModel", "Error getting last FTP estimate", e)
+                _ftpEstimate.value = null
+            }
+        }
+    }
+
+    fun fetchFtpEstimateAfterSync() {
+        viewModelScope.launch {
+            try {
+                Log.d("STRAVA_DEBUG", "[fetchFtpEstimateAfterSync] Fetching FTP estimate after sync")
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                
+                // Use withTimeout for FTP estimation which might take longer
+                val result = withTimeout(300000) { // 5 minutes timeout for FTP estimation
+                    withContext(Dispatchers.IO) {
+                        apiService.estimateFtp("Bearer $jwtToken")
+                    }
+                }
+                
+                _ftpEstimate.value = result
+                Log.d("STRAVA_DEBUG", "[fetchFtpEstimateAfterSync] FTP estimate received: ${result.estimatedFTP}W")
+            } catch (e: TimeoutCancellationException) {
+                Log.e("STRAVA_DEBUG", "[fetchFtpEstimateAfterSync] FTP estimation timed out after 5 minutes", e)
+                _ftpEstimate.value = null
+            } catch (e: Exception) {
+                Log.e("STRAVA_DEBUG", "[fetchFtpEstimateAfterSync] Error fetching FTP estimate", e)
                 _ftpEstimate.value = null
             }
         }

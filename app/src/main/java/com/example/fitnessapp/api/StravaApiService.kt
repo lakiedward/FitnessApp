@@ -68,4 +68,45 @@ interface StravaApiService {
     suspend fun getLastFtpEstimateFromDb(
         @Header("Authorization") jwtToken: String
     ): FTPEstimate
+
+    @GET("strava/estimate-cycling-fthr")
+    suspend fun estimateCyclingFthr(
+        @Header("Authorization") jwtToken: String,
+        @Query("days") days: Int = 90
+    ): retrofit2.Response<Map<String, Any>>
+
+    @GET("strava/estimate-cycling-fthr-20min")
+    suspend fun estimateCyclingFthr20min(
+        @Header("Authorization") jwtToken: String,
+        @Query("days") days: Int = 90
+    ): retrofit2.Response<Map<String, Any>>
+
+    @POST("strava/set-fthr")
+    suspend fun setCyclingFthr(
+        @Header("Authorization") jwtToken: String,
+        @Body body: Map<String, Any>
+    ): retrofit2.Response<Map<String, Any>>
+
+    @GET("strava/estimate-running-fthr")
+    suspend fun estimateRunningFthr(
+        @Header("Authorization") jwtToken: String,
+        @Query("days") days: Int = 90
+    ): retrofit2.Response<Map<String, Any>>
+
+    @GET("strava/estimate-swimming-fthr")
+    suspend fun estimateSwimmingFthr(
+        @Header("Authorization") jwtToken: String,
+        @Query("days") days: Int = 90
+    ): retrofit2.Response<Map<String, Any>>
+
+    @GET("strava/estimate-other-fthr")
+    suspend fun estimateOtherFthr(
+        @Header("Authorization") jwtToken: String,
+        @Query("days") days: Int = 90
+    ): retrofit2.Response<Map<String, Any>>
+
+    @POST("strava/calculate-hrtss")
+    suspend fun calculateHrTss(
+        @Header("Authorization") jwtToken: String
+    ): retrofit2.Response<Map<String, Any>>
 } 

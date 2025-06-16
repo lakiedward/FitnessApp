@@ -115,7 +115,9 @@ data class StravaActivity(
     val endLatLng: List<Float>?,
     val achievements: List<StravaAchievement>? = null,
     @SerializedName("segment_efforts")
-    val segmentEfforts: List<StravaSegmentEffort>? = null
+    val segmentEfforts: List<StravaSegmentEffort>? = null,
+    @SerializedName("HrTSS")
+    val hrTss: Float? = null
 )
 
 data class StravaMap(

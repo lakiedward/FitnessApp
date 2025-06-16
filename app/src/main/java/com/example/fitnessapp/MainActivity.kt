@@ -175,12 +175,6 @@ fun AppNavigation(
         composable("choose_discipline") {
             ChooseDisciplineScreen(navController, authViewModel, userDetalis)
         }
-        composable("cycling_data_insert") {
-            CyclingDataInsertScreen(navController, authViewModel, choosedSports)
-        }
-        composable("running_data_insert") {
-            RunningDataInsertScreen(navController, authViewModel, choosedSports)
-        }
         composable("plan_length_screen") {
             PlanLengthScreen(navController, authViewModel, choosedSports)
         }

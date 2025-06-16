@@ -143,8 +143,8 @@ fun ChooseSportsScreen(
                         authViewModel.addWeekAvailability(availabilityList)
                         authViewModel.saveUserSports(selectedSportsList)
 
-                        if (choosedSports.value.cycling) navController.navigate("cycling_data_insert")
-                        else if (choosedSports.value.running) navController.navigate("running_data_insert")
+                        // Navigate directly to plan length screen
+                        navController.navigate("plan_length_screen")
                     },
                     enabled = selectedSports.values.any { it } && selectedDays.values.any { it },
                     modifier = Modifier

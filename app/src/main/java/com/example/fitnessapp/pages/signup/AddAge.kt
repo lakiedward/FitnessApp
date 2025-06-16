@@ -3,19 +3,22 @@ package com.example.fitnessapp.pages.signup
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -24,6 +27,7 @@ import com.example.fitnessapp.model.UserDetalis
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.ui.theme.SectionTitle
+import androidx.compose.foundation.clickable
 
 
 class AddAge : ComponentActivity() {
@@ -50,144 +54,200 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
 
     val isFormComplete = age.isNotBlank() && weight.isNotBlank() && height.isNotBlank()
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF6366F1),
+                        Color(0xFF8B5CF6),
+                        Color(0xFFA855F7)
+                    )
+                )
+            )
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            // Back Button
-            IconButton(
-                onClick = { navController.navigateUp() },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.TopStart)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.back),
+        // Header
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { navController.navigateUp() }) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
+                    tint = Color.White
                 )
             }
+            
+            Text(
+                text = "Personal Details",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+            
+            // Placeholder for symmetry
+            Spacer(modifier = Modifier.width(48.dp))
+        }
 
-            // Main Content
+        // Content
+        Card(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp),
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 32.dp),
+                    .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Age Input
-                SectionTitle(title = "How Old Are You?")
+                // Age Section
+                Text(
+                    text = "How Old Are You?",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
                 OutlinedTextField(
                     value = age,
                     onValueChange = { age = it },
                     label = { Text("Enter Age") },
-                    modifier = Modifier
-                        .width(259.dp)
-                        .height(56.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    shape = RoundedCornerShape(34.dp),
-                    textStyle = MaterialTheme.typography.bodySmall,
+                    shape = RoundedCornerShape(12.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
-                        focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
-
+                        focusedBorderColor = Color(0xFF6366F1),
+                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
+                        focusedLabelColor = Color(0xFF6366F1),
+                        unfocusedLabelColor = Color.Gray
                     )
                 )
 
-                // Weight Input
-                SectionTitle(title = "What Is Your Weight?")
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Weight Section
+                Text(
+                    text = "What Is Your Weight?",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
                 ToggleButtonsRow(
                     options = listOf("Kg", "Lb"),
                     selectedOption = weightUnit,
                     onOptionSelected = { weightUnit = it }
                 )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
                 OutlinedTextField(
                     value = weight,
                     onValueChange = { weight = it },
                     label = { Text("Enter Weight ($weightUnit)") },
-                    modifier = Modifier
-                        .width(259.dp)
-                        .height(56.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    shape = RoundedCornerShape(34.dp),
-                    textStyle = MaterialTheme.typography.bodySmall,
+                    shape = RoundedCornerShape(12.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
-                        focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
-
+                        focusedBorderColor = Color(0xFF6366F1),
+                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
+                        focusedLabelColor = Color(0xFF6366F1),
+                        unfocusedLabelColor = Color.Gray
                     )
                 )
 
-                // Height Input
-                SectionTitle(title = "What Is Your Height?")
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Height Section
+                Text(
+                    text = "What Is Your Height?",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
                 ToggleButtonsRow(
                     options = listOf("Cm", "Ft"),
                     selectedOption = heightUnit,
                     onOptionSelected = { heightUnit = it }
                 )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
                 OutlinedTextField(
                     value = height,
                     onValueChange = { height = it },
                     label = { Text("Enter Height ($heightUnit)") },
-                    modifier = Modifier
-                        .width(259.dp)
-                        .height(56.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    shape = RoundedCornerShape(34.dp),
-                    textStyle = MaterialTheme.typography.bodySmall,
+                    shape = RoundedCornerShape(12.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Border when focused
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Border when unfocused
-                        focusedLabelColor = MaterialTheme.colorScheme.primary, // Label when focused
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), // Label when unfocused
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface, // Ensure focused text is visible
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface // Ensure unfocused text is visible
-
+                        focusedBorderColor = Color(0xFF6366F1),
+                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
+                        focusedLabelColor = Color(0xFF6366F1),
+                        unfocusedLabelColor = Color.Gray
                     )
                 )
-            }
 
-            // Continue Button
-            Button(
-                onClick = {
-                    val convertedWeight = if (weightUnit == "Lb")
-                        (weight.toFloat() * 0.453592f).toFloat() // Explicitly cast to Float
-                    else
-                        weight.toFloat() // Already a Float
-                    val convertedHeight = if (heightUnit == "Ft")
-                        (height.toFloat() * 30.48f).toFloat() // Explicitly cast to Float
-                    else
-                        height.toFloat() // Already a Float
-                    var varsta = age.toInt()
+                Spacer(modifier = Modifier.weight(1f))
 
-                    userDetalis.value = userDetalis.value.copy(varsta = varsta, greutate = convertedWeight, inaltime = convertedHeight)
+                // Continue Button
+                Button(
+                    onClick = {
+                        val convertedWeight = if (weightUnit == "Lb")
+                            (weight.toFloat() * 0.453592f).toFloat()
+                        else
+                            weight.toFloat()
+                        
+                        val convertedHeight = if (heightUnit == "Ft")
+                            (height.toFloat() * 30.48f).toFloat()
+                        else
+                            height.toFloat()
+                        
+                        val varsta = age.toInt()
 
-                    // Navigate to the next screen
-                    navController.navigate("strava_auth_screen")
-                },
-                enabled = isFormComplete,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-                    .fillMaxWidth(0.6f)
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isFormComplete) Color.Black else Color.Gray,
-                    contentColor = Color.White
-                )
-            ) {
-                Text(text = "Continue")
+                        userDetalis.value = userDetalis.value.copy(
+                            varsta = varsta, 
+                            greutate = convertedWeight, 
+                            inaltime = convertedHeight
+                        )
+
+                        // Navigate to the next screen
+                        navController.navigate("strava_auth_screen")
+                    },
+                    enabled = isFormComplete,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF6366F1),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color.Gray.copy(alpha = 0.6f)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "Continue",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
@@ -201,22 +261,40 @@ fun ToggleButtonsRow(
     onOptionSelected: (String) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         options.forEach { option ->
-            Button(
-                onClick = { onOptionSelected(option) },
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (option == selectedOption) Color.Black else Color.Gray,
-                    contentColor = if (option == selectedOption) Color.White else Color.Black
+            Card(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (option == selectedOption) Color(0xFF6366F1) else Color(0xFFF8FAFC)
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = if (option == selectedOption) 4.dp else 2.dp
                 )
             ) {
-                Text(option)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .run {
+                            if (option != selectedOption) {
+                                clickable { onOptionSelected(option) }
+                            } else this
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = option,
+                        color = if (option == selectedOption) Color.White else Color.Black,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
         }
     }
 }
+
