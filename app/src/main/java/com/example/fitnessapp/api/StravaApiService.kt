@@ -1,12 +1,17 @@
 package com.example.fitnessapp.api
 
+import com.example.fitnessapp.model.FTPEstimate
 import com.example.fitnessapp.model.StravaActivity
 import com.example.fitnessapp.model.StravaAthlete
 import com.example.fitnessapp.model.StravaToken
 import com.example.fitnessapp.model.SyncResult
-import com.example.fitnessapp.model.FTPEstimate
 import retrofit2.Call
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface StravaApiService {
     @GET("strava/connect-mobile")
@@ -25,13 +30,6 @@ interface StravaApiService {
         @Header("Authorization") jwtToken: String,
         @Header("X-Strava-Token") stravaToken: String
     ): Call<StravaAthlete>
-
-    @GET("strava/activities")
-    fun getActivities(
-        @Header("Authorization") jwtToken: String,
-        @Query("per_page") perPage: Int = 30,
-        @Query("page") page: Int = 1
-    ): Call<List<StravaActivity>>
 
     @POST("strava/refresh-token")
     fun refreshToken(
@@ -109,4 +107,44 @@ interface StravaApiService {
     suspend fun calculateHrTss(
         @Header("Authorization") jwtToken: String
     ): retrofit2.Response<Map<String, Any>>
-} 
+
+    @POST("strava/disconnect")
+    suspend fun disconnectStravaAccount(
+        @Header("Authorization") jwtToken: String
+    ): retrofit2.Response<Map<String, String>>
+
+    @GET("running/pace-prediction")
+    suspend fun getRunningPacePrediction(
+        @Header("Authorization") jwtToken: String
+    ): retrofit2.Response<List<Map<String, Any>>>
+
+    @GET("swim/best-time-prediction")
+    suspend fun getSwimBestTimePrediction(
+        @Header("Authorization") jwtToken: String
+    ): retrofit2.Response<List<Map<String, Any>>>
+
+    @GET("strava/activities-db")
+    suspend fun getActivitiesFromDb(
+        @Header("Authorization") jwtToken: String,
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String
+    ): retrofit2.Response<List<StravaActivity>>
+
+    @GET("strava/activities/{activity_id}/gpx")
+    suspend fun getActivityGpx(
+        @Header("Authorization") jwtToken: String,
+        @Path("activity_id") activityId: Long
+    ): retrofit2.Response<Map<String, String>>
+
+    @GET("strava/activities/{activity_id}/map-view")
+    suspend fun getActivityMapView(
+        @Header("Authorization") jwtToken: String,
+        @Path("activity_id") activityId: Long
+    ): retrofit2.Response<Map<String, String>>
+
+    @GET("strava/activity/{activity_id}/streams-db")
+    suspend fun getActivityStreamsFromDB(
+        @Header("Authorization") jwtToken: String,
+        @Path("activity_id") activityId: Long
+    ): retrofit2.Response<Map<String, Any>>
+}

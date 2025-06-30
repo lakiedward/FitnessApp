@@ -174,219 +174,385 @@ fun StravaSyncLoadingScreen(
             val fullUrl = "${ApiConfig.BASE_URL}strava/sync-live"
             Log.d("StravaSyncLoading", "Full URL: $fullUrl")
             
-            // Folosesc HttpURLConnection pentru SSE streaming
-            withContext(Dispatchers.IO) {
-                val url = URL(fullUrl)
-                val connection = url.openConnection() as HttpURLConnection
-                
-                try {
-                    connection.requestMethod = "GET"
-                    connection.setRequestProperty("Authorization", "Bearer $jwtToken")
-                    connection.setRequestProperty("Accept", "text/event-stream")
-                    connection.setRequestProperty("Cache-Control", "no-cache")
-                    connection.setRequestProperty("Connection", "keep-alive")
-                    connection.connectTimeout = 30000 // 30 seconds
-                    connection.readTimeout = 0 // No timeout for streaming
-                    
-                    Log.d("StravaSyncLoading", "Making SSE request...")
-                    Log.d("StravaSyncLoading", "Response code: ${connection.responseCode}")
-                    
-                    if (connection.responseCode != 200) {
-                        val errorStream = connection.errorStream
-                        val errorBody = errorStream?.bufferedReader()?.use { it.readText() }
-                        Log.e("StravaSyncLoading", "SSE request failed: ${connection.responseCode}")
-                        Log.e("StravaSyncLoading", "Error body: $errorBody")
-                        throw Exception("Sincronizare eșuată: ${connection.responseCode} - $errorBody")
+            // Variables for reconnection logic
+            var totalActivitiesSynced = 0
+            var maxRetries = 3
+            var currentRetry = 0
+            var isSyncCompleted = false
+            val gson = Gson() // Define gson here so it's accessible in all blocks
+            
+            while (!isSyncCompleted && currentRetry < maxRetries) {
+                if (currentRetry > 0) {
+                    Log.d("StravaSyncLoading", "Reconnection attempt $currentRetry/$maxRetries")
+                    withContext(Dispatchers.Main) {
+                        currentStep = "Reconectare... (încercarea $currentRetry/$maxRetries)"
+                        syncProgress = 0.3f + (currentRetry * 0.1f)
                     }
+                    delay(2000) // Wait before reconnecting
+                }
+                
+                // Folosesc HttpURLConnection pentru SSE streaming
+                withContext(Dispatchers.IO) {
+                    val url = URL(fullUrl)
+                    val connection = url.openConnection() as HttpURLConnection
                     
-                    val inputStream = connection.inputStream
-                    val reader = BufferedReader(InputStreamReader(inputStream))
-                    
-                    Log.d("StravaSyncLoading", "SSE stream started, reading events...")
-                    
-                    var line: String?
-                    var activitiesCount = 0
-                    val gson = Gson()
-                    
-                    while (reader.readLine().also { line = it } != null) {
-                        Log.d("StravaSyncLoading", "SSE line: $line")
+                    try {
+                        connection.requestMethod = "GET"
+                        connection.setRequestProperty("Authorization", "Bearer $jwtToken")
+                        connection.setRequestProperty("Accept", "text/event-stream")
+                        connection.setRequestProperty("Cache-Control", "no-cache")
+                        connection.setRequestProperty("Connection", "keep-alive")
+                        connection.connectTimeout = 30000 // 30 seconds
+                        connection.readTimeout = 0 // No timeout for streaming
                         
-                        val currentLine = line // Store in local variable for smart cast
-                        if (currentLine?.startsWith("data: ") == true) {
-                            val jsonData = currentLine.substring(6) // Remove "data: " prefix
+                        Log.d("StravaSyncLoading", "Making SSE request... (attempt ${currentRetry + 1})")
+                        Log.d("StravaSyncLoading", "Response code: ${connection.responseCode}")
+                        
+                        if (connection.responseCode != 200) {
+                            val errorStream = connection.errorStream
+                            val errorBody = errorStream?.bufferedReader()?.use { it.readText() }
+                            Log.e("StravaSyncLoading", "SSE request failed: ${connection.responseCode}")
+                            Log.e("StravaSyncLoading", "Error body: $errorBody")
+                            throw Exception("Sincronizare eșuată: ${connection.responseCode} - $errorBody")
+                        }
+                        
+                        val inputStream = connection.inputStream
+                        val reader = BufferedReader(InputStreamReader(inputStream))
+                        
+                        Log.d("StravaSyncLoading", "SSE stream started, reading events...")
+                        
+                        var line: String?
+                        var activitiesCount = 0
+                        
+                        while (reader.readLine().also { line = it } != null) {
+                            Log.d("StravaSyncLoading", "SSE line: $line")
                             
-                            try {
-                                val eventData = gson.fromJson(jsonData, JsonObject::class.java)
-                                Log.d("StravaSyncLoading", "Parsed event data: $eventData")
+                            val currentLine = line // Store in local variable for smart cast
+                            if (currentLine?.startsWith("data: ") == true) {
+                                val jsonData = currentLine.substring(6) // Remove "data: " prefix
                                 
-                                // Check if it's a sync completion event
-                                if (eventData.has("status") && eventData.get("status").asString == "done") {
-                                    Log.d("StravaSyncLoading", "Sync completed!")
-                                    withContext(Dispatchers.Main) {
-                                        currentStep = "Finalizare sincronizare..."
-                                        syncProgress = 1.0f
-                                        isCompleted = true
-                                        currentStep = "Sincronizare completă!"
-                                        activitiesSynced = activitiesCount
-                                    }
-                                    break
-                                }
-                                
-                                // Check if it's an error event
-                                if (eventData.has("error")) {
-                                    val errorMessage = eventData.get("error").asString
-                                    Log.e("StravaSyncLoading", "SSE error: $errorMessage")
-                                    withContext(Dispatchers.Main) {
-                                        syncError = errorMessage
-                                        currentStep = "Eroare: $errorMessage"
-                                    }
-                                    break
-                                }
-                                
-                                // Check if it's an activity sync event
-                                if (eventData.has("name") && eventData.has("start_date")) {
-                                    activitiesCount++
-                                    val activityName = eventData.get("name").asString
-                                    val startDate = eventData.get("start_date").asString
+                                try {
+                                    val eventData = gson.fromJson(jsonData, JsonObject::class.java)
+                                    Log.d("StravaSyncLoading", "Parsed event data: $eventData")
                                     
-                                    Log.d("StravaSyncLoading", "Activity synced: $activityName ($startDate)")
+                                    // Check if it's a sync completion event
+                                    if (eventData.has("status") && eventData.get("status").asString == "done") {
+                                        Log.d("StravaSyncLoading", "Sync completed!")
+                                        withContext(Dispatchers.Main) {
+                                            currentStep = "Finalizare sincronizare..."
+                                            syncProgress = 1.0f
+                                            isCompleted = true
+                                            currentStep = "Sincronizare completă!"
+                                            activitiesSynced = totalActivitiesSynced + activitiesCount
+                                        }
+                                        isSyncCompleted = true
+                                        break
+                                    }
                                     
-                                    withContext(Dispatchers.Main) {
-                                        currentActivityName = activityName
-                                        activitiesSynced = activitiesCount
+                                    // Check if it's an error event
+                                    if (eventData.has("error")) {
+                                        val errorMessage = eventData.get("error").asString
+                                        Log.e("StravaSyncLoading", "SSE error: $errorMessage")
+                                        withContext(Dispatchers.Main) {
+                                            syncError = errorMessage
+                                            currentStep = "Eroare: $errorMessage"
+                                        }
+                                        throw Exception(errorMessage)
+                                    }
+                                    
+                                    // Check if it's an activity sync event
+                                    if (eventData.has("name") && eventData.has("start_date")) {
+                                        activitiesCount++
+                                        val activityName = eventData.get("name").asString
+                                        val startDate = eventData.get("start_date").asString
                                         
-                                        // Update progress based on activities synced
-                                        if (activitiesCount <= 10) {
-                                            syncProgress = 0.3f + (activitiesCount * 0.06f) // 0.3 to 0.9 for first 10 activities
-                                        } else {
-                                            syncProgress = 0.9f + (0.1f / maxOf(1, activitiesCount - 10)) // 0.9 to 1.0 for remaining
+                                        Log.d("StravaSyncLoading", "Activity synced: $activityName ($startDate)")
+                                        
+                                        withContext(Dispatchers.Main) {
+                                            currentActivityName = activityName
+                                            activitiesSynced = totalActivitiesSynced + activitiesCount
+                                            
+                                            // Update progress based on activities synced
+                                            if (activitiesCount <= 10) {
+                                                syncProgress = 0.3f + (activitiesCount * 0.06f) // 0.3 to 0.9 for first 10 activities
+                                            } else {
+                                                syncProgress = 0.9f + (0.1f / maxOf(1, activitiesCount - 10)) // 0.9 to 1.0 for remaining
+                                            }
+                                            
+                                            currentStep = "Sincronizare activitate ${totalActivitiesSynced + activitiesCount}..."
                                         }
                                         
-                                        currentStep = "Sincronizare activitate $activitiesCount..."
+                                        delay(100) // Small delay to show progress
                                     }
                                     
-                                    delay(100) // Small delay to show progress
+                                } catch (e: Exception) {
+                                    Log.e("StravaSyncLoading", "Error parsing SSE event", e)
                                 }
-                                
-                            } catch (e: Exception) {
-                                Log.e("StravaSyncLoading", "Error parsing SSE event", e)
-                            }
-                        }
-                    }
-                    
-                    Log.d("StravaSyncLoading", "SSE stream completed")
-                    
-                    // Refresh activities using the correct endpoint
-                    Log.d("StravaSyncLoading", "Refreshing activities...")
-                    withContext(Dispatchers.Main) {
-                        stravaViewModel.refreshActivities()
-                    }
-                    
-                    // Estimate FTHR after successful sync
-                    Log.d("StravaSyncLoading", "Estimating FTHR after successful sync...")
-                    withContext(Dispatchers.Main) {
-                        currentStep = "Estimare FTHR din activități recente..."
-                        syncProgress = 0.95f
-                    }
-                    
-                    // Make direct FTHR estimation request
-                    try {
-                        val fthrResponse = withContext(Dispatchers.IO) {
-                            val fthrUrl = "${ApiConfig.BASE_URL}strava/estimate-cycling-fthr"
-                            Log.d("StravaSyncLoading", "FTHR estimate URL: $fthrUrl")
-                            
-                            val fthrConnection = URL(fthrUrl).openConnection() as HttpURLConnection
-                            fthrConnection.requestMethod = "GET"
-                            fthrConnection.setRequestProperty("Authorization", "Bearer $jwtToken")
-                            fthrConnection.setRequestProperty("Content-Type", "application/json")
-                            fthrConnection.connectTimeout = 60000 // 60 seconds
-                            fthrConnection.readTimeout = 60000 // 60 seconds
-                            
-                            Log.d("StravaSyncLoading", "Making FTHR estimate request...")
-                            Log.d("StravaSyncLoading", "FTHR response code: ${fthrConnection.responseCode}")
-                            
-                            if (fthrConnection.responseCode == 200) {
-                                val responseBody = fthrConnection.inputStream.bufferedReader().use { it.readText() }
-                                Log.d("StravaSyncLoading", "FTHR estimate response: $responseBody")
-                                
-                                val fthrData = gson.fromJson(responseBody, JsonObject::class.java)
-                                val estimatedFthr = fthrData.get("estimated_fthr")?.asInt
-                                val activitiesUsed = fthrData.get("activities_used")?.asInt
-                                val maxHrObserved = fthrData.get("max_hr_observed")?.asInt
-                                
-                                Log.d("StravaSyncLoading", "FTHR estimate parsed: ${estimatedFthr} bpm (activities: ${activitiesUsed}, max HR: ${maxHrObserved})")
-                                
-                                withContext(Dispatchers.Main) {
-                                    fthrEstimate = estimatedFthr
-                                    currentStep = "FTHR estimat: ${estimatedFthr} bpm"
-                                }
-                                
-                                fthrData
-                            } else {
-                                val errorBody = fthrConnection.errorStream?.bufferedReader()?.use { it.readText() }
-                                Log.e("StravaSyncLoading", "FTHR estimate failed: ${fthrConnection.responseCode} - $errorBody")
-                                null
                             }
                         }
                         
-                        if (fthrResponse != null) {
-                            Log.d("StravaSyncLoading", "FTHR estimation completed successfully")
-                        } else {
-                            Log.w("StravaSyncLoading", "FTHR estimation failed, but sync was successful")
-                        }
-                    } catch (e: Exception) {
-                        Log.e("StravaSyncLoading", "Error estimating FTHR", e)
-                        // Don't fail the sync if FTHR estimation fails
-                    }
-                    
-                    delay(1000) // Small delay to show FTHR estimation step
-                    
-                    // Also estimate running, swimming, and other FTHR (non-blocking, log errors)
-                    estimateAllFthrTypes(jwtToken)
-
-                    // Call /strava/calculate-hrtss to recompute missing HrTSS values
-                    try {
-                        val hrtssResponse = withContext(Dispatchers.IO) {
-                            val url = URL("${ApiConfig.BASE_URL}strava/calculate-hrtss")
-                            val conn = url.openConnection() as HttpURLConnection
-                            conn.requestMethod = "POST"
-                            conn.setRequestProperty("Authorization", "Bearer $jwtToken")
-                            conn.setRequestProperty("Content-Type", "application/json")
-                            conn.connectTimeout = 60000
-                            conn.readTimeout = 60000
-                            if (conn.responseCode == 200) {
-                                val responseBody = conn.inputStream.bufferedReader().use { it.readText() }
-                                Log.d("StravaSyncLoading", "HrTSS calculation response: $responseBody")
-                                responseBody
-                            } else {
-                                val errorBody = conn.errorStream?.bufferedReader()?.use { it.readText() }
-                                Log.e("StravaSyncLoading", "HrTSS calculation failed: ${conn.responseCode} - $errorBody")
-                                null
+                        // If we reach here without getting "done" status, connection was dropped
+                        if (!isSyncCompleted) {
+                            Log.w("StravaSyncLoading", "Connection dropped after syncing $activitiesCount activities")
+                            totalActivitiesSynced += activitiesCount
+                            currentRetry++
+                            
+                            withContext(Dispatchers.Main) {
+                                currentStep = "Conexiunea s-a întrerupt. Reconectare..."
+                                syncProgress = 0.3f + (currentRetry * 0.1f)
                             }
                         }
+                        
                     } catch (e: Exception) {
-                        Log.e("StravaSyncLoading", "Error calling calculate-hrtss endpoint", e)
+                        Log.e("StravaSyncLoading", "Error during SSE sync (attempt ${currentRetry + 1})", e)
+                        
+                        // If it's a connection error, try to reconnect
+                        if (e.message?.contains("Connection") == true || e.message?.contains("timeout") == true) {
+                            Log.w("StravaSyncLoading", "Connection error detected, will retry")
+                            currentRetry++
+                            
+                            withContext(Dispatchers.Main) {
+                                currentStep = "Eroare de conexiune. Reconectare..."
+                                syncProgress = 0.3f + (currentRetry * 0.1f)
+                            }
+                        } else {
+                            // For other errors, don't retry
+                            throw e
+                        }
+                    } finally {
+                        connection.disconnect()
                     }
-                    
-                    // Estimate FTP after FTHR estimation
-                    Log.d("StravaSyncLoading", "Estimating FTP after FTHR estimation...")
-                    withContext(Dispatchers.Main) {
-                        currentStep = "Estimare FTP din datele de putere..."
-                        syncProgress = 0.98f
-                    }
-                    
-                    withContext(Dispatchers.Main) {
-                        stravaViewModel.fetchFtpEstimateAfterSync()
-                    }
-                    
-                    delay(2000)
-                    withContext(Dispatchers.Main) {
-                        onSyncComplete()
-                    }
-                    
-                } finally {
-                    connection.disconnect()
                 }
+            }
+            
+            // If we've exhausted retries without completion
+            if (!isSyncCompleted) {
+                throw Exception("Sincronizarea s-a întrerupt după $maxRetries încercări. $totalActivitiesSynced activități sincronizate.")
+            }
+            
+            Log.d("StravaSyncLoading", "SSE stream completed")
+            
+            // Estimate FTHR after successful sync
+            Log.d("StravaSyncLoading", "Estimating FTHR after successful sync...")
+            withContext(Dispatchers.Main) {
+                currentStep = "Estimare FTHR din activități recente..."
+                syncProgress = 0.95f
+            }
+            
+            // Make direct FTHR estimation request
+            try {
+                val fthrResponse = withContext(Dispatchers.IO) {
+                    val fthrUrl = "${ApiConfig.BASE_URL}strava/estimate-cycling-fthr"
+                    Log.d("StravaSyncLoading", "FTHR estimate URL: $fthrUrl")
+                    
+                    val fthrConnection = URL(fthrUrl).openConnection() as HttpURLConnection
+                    fthrConnection.requestMethod = "GET"
+                    fthrConnection.setRequestProperty("Authorization", "Bearer $jwtToken")
+                    fthrConnection.setRequestProperty("Content-Type", "application/json")
+                    fthrConnection.connectTimeout = 60000 // 60 seconds
+                    fthrConnection.readTimeout = 60000 // 60 seconds
+                    
+                    Log.d("StravaSyncLoading", "Making FTHR estimate request...")
+                    Log.d("StravaSyncLoading", "FTHR response code: ${fthrConnection.responseCode}")
+                    
+                    if (fthrConnection.responseCode == 200) {
+                        val responseBody = fthrConnection.inputStream.bufferedReader().use { it.readText() }
+                        Log.d("StravaSyncLoading", "FTHR estimate response: $responseBody")
+                        
+                        val fthrData = gson.fromJson(responseBody, JsonObject::class.java)
+                        val estimatedFthr = fthrData.get("estimated_fthr")?.asInt
+                        val activitiesUsed = fthrData.get("activities_used")?.asInt
+                        val maxHrObserved = fthrData.get("max_hr_observed")?.asInt
+                        
+                        Log.d("StravaSyncLoading", "FTHR estimate parsed: ${estimatedFthr} bpm (activities: ${activitiesUsed}, max HR: ${maxHrObserved})")
+                        
+                        withContext(Dispatchers.Main) {
+                            fthrEstimate = estimatedFthr
+                            currentStep = "FTHR estimat: ${estimatedFthr} bpm"
+                        }
+                        
+                        fthrData
+                    } else {
+                        val errorBody = fthrConnection.errorStream?.bufferedReader()?.use { it.readText() }
+                        Log.e("StravaSyncLoading", "FTHR estimate failed: ${fthrConnection.responseCode} - $errorBody")
+                        null
+                    }
+                }
+                
+                if (fthrResponse != null) {
+                    Log.d("StravaSyncLoading", "FTHR estimation completed successfully")
+                } else {
+                    Log.w("StravaSyncLoading", "FTHR estimation failed, but sync was successful")
+                }
+            } catch (e: Exception) {
+                Log.e("StravaSyncLoading", "Error estimating FTHR", e)
+                // Don't fail the sync if FTHR estimation fails
+            }
+            
+            delay(1000) // Small delay to show FTHR estimation step
+            
+            // Also estimate running, swimming, and other FTHR (non-blocking, log errors)
+            estimateAllFthrTypes(jwtToken)
+
+            // Call /running/pace-prediction to generate running pace predictions
+            try {
+                withContext(Dispatchers.Main) {
+                    currentStep = "Generare predicții viteză alergare..."
+                    syncProgress = 0.97f
+                }
+                
+                val runningPaceResponse = withContext(Dispatchers.IO) {
+                    val url = URL("${ApiConfig.BASE_URL}running/pace-prediction")
+                    val conn = url.openConnection() as HttpURLConnection
+                    conn.requestMethod = "GET"
+                    conn.setRequestProperty("Authorization", "Bearer $jwtToken")
+                    conn.setRequestProperty("Content-Type", "application/json")
+                    conn.connectTimeout = 60000
+                    conn.readTimeout = 60000
+                    
+                    Log.d("StravaSyncLoading", "Making running pace prediction request...")
+                    Log.d("StravaSyncLoading", "Running pace response code: ${conn.responseCode}")
+                    
+                    if (conn.responseCode == 200) {
+                        val responseBody = conn.inputStream.bufferedReader().use { it.readText() }
+                        Log.d("StravaSyncLoading", "Running pace prediction response: $responseBody")
+                        
+                        // Parse the response to show predictions
+                        try {
+                            val predictionsArray = gson.fromJson(responseBody, Array<JsonObject>::class.java)
+                            Log.d("StravaSyncLoading", "Running pace predictions generated: ${predictionsArray.size} predictions")
+                            
+                            predictionsArray.forEach { prediction ->
+                                val distance = prediction.get("distance_km")?.asFloat
+                                val time = prediction.get("time")?.asString
+                                val pace = prediction.get("pace_min_per_km")?.asString
+                                val avgHr = prediction.get("avg_hr")?.asInt
+                                val adjustedForHr = prediction.get("adjusted_for_hr")?.asFloat
+                                
+                                Log.d("StravaSyncLoading", "Prediction: ${distance}km in $time (pace: $pace, HR: ${avgHr}bpm, adjusted: ${adjustedForHr})")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("StravaSyncLoading", "Error parsing running pace predictions", e)
+                        }
+                        
+                        responseBody
+                    } else {
+                        val errorBody = conn.errorStream?.bufferedReader()?.use { it.readText() }
+                        Log.e("StravaSyncLoading", "Running pace prediction failed: ${conn.responseCode} - $errorBody")
+                        null
+                    }
+                }
+                
+                if (runningPaceResponse != null) {
+                    Log.d("StravaSyncLoading", "Running pace predictions completed successfully")
+                    withContext(Dispatchers.Main) {
+                        currentStep = "Predicții viteză alergare generate"
+                    }
+                } else {
+                    Log.w("StravaSyncLoading", "Running pace prediction failed, but sync was successful")
+                }
+            } catch (e: Exception) {
+                Log.e("StravaSyncLoading", "Error calling running pace prediction endpoint", e)
+                // Don't fail the sync if running pace prediction fails
+            }
+
+            // Call /swim/best-time-prediction to generate swimming best time predictions
+            try {
+                withContext(Dispatchers.Main) {
+                    currentStep = "Generare predicții timp înot..."
+                    syncProgress = 0.975f
+                }
+                
+                val swimBestTimeResponse = withContext(Dispatchers.IO) {
+                    val url = URL("${ApiConfig.BASE_URL}swim/best-time-prediction")
+                    val conn = url.openConnection() as HttpURLConnection
+                    conn.requestMethod = "GET"
+                    conn.setRequestProperty("Authorization", "Bearer $jwtToken")
+                    conn.setRequestProperty("Content-Type", "application/json")
+                    conn.connectTimeout = 60000
+                    conn.readTimeout = 60000
+                    
+                    Log.d("StravaSyncLoading", "Making swimming best time prediction request...")
+                    Log.d("StravaSyncLoading", "Swimming best time response code: ${conn.responseCode}")
+                    
+                    if (conn.responseCode == 200) {
+                        val responseBody = conn.inputStream.bufferedReader().use { it.readText() }
+                        Log.d("StravaSyncLoading", "Swimming best time prediction response: $responseBody")
+                        
+                        // Parse the response to show predictions
+                        try {
+                            val predictionsArray = gson.fromJson(responseBody, Array<JsonObject>::class.java)
+                            Log.d("StravaSyncLoading", "Swimming best time predictions generated: ${predictionsArray.size} predictions")
+                            
+                            predictionsArray.forEach { prediction ->
+                                val distance = prediction.get("distance_m")?.asInt
+                                val time = prediction.get("time")?.asString
+                                
+                                Log.d("StravaSyncLoading", "Swimming prediction: ${distance}m in $time")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("StravaSyncLoading", "Error parsing swimming best time predictions", e)
+                        }
+                        
+                        responseBody
+                    } else {
+                        val errorBody = conn.errorStream?.bufferedReader()?.use { it.readText() }
+                        Log.e("StravaSyncLoading", "Swimming best time prediction failed: ${conn.responseCode} - $errorBody")
+                        null
+                    }
+                }
+                
+                if (swimBestTimeResponse != null) {
+                    Log.d("StravaSyncLoading", "Swimming best time predictions completed successfully")
+                    withContext(Dispatchers.Main) {
+                        currentStep = "Predicții timp înot generate"
+                    }
+                } else {
+                    Log.w("StravaSyncLoading", "Swimming best time prediction failed, but sync was successful")
+                }
+            } catch (e: Exception) {
+                Log.e("StravaSyncLoading", "Error calling swimming best time prediction endpoint", e)
+                // Don't fail the sync if swimming best time prediction fails
+            }
+
+            // Call /strava/calculate-hrtss to recompute missing HrTSS values
+            try {
+                val hrtssResponse = withContext(Dispatchers.IO) {
+                    val url = URL("${ApiConfig.BASE_URL}strava/calculate-hrtss")
+                    val conn = url.openConnection() as HttpURLConnection
+                    conn.requestMethod = "POST"
+                    conn.setRequestProperty("Authorization", "Bearer $jwtToken")
+                    conn.setRequestProperty("Content-Type", "application/json")
+                    conn.connectTimeout = 60000
+                    conn.readTimeout = 60000
+                    if (conn.responseCode == 200) {
+                        val responseBody = conn.inputStream.bufferedReader().use { it.readText() }
+                        Log.d("StravaSyncLoading", "HrTSS calculation response: $responseBody")
+                        responseBody
+                    } else {
+                        val errorBody = conn.errorStream?.bufferedReader()?.use { it.readText() }
+                        Log.e("StravaSyncLoading", "HrTSS calculation failed: ${conn.responseCode} - $errorBody")
+                        null
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("StravaSyncLoading", "Error calling calculate-hrtss endpoint", e)
+            }
+            
+            // Estimate FTP after FTHR estimation
+            Log.d("StravaSyncLoading", "Estimating FTP after FTHR estimation...")
+            withContext(Dispatchers.Main) {
+                currentStep = "Estimare FTP din datele de putere..."
+                syncProgress = 0.98f
+            }
+            
+            withContext(Dispatchers.Main) {
+                stravaViewModel.fetchFtpEstimateAfterSync()
+            }
+            
+            delay(2000)
+            withContext(Dispatchers.Main) {
+                onSyncComplete()
             }
             
         } catch (e: Exception) {

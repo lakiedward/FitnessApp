@@ -39,6 +39,8 @@ import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 
 class WorkoutViewModel(context: Context) : ViewModel() {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -440,4 +442,10 @@ class WorkoutViewModelFactory(private val context: Context) : ViewModelProvider.
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WorkoutScreenPreview() {
+    WorkoutScreen(navController = rememberNavController())
 }

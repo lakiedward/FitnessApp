@@ -8,9 +8,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnessapp.api.ApiService
 import com.example.fitnessapp.api.RetrofitClient
+import com.example.fitnessapp.model.DetaliiUserCycling
 import com.example.fitnessapp.model.RaceModel
 import com.example.fitnessapp.model.RacesModelResponse
 import com.example.fitnessapp.model.SportsSelectionRequest
+import com.example.fitnessapp.model.TrainingDateUpdate
 import com.example.fitnessapp.model.TrainingPlan
 import com.example.fitnessapp.model.User
 import com.example.fitnessapp.model.UserDetalis
@@ -22,14 +24,6 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
 
 class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
 
@@ -106,6 +100,74 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
         })
     }
 
+    fun saveUserSports(sports: SportsSelectionRequest) {
+        val token = getToken()
+        if (token == null) {
+            Log.e("AuthViewModel", "Token is missing. Please log in again.")
+            _authState.value = AuthState.Error("Token is missing. Please log in again.")
+            return
+        }
+
+        apiService.selectUserSports("Bearer $token", sports)
+            .enqueue(object : Callback<Void> {
+                override fun onResponse(
+                    call: Call<Void>,
+                    response: Response<Void>
+                ) {
+                    if (response.isSuccessful) {
+                        Log.d("AuthViewModel", "User sports updated successfully")
+                        _authState.value = AuthState.Authenticated(token) // ✅ asta era esențial
+                    } else {
+                        Log.e(
+                            "AuthViewModel",
+                            "Failed to update user sports: ${response.message()}"
+                        )
+                        _authState.value =
+                            AuthState.Error("Failed to update user sports: ${response.message()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    Log.e("AuthViewModel", "Failed to update user sports: ${t.message}")
+                    _authState.value =
+                        AuthState.Error("Failed to update user sports: ${t.message}")
+                }
+            })
+    }
+
+    fun updateTrainingPlanDate(planId: Int, trainingDateUpdate: TrainingDateUpdate) {
+        val token = getToken()
+        if (token == null) {
+            Log.e("AuthViewModel", "Token is missing. Please log in again.")
+            _authState.value = AuthState.Error("Token is missing. Please log in again.")
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val response =
+                    apiService.updateTrainingPlanDate(planId, "Bearer $token", trainingDateUpdate)
+                if (response.isSuccessful) {
+                    Log.d("AuthViewModel", "Training plan date updated successfully")
+                    // Refresh training plans after update
+                    delay(1000) // Wait a bit for the DB to update
+                    getTrainingPlans()
+                } else {
+                    Log.e(
+                        "AuthViewModel",
+                        "Failed to update training plan date: ${response.message()}"
+                    )
+                    _authState.value =
+                        AuthState.Error("Failed to update training plan date: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error updating training plan date: ${e.message}")
+                _authState.value =
+                    AuthState.Error("Error updating training plan date: ${e.message}")
+            }
+        }
+    }
+
     fun generateTrainingPlanBySport(raceDate: String) {
         val token = getToken()
         if (token == null) {
@@ -127,11 +189,15 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
 
                     } else {
                         Log.e("AuthViewModel", "Failed to generate training plan: ${response.message()}")
+                        _authState.value =
+                            AuthState.Error("Failed to generate training plan: ${response.message()}")
                     }
                 }
 
                 override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
                     Log.e("AuthViewModel", "Error generating training plan: ${t.message}")
+                    _authState.value =
+                        AuthState.Error("Error generating training plan: ${t.message}")
                 }
             })
     }
@@ -167,30 +233,32 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
         })
     }
 
-    fun addWeekAvailability(availabilityList: List<UserWeekAvailability>) {
+    fun addWeekAvailability(
+        availabilityList: List<UserWeekAvailability>,
+        onSuccess: (() -> Unit)? = null,
+        onError: ((String) -> Unit)? = null
+    ) {
         val token = getToken()
         if (token == null) {
-            Log.e("AuthViewModel", "Token is missing. Please log in again.")
-            _authState.value = AuthState.Error("Token is missing. Please log in again.")
+            onError?.invoke("Token is missing")
             return
         }
-
-        apiService.addWeekAvailability("Bearer $token", availabilityList).enqueue(object : Callback<Map<String, String>> {
-            override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
-                if (response.isSuccessful) {
-                    Log.d("AuthViewModel", "Week availability updated successfully")
-                } else {
-                    Log.e("AuthViewModel", "Failed to update week availability: ${response.message()}")
+        apiService.addWeekAvailability("Bearer $token", availabilityList)
+            .enqueue(object : Callback<Map<String, String>> {
+                override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
+                    if (response.isSuccessful) {
+                        onSuccess?.invoke()
+                    } else {
+                        onError?.invoke("Failed to save availability: ${response.message()}")
+                    }
                 }
-            }
-
-            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
-                Log.e("AuthViewModel", "Failed to update week availability: ${t.message}")
-            }
-        })
+                override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
+                    onError?.invoke("Error saving availability: ${t.message}")
+                }
+            })
     }
 
-    fun addOrUpdateTrainingData(ftp: Int, max_bpm: Int) {
+    fun addOrUpdateTrainingData(ftp: Int) {
         val token = getToken()
         if (token == null) {
             Log.e("AuthViewModel", "Token is missing. Please log in again.")
@@ -198,21 +266,19 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             return
         }
 
-        val cyclingDetails = UserTrainigData(ftp, max_bpm)
-        apiService.addOrUpdateTrainingData("Bearer $token", cyclingDetails).enqueue(object : Callback<Map<String, String>> {
-            override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
+        val cyclingDetails = DetaliiUserCycling(ftp)
+        viewModelScope.launch {
+            try {
+                val response = apiService.addOrUpdateCyclingData("Bearer $token", cyclingDetails)
                 if (response.isSuccessful) {
                     Log.d("AuthViewModel", "Cycling details updated successfully")
                 } else {
                     Log.e("AuthViewModel", "Failed to update cycling details: ${response.message()}")
                 }
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Failed to update cycling details: ${e.message}")
             }
-
-            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
-                Log.e("AuthViewModel", "Failed to update cycling details: ${t.message}")
-            }
-        })
-
+        }
     }
 
     fun saveRunningData(best5km: Int?, best10km: Int?) {
@@ -280,39 +346,6 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
 //            }
 //        })
 //    }
-
-    fun saveUserSports(sports: List<String>) {
-        val token = getToken()
-        if (token == null) {
-            _authState.value = AuthState.Error("Token is missing")
-            return
-        }
-
-        val body = SportsSelectionRequest(sports)
-        Log.d("AuthViewModel", "Trimitem sporturile: $body")
-
-        apiService.selectUserSports("Bearer $token", body)
-            .enqueue(object : Callback<Void> {
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    if (response.isSuccessful) {
-                        Log.d("AuthViewModel", "User sports saved successfully.")
-                        _authState.value = AuthState.Authenticated(token)
-                    } else {
-                        Log.e("AuthViewModel", "Failed to save sports: ${response.code()} ${response.message()}")
-                        _authState.value =
-                            AuthState.Error("Failed to save sports: ${response.message()}")
-                    }
-                }
-
-                override fun onFailure(call: Call<Void>, t: Throwable) {
-                    Log.e("AuthViewModel", "Error saving sports: ${t.message}")
-                    _authState.value = AuthState.Error("Exception: ${t.message}")
-                }
-            })
-    }
-
-
-
 
     fun getTrainingPlans(retry: Boolean = true) {
         val token = getToken()

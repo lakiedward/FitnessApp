@@ -2,37 +2,55 @@ package com.example.fitnessapp
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.fitnessapp.model.UserDetalis
 import com.example.fitnessapp.model.ChoosedSports
-import com.example.fitnessapp.pages.signup.*
-import com.example.fitnessapp.pages.home.*
+import com.example.fitnessapp.model.UserDetalis
 import com.example.fitnessapp.pages.LoginScreen
+import com.example.fitnessapp.pages.home.HomeScreen
+import com.example.fitnessapp.pages.home.InfiniteCalendarPage
+import com.example.fitnessapp.pages.home.SeasonScreen
+import com.example.fitnessapp.pages.home.StravaActivityDetailScreen
+import com.example.fitnessapp.pages.home.TrainingDetailScreen
+import com.example.fitnessapp.pages.home.WorkoutScreen
 import com.example.fitnessapp.pages.loading.LoadingScreen
 import com.example.fitnessapp.pages.loading.LoadingTrainingScreen
 import com.example.fitnessapp.pages.more.AppIntegrationsScreen
 import com.example.fitnessapp.pages.more.MoreScreen
+import com.example.fitnessapp.pages.signup.AddAgeScreen
+import com.example.fitnessapp.pages.signup.AddEmailScreen
+import com.example.fitnessapp.pages.signup.AddFtpScreen
+import com.example.fitnessapp.pages.signup.AddRunningPaceScreen
+import com.example.fitnessapp.pages.signup.AddSwimPaceScreen
+import com.example.fitnessapp.pages.signup.ChooseDisciplineScreen
+import com.example.fitnessapp.pages.signup.ChooseSportsScreen
+import com.example.fitnessapp.pages.signup.DisciplineLoadingScreen
+import com.example.fitnessapp.pages.signup.GenderSelectionScreen
+import com.example.fitnessapp.pages.signup.PlanLengthScreen
+import com.example.fitnessapp.pages.signup.SetupStatusLoadingScreen
+import com.example.fitnessapp.pages.signup.StravaAuthScreen
 import com.example.fitnessapp.pages.strava.StravaActivitiesScreen
 import com.example.fitnessapp.pages.strava.StravaSyncLoadingScreen
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
-import com.example.fitnessapp.viewmodel.StravaViewModel
-import com.example.fitnessapp.viewmodel.StravaViewModelFactory
-import android.net.Uri
-import androidx.compose.runtime.livedata.observeAsState
 import com.example.fitnessapp.viewmodel.AuthViewModel
+import com.example.fitnessapp.viewmodel.StravaViewModel
 import kotlinx.coroutines.launch
-import androidx.lifecycle.lifecycleScope
 
 class MainActivity : ComponentActivity() {
     private lateinit var authViewModel: AuthViewModel
@@ -69,7 +87,7 @@ class MainActivity : ComponentActivity() {
         handleStravaCode(intent)
 
         setContent {
-            FitnessAppTheme(darkTheme = false) {
+            FitnessAppTheme {
                 val navController = rememberNavController()
                 val userDetalis = remember { mutableStateOf(UserDetalis(0, 0f, 0f, "", "")) }
                 val choosedSports = remember { mutableStateOf(ChoosedSports()) }
@@ -110,7 +128,7 @@ class MainActivity : ComponentActivity() {
     private fun handleStravaCode(intent: Intent?) {
         val code = intent?.getStringExtra("strava_code")
         if (!code.isNullOrEmpty()) {
-            // Verific dacă userul e logat (există JWT)
+            // Verific dacă există JWT (poți adapta după implementarea ta)
             val jwt = getJwtToken()
             if (!jwt.isNullOrEmpty()) {
                 lifecycleScope.launch {
@@ -170,10 +188,25 @@ fun AppNavigation(
             )
         }
         composable("choose_sports") {
-            ChooseSportsScreen(navController, authViewModel, choosedSports)
+            ChooseSportsScreen(navController, authViewModel, choosedSports, userDetalis)
+        }
+        composable("setup_status_loading_screen") {
+            SetupStatusLoadingScreen(navController, authViewModel)
         }
         composable("choose_discipline") {
             ChooseDisciplineScreen(navController, authViewModel, userDetalis)
+        }
+        composable("discipline_loading_screen") {
+            DisciplineLoadingScreen(navController, authViewModel, userDetalis.value)
+        }
+        composable("add_ftp_screen") {
+            AddFtpScreen(navController, authViewModel)
+        }
+        composable("add_running_pace_screen") {
+            AddRunningPaceScreen(navController, authViewModel)
+        }
+        composable("add_swim_pace_screen") {
+            AddSwimPaceScreen(navController, authViewModel)
         }
         composable("plan_length_screen") {
             PlanLengthScreen(navController, authViewModel, choosedSports)
@@ -238,8 +271,12 @@ fun AppNavigation(
                 )
             }
         }
+        composable("strava_activity_detail/{activityId}") { backStackEntry ->
+            val activityId = backStackEntry.arguments?.getString("activityId")?.toLongOrNull() ?: 0L
+            StravaActivityDetailScreen(
+                navController = navController,
+                activityId = activityId
+            )
+        }
     }
 }
-
-
-

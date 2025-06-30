@@ -18,6 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import com.example.fitnessapp.R
 import com.example.fitnessapp.model.UserDetalis
@@ -26,7 +28,6 @@ import com.example.fitnessapp.viewmodel.StravaViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModelFactory
 import com.example.fitnessapp.viewmodel.HomeViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.ui.platform.LocalContext
 import android.content.Intent
 import android.net.Uri
 import kotlinx.coroutines.launch
@@ -39,6 +40,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.example.fitnessapp.mock.SharedPreferencesMock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +69,7 @@ fun StravaAuthScreen(
         Log.d("StravaAuthScreen", "Creating errorMessage state")
         mutableStateOf<String?>(null) 
     }
-    var isSyncingActivities by remember { 
+    var isSyncing by remember { 
         Log.d("StravaAuthScreen", "Creating isSyncingActivities state")
         mutableStateOf(false) 
     }
@@ -75,20 +77,15 @@ fun StravaAuthScreen(
         Log.d("StravaAuthScreen", "Creating syncMessage state")
         mutableStateOf<String?>(null) 
     }
-    var activitiesCount by remember { 
-        Log.d("StravaAuthScreen", "Creating activitiesCount state")
-        mutableStateOf<Int?>(null) 
-    }
     
     val stravaState by stravaViewModel.stravaState.collectAsState()
     val ftpEstimateData by homeViewModel.ftpEstimate.observeAsState()
     val isLoading by homeViewModel.isLoading.observeAsState()
     val error by homeViewModel.error.observeAsState()
-    val stravaActivities by stravaViewModel.stravaActivities.collectAsState()
     val stravaFtpEstimate by stravaViewModel.ftpEstimate.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
-    // Function to fetch FTHR estimate - defined early for scope access
+    // Function to fetch FTHR estimate
     fun fetchFthrEstimate(token: String) {
         coroutineScope.launch {
             try {
@@ -133,14 +130,11 @@ fun StravaAuthScreen(
         }
     }
 
-    // Local function to open URLs - must be defined before other functions
+    // Function to open URLs
     fun openUrl(url: String) {
-        Log.d("StravaAuthScreen", "=== openUrl() CALLED ===")
         Log.d("StravaAuthScreen", "Opening URL: $url")
-        Log.d("StravaAuthScreen", "Context: $context")
         try {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            Log.d("StravaAuthScreen", "Created intent: $intent")
             context.startActivity(intent)
             Log.d("StravaAuthScreen", "URL opened successfully in browser")
         } catch (e: Exception) {
@@ -151,21 +145,16 @@ fun StravaAuthScreen(
 
     // Debug logging for state changes
     LaunchedEffect(stravaState) {
-        Log.d("StravaAuthScreen", "=== STATE CHANGE DEBUG ===")
         Log.d("StravaAuthScreen", "New stravaState: $stravaState")
         Log.d("StravaAuthScreen", "Current isConnecting: $isConnecting")
-        Log.d("StravaAuthScreen", "ViewModel instance: ${stravaViewModel.hashCode()}")
     }
 
-    // Check initial connection status when screen loads
+    // Check initial connection status
     LaunchedEffect(Unit) {
         Log.d("StravaAuthScreen", "Screen loaded, checking initial connection status")
-        Log.d("StravaAuthScreen", "ViewModel instance: ${stravaViewModel.hashCode()}")
         stravaViewModel.checkConnectionStatus()
-        
-        // Also fetch FTHR estimate if we have activities and token
         val token = authViewModel.getToken()
-        if (!token.isNullOrEmpty() && stravaActivities.isNotEmpty()) {
+        if (!token.isNullOrEmpty()) {
             Log.d("StravaAuthScreen", "Fetching FTHR estimate on screen load")
             fetchFthrEstimate(token)
         }
@@ -173,46 +162,19 @@ fun StravaAuthScreen(
 
     // Handle Strava authentication
     LaunchedEffect(stravaState) {
-        Log.d("StravaAuthScreen", "=== LaunchedEffect(stravaState) TRIGGERED ===")
+        Log.d("StravaAuthScreen", "Strava state changed: $stravaState")
         val currentState = stravaState
-        Log.d("StravaAuthScreen", "=== HANDLING STRAVA STATE ===")
-        Log.d("StravaAuthScreen", "Strava state changed: $currentState")
-        Log.d("StravaAuthScreen", "Previous isConnecting: $isConnecting")
-        Log.d("StravaAuthScreen", "Current isConnecting: $isConnecting")
-        Log.d("StravaAuthScreen", "State type: ${currentState::class.simpleName}")
-        Log.d("StravaAuthScreen", "State hashCode: ${currentState.hashCode()}")
-        
         when (currentState) {
             is com.example.fitnessapp.viewmodel.StravaState.Connected -> {
-                Log.d("StravaAuthScreen", "=== CONNECTED STATE DETECTED ===")
                 Log.d("StravaAuthScreen", "Strava connected successfully")
-                Log.d("StravaAuthScreen", "Setting isConnecting = false")
-                Log.d("StravaAuthScreen", "isConnecting before: $isConnecting")
                 isConnecting = false
-                Log.d("StravaAuthScreen", "isConnecting after: $isConnecting")
                 errorMessage = null
                 syncMessage = "Connected! You can now sync your activities."
-                Log.d("StravaAuthScreen", "After setting isConnecting = false: $isConnecting")
-                
-                // After successful connection, fetch FTP estimate
-                val token = authViewModel.getToken()
-                if (!token.isNullOrEmpty()) {
-                    Log.d("StravaAuthScreen", "Fetching FTP estimate after successful connection")
-                    homeViewModel.fetchFTPEstimate(token)
-                }
-                
-                // Refresh activities count
-                stravaViewModel.refreshActivities()
             }
             is com.example.fitnessapp.viewmodel.StravaState.Error -> {
-                Log.d("StravaAuthScreen", "=== ERROR STATE DETECTED ===")
                 Log.e("StravaAuthScreen", "Strava connection error: ${currentState.message}")
-                Log.d("StravaAuthScreen", "Setting isConnecting = false")
-                Log.d("StravaAuthScreen", "isConnecting before: $isConnecting")
                 isConnecting = false
-                Log.d("StravaAuthScreen", "isConnecting after: $isConnecting")
-                isSyncingActivities = false
-                // Don't show rate limiting errors or temporary connection issues to user
+                isSyncing = false
                 if (!currentState.message.contains("Rate Limit") && 
                     !currentState.message.contains("Job was cancelled") &&
                     !currentState.message.contains("Strava account not connected yet")) {
@@ -224,66 +186,39 @@ fun StravaAuthScreen(
                 }
             }
             is com.example.fitnessapp.viewmodel.StravaState.Connecting -> {
-                Log.d("StravaAuthScreen", "=== CONNECTING STATE DETECTED ===")
                 Log.d("StravaAuthScreen", "Strava connecting...")
-                Log.d("StravaAuthScreen", "Setting isConnecting = true")
-                Log.d("StravaAuthScreen", "isConnecting before: $isConnecting")
                 isConnecting = true
-                Log.d("StravaAuthScreen", "isConnecting after: $isConnecting")
                 errorMessage = null
                 syncMessage = null
             }
             else -> {
-                Log.d("StravaAuthScreen", "=== OTHER STATE DETECTED ===")
                 Log.d("StravaAuthScreen", "Strava state: $currentState")
-                Log.d("StravaAuthScreen", "Setting isConnecting = false")
-                Log.d("StravaAuthScreen", "isConnecting before: $isConnecting")
                 isConnecting = false
-                Log.d("StravaAuthScreen", "isConnecting after: $isConnecting")
                 errorMessage = null
                 syncMessage = null
             }
         }
-        Log.d("StravaAuthScreen", "Final isConnecting: $isConnecting")
-        Log.d("StravaAuthScreen", "=== LaunchedEffect(stravaState) COMPLETED ===")
     }
     
-    // Force reset isConnecting when Connected state is detected
+    // Force reset isConnecting
     LaunchedEffect(stravaState) {
-        if (stravaState is com.example.fitnessapp.viewmodel.StravaState.Connected) {
+        val currentState = stravaState
+        if (currentState is com.example.fitnessapp.viewmodel.StravaState.Connected) {
             Log.d("StravaAuthScreen", "Connected state detected - forcing isConnecting = false")
             isConnecting = false
         }
     }
 
-    // Additional aggressive reset for isConnecting
+    // Additional reset for isConnecting
     LaunchedEffect(stravaState) {
-        if (stravaState is com.example.fitnessapp.viewmodel.StravaState.Connected && isConnecting) {
+        val currentState = stravaState
+        if (currentState is com.example.fitnessapp.viewmodel.StravaState.Connected && isConnecting) {
             Log.d("StravaAuthScreen", "AGGRESSIVE RESET: Connected state with isConnecting=true, forcing reset")
             isConnecting = false
         }
     }
 
-    // Handle activities count when activities are fetched
-    LaunchedEffect(stravaActivities) {
-        if (stravaActivities.isNotEmpty()) {
-            activitiesCount = stravaActivities.size
-            syncMessage = "✓ Activities loaded successfully"
-            
-            // Fetch FTP estimate after activities are loaded
-            val token = authViewModel.getToken()
-            if (!token.isNullOrEmpty()) {
-                Log.d("StravaAuthScreen", "Fetching FTP estimate after activities loaded")
-                stravaViewModel.fetchFtpEstimateAfterSync()
-                
-                // Also fetch FTHR estimate
-                Log.d("StravaAuthScreen", "Fetching FTHR estimate after activities loaded")
-                fetchFthrEstimate(token)
-            }
-        }
-    }
-
-    // Handle FTP estimate results from StravaViewModel
+    // Handle FTP estimate results
     LaunchedEffect(stravaFtpEstimate) {
         if (stravaFtpEstimate != null) {
             ftpEstimate = stravaFtpEstimate!!.estimatedFTP
@@ -291,18 +226,7 @@ fun StravaAuthScreen(
         }
     }
 
-    // Refresh FTHR estimate when activities are refreshed (after sync)
-    LaunchedEffect(stravaActivities) {
-        if (stravaActivities.isNotEmpty()) {
-            val token = authViewModel.getToken()
-            if (!token.isNullOrEmpty()) {
-                Log.d("StravaAuthScreen", "Activities refreshed, fetching FTHR estimate")
-                fetchFthrEstimate(token)
-            }
-        }
-    }
-
-    // Handle FTP estimate results from HomeViewModel (fallback)
+    // Handle FTP results from HomeViewModel
     LaunchedEffect(ftpEstimateData, error) {
         if (ftpEstimateData != null) {
             ftpEstimate = ftpEstimateData!!.estimatedFTP
@@ -313,32 +237,23 @@ fun StravaAuthScreen(
         }
     }
 
-    // Monitor state changes for debugging
+    // Monitor state changes
     LaunchedEffect(stravaState, isConnecting) {
-        Log.d("StravaAuthScreen", "=== STATE MONITORING ===")
         Log.d("StravaAuthScreen", "stravaState changed to: $stravaState")
         Log.d("StravaAuthScreen", "isConnecting changed to: $isConnecting")
-        Log.d("StravaAuthScreen", "Timestamp: ${System.currentTimeMillis()}")
     }
 
     fun connectToStrava() {
-        Log.d("StravaAuthScreen", "=== connectToStrava() FUNCTION CALLED ===")
-        Log.d("StravaAuthScreen", "Current isConnecting: $isConnecting")
-        Log.d("StravaAuthScreen", "Current stravaState: $stravaState")
-        Log.d("StravaAuthScreen", "Starting OAuth flow from function...")
+        Log.d("StravaAuthScreen", "Starting OAuth flow...")
         isConnecting = true
-        Log.d("StravaAuthScreen", "isConnecting set to: $isConnecting")
-        Log.d("StravaAuthScreen", "Calling stravaViewModel.connect() from function")
         coroutineScope.launch {
             try {
                 val authUrl = stravaViewModel.connect()
-                Log.d("StravaAuthScreen", "OAuth URL received from function: $authUrl")
-                Log.d("StravaAuthScreen", "Opening OAuth URL in browser from function")
+                Log.d("StravaAuthScreen", "OAuth URL received: $authUrl")
                 openUrl(authUrl)
             } catch (e: Exception) {
-                Log.e("StravaAuthScreen", "Error starting OAuth from function", e)
+                Log.e("StravaAuthScreen", "Error starting OAuth", e)
                 isConnecting = false
-                Log.d("StravaAuthScreen", "Error occurred in function, isConnecting reset to: $isConnecting")
                 errorMessage = "Failed to start OAuth: ${e.message}"
             }
         }
@@ -349,16 +264,13 @@ fun StravaAuthScreen(
         navController.navigate("strava_sync_loading")
     }
 
-    // Debug logging for recomposition
-    Log.d("StravaAuthScreen", "=== RECOMPOSITION ===")
+    // Log recomposition
     Log.d("StravaAuthScreen", "stravaState: $stravaState")
     Log.d("StravaAuthScreen", "isConnecting: $isConnecting")
-    Log.d("StravaAuthScreen", "isSyncingActivities: $isSyncingActivities")
-    Log.d("StravaAuthScreen", "activitiesCount: $activitiesCount")
+    Log.d("StravaAuthScreen", "isSyncing: $isSyncing")
     Log.d("StravaAuthScreen", "errorMessage: $errorMessage")
     Log.d("StravaAuthScreen", "syncMessage: $syncMessage")
 
-    // Get current Strava state for UI decisions
     val currentStravaState = stravaState
 
     // UI
@@ -384,8 +296,8 @@ fun StravaAuthScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Setup Complete",
-                style = MaterialTheme.typography.headlineSmall,
+                text = "Connect Strava",
+                style = MaterialTheme.typography.titleLarge,
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
@@ -395,249 +307,252 @@ fun StravaAuthScreen(
         Card(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                // Scrollable content area
+                // Scrollable content
                 Column(
                     modifier = Modifier
                         .weight(1f)
                         .verticalScroll(rememberScrollState())
-                        .padding(24.dp),
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Strava Logo and Title
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(bottom = 24.dp)
+                    // Strava Logo and Title - Made larger and clearer
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(bottom = 32.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_strava),
                             contentDescription = "Strava",
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier.size(72.dp),
                             tint = Color.Unspecified
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Strava Integration",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = Color.Black,
+                            text = "Integrare Strava",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold
                         )
                     }
                     
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Log.d("StravaAuthScreen", "=== UI RENDERING DECISION ===")
-                    Log.d("StravaAuthScreen", "currentStravaState: $currentStravaState")
-                    Log.d("StravaAuthScreen", "isConnecting: $isConnecting")
-                    Log.d("StravaAuthScreen", "currentStravaState is Connected: ${currentStravaState is com.example.fitnessapp.viewmodel.StravaState.Connected}")
                     when {
                         currentStravaState is com.example.fitnessapp.viewmodel.StravaState.Connected -> {
-                            Log.d("StravaAuthScreen", "=== RENDERING CONNECTED STATE ===")
-                            Log.d("StravaAuthScreen", "isConnecting: $isConnecting")
-                            Log.d("StravaAuthScreen", "stravaState: $currentStravaState")
                             // Connected State
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_check_circle),
-                                    contentDescription = "Connected",
+                                    contentDescription = "Conectat",
                                     tint = Color(0xFF10B981),
                                     modifier = Modifier.size(48.dp)
                                 )
-                                
-                                Spacer(modifier = Modifier.height(8.dp))
-                                
+                                Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = "✓ Connected to Strava",
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    text = "✓ Conectat cu succes",
+                                    style = MaterialTheme.typography.titleMedium,
                                     color = Color(0xFF10B981),
-                                    fontWeight = FontWeight.Medium
+                                    fontWeight = FontWeight.Bold
                                 )
+                                Spacer(modifier = Modifier.height(24.dp))
                                 
-                                Spacer(modifier = Modifier.height(16.dp))
-                                
-                                // Activity Sync Controls
+                                // Activity Sync
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC))
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                                    shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Column(
                                         modifier = Modifier.padding(16.dp)
                                     ) {
                                         Text(
-                                            text = "Activity Sync",
+                                            text = "Sincronizare activități",
                                             style = MaterialTheme.typography.titleMedium,
+                                            color = MaterialTheme.colorScheme.onSurface,
                                             fontWeight = FontWeight.Bold
                                         )
-                                        
                                         Spacer(modifier = Modifier.height(8.dp))
-                                        
                                         if (syncMessage != null) {
                                             Text(
                                                 text = syncMessage!!,
                                                 style = MaterialTheme.typography.bodyMedium,
-                                                color = if (syncMessage!!.startsWith("✓")) Color(0xFF10B981) else Color.Gray
+                                                color = if (syncMessage!!.startsWith("✓")) Color(0xFF10B981) else MaterialTheme.colorScheme.onSurfaceVariant
                                             )
-                                            
                                             Spacer(modifier = Modifier.height(8.dp))
                                         }
-                                        
                                         Button(
                                             onClick = {
-                                                Log.d("StravaAuthScreen", "Sync button clicked")
-                                                Log.d("StravaAuthScreen", "Current stravaState: $currentStravaState")
-                                                Log.d("StravaAuthScreen", "isConnecting: $isConnecting")
-                                                isSyncingActivities = true
+                                                isSyncing = true
                                                 syncMessage = "Pornire sincronizare..."
-                                                
                                                 coroutineScope.launch {
                                                     try {
-                                                        Log.d("StravaAuthScreen", "Starting sync process...")
-                                                        // Navigate to sync loading screen
-                                                        Log.d("StravaAuthScreen", "Navigating to sync loading screen")
-                                                        navController.navigate("strava_sync_loading")
+                                                        syncActivities()
                                                     } catch (e: Exception) {
                                                         Log.e("StravaAuthScreen", "Error during sync", e)
                                                         syncMessage = "Eroare: ${e.message}"
                                                     } finally {
-                                                        isSyncingActivities = false
+                                                        isSyncing = false
                                                     }
                                                 }
                                             },
-                                            enabled = !isSyncingActivities,
+                                            enabled = !isSyncing,
                                             modifier = Modifier.fillMaxWidth(),
                                             colors = ButtonDefaults.buttonColors(
-                                                containerColor = Color(0xFF6366F1),
-                                                contentColor = Color.White
-                                            )
+                                                containerColor = MaterialTheme.colorScheme.primary
+                                            ),
+                                            shape = RoundedCornerShape(8.dp)
                                         ) {
-                                            if (isSyncingActivities) {
+                                            if (isSyncing) {
                                                 CircularProgressIndicator(
                                                     modifier = Modifier.size(16.dp),
-                                                    color = Color.White,
+                                                    color = MaterialTheme.colorScheme.onPrimary,
                                                     strokeWidth = 2.dp
                                                 )
                                                 Spacer(modifier = Modifier.width(8.dp))
                                             }
-                                            Text(if (isSyncingActivities) "Sincronizare..." else "Sincronizează activități")
+                                            Text(if (isSyncing) "Sincronizare..." else "Sincronizează activități")
                                         }
-                                        
                                         Spacer(modifier = Modifier.height(8.dp))
-                                        
                                         OutlinedButton(
                                             onClick = { 
-                                                stravaViewModel.forceClearAllData()
+                                                stravaViewModel.disconnect()
                                                 isConnecting = false
                                                 errorMessage = null
                                                 syncMessage = null
-                                                activitiesCount = null
                                                 ftpEstimate = null
+                                                fthrEstimate = null
                                             },
                                             modifier = Modifier.fillMaxWidth(),
-                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFDC2626))
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                contentColor = MaterialTheme.colorScheme.error
+                                            ),
+                                            shape = RoundedCornerShape(8.dp)
                                         ) {
-                                            Text("Disconnect & Clear Cache")
+                                            Text("Deconectează Strava")
                                         }
+                                    }
+                                }
+                                
+                                // Performance Metrics
+                                if (ftpEstimate != null || fthrEstimate != null) {
+                                    Spacer(modifier = Modifier.height(24.dp))
+                                    Text(
+                                        text = "Metrici de performanță",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    if (ftpEstimate != null) {
+                                        val currentFtp = ftpEstimate
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Column {
+                                                Text(
+                                                    text = "FTP (Putere prag funcțional)",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                                Text(
+                                                    text = "Prag de putere pentru antrenament",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+                                            Text(
+                                                text = "${currentFtp!!.toInt()} W",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = Color(0xFF2563EB),
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                    }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column {
+                                            Text(
+                                                text = "FTHR (Frecvență cardiacă prag funcțional)",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                            Text(
+                                                text = "Prag de frecvență cardiacă",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                        Text(
+                                            text = if (fthrEstimate != null) "${fthrEstimate} bpm" else "Indisponibil",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color(0xFFD97706),
+                                            fontWeight = if (fthrEstimate != null) FontWeight.Bold else FontWeight.Medium
+                                        )
                                     }
                                 }
                             }
                         }
-                        
                         isConnecting -> {
-                            Log.d("StravaAuthScreen", "=== RENDERING CONNECTING STATE ===")
-                            Log.d("StravaAuthScreen", "isConnecting: $isConnecting")
-                            Log.d("StravaAuthScreen", "stravaState: $currentStravaState")
                             // Connecting State
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(48.dp),
-                                    color = Color(0xFF6366F1),
+                                    color = MaterialTheme.colorScheme.primary,
                                     strokeWidth = 4.dp
                                 )
-                                
                                 Spacer(modifier = Modifier.height(16.dp))
-                                
                                 Text(
-                                    text = "Connecting to Strava...",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = Color(0xFF6366F1),
+                                    text = "Conectare în curs...",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Medium
                                 )
-                                
                                 Text(
-                                    text = "Please complete authorization in browser",
+                                    text = "Vă rugăm să completați autorizarea în browser",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Gray,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
                                 )
                             }
                         }
-                        
                         else -> {
-                            // Not Connected State
+                            // Not Connected State - Simplified
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_strava),
-                                    contentDescription = "Strava",
-                                    modifier = Modifier.size(48.dp),
-                                    tint = Color.Unspecified
-                                )
-                                
-                                Spacer(modifier = Modifier.height(16.dp))
-                                
                                 Text(
-                                    text = "Connect to Strava",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                
-                                Text(
-                                    text = "Sync your activities and get detailed performance insights",
+                                    text = "Sincronizează activitățile și obține detalii despre performanță",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.Gray,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
                                 )
-                                
-                                Spacer(modifier = Modifier.height(16.dp))
-                                
+                                Spacer(modifier = Modifier.height(24.dp))
                                 Button(
                                     onClick = {
-                                        Log.d("StravaAuthScreen", "=== CONNECT BUTTON CLICKED ===")
-                                        Log.d("StravaAuthScreen", "Current isConnecting: $isConnecting")
-                                        Log.d("StravaAuthScreen", "Current stravaState: $stravaState")
-                                        Log.d("StravaAuthScreen", "Starting OAuth flow...")
-                                        isConnecting = true
-                                        Log.d("StravaAuthScreen", "isConnecting set to: $isConnecting")
-                                        Log.d("StravaAuthScreen", "Calling stravaViewModel.connect()")
-                                        coroutineScope.launch {
-                                            try {
-                                                val authUrl = stravaViewModel.connect()
-                                                Log.d("StravaAuthScreen", "OAuth URL received: $authUrl")
-                                                Log.d("StravaAuthScreen", "Opening OAuth URL in browser")
-                                                openUrl(authUrl)
-                                            } catch (e: Exception) {
-                                                Log.e("StravaAuthScreen", "Error starting OAuth", e)
-                                                isConnecting = false
-                                                Log.d("StravaAuthScreen", "Error occurred, isConnecting reset to: $isConnecting")
-                                                errorMessage = "Failed to start OAuth: ${e.message}"
-                                            }
-                                        }
+                                        connectToStrava()
                                     },
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC4C02))
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC4C02)),
+                                    shape = RoundedCornerShape(8.dp)
                                 ) {
-                                    Text("Connect to Strava")
+                                    Text("Conectare la Strava")
                                 }
                             }
                         }
@@ -658,128 +573,46 @@ fun StravaAuthScreen(
                             )
                         }
                     }
-                    
-                    // FTP and FTHR Estimates Display
-                    if (ftpEstimate != null || stravaFtpEstimate != null) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        // Performance Metrics Section
-                        Text(
-                            text = "Performance Metrics",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        
-                        Spacer(modifier = Modifier.height(12.dp))
-                        
-                        // FTP Card
-                        if (ftpEstimate != null || stravaFtpEstimate != null) {
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = Color(0xFFF0F9FF)),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    // FTP Icon/Label
-                                    Column(
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            text = "FTP (Functional Threshold Power)",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            fontWeight = FontWeight.Medium,
-                                            color = Color.Black
-                                        )
-                                        Text(
-                                            text = "Power threshold for training",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.Gray
-                                        )
-                                    }
-                                    
-                                    // FTP Value
-                                    Text(
-                                        text = "${(ftpEstimate ?: stravaFtpEstimate?.estimatedFTP)?.toInt() ?: "N/A"}W",
-                                        style = MaterialTheme.typography.headlineSmall,
-                                        color = Color(0xFF2563EB),
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            }
-                        }
-                        
-                        Spacer(modifier = Modifier.height(12.dp))
-                        
-                        // FTHR Card - show actual value when available
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF3C7)),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // FTHR Icon/Label
-                                Column(
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Text(
-                                        text = "FTHR (Functional Threshold Heart Rate)",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Medium,
-                                        color = Color.Black
-                                    )
-                                    Text(
-                                        text = "Heart rate threshold for training",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.Gray
-                                    )
-                                }
-                                
-                                // FTHR Value - show actual value or "Sync activities"
-                                Text(
-                                    text = if (fthrEstimate != null) "${fthrEstimate} bpm" else "Sync activities",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = if (fthrEstimate != null) Color(0xFFD97706) else Color(0xFFD97706),
-                                    fontWeight = if (fthrEstimate != null) FontWeight.Bold else FontWeight.Medium
-                                )
-                            }
-                        }
-                    }
                 }
-                
-                // Add some bottom padding for the scrollable content
-                Spacer(modifier = Modifier.height(16.dp))
                 
                 // Fixed bottom area with Continue button
                 Column(
-                    modifier = Modifier.padding(24.dp)
+                    modifier = Modifier.padding(16.dp)
                 ) {
                     // Continue Button
                     if (currentStravaState is com.example.fitnessapp.viewmodel.StravaState.Connected) {
                         Button(
                             onClick = onContinue,
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981))
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
+                            shape = RoundedCornerShape(8.dp)
                         ) {
-                            Text("Continue")
+                            Text("Continuă")
                         }
                     } else {
                         OutlinedButton(
                             onClick = onContinue,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp)
                         ) {
-                            Text("Continue Without Strava")
+                            Text("Continuă fără Strava")
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StravaAuthScreenPreview() {
+    MaterialTheme {
+        StravaAuthScreen(
+            onContinue = {},
+            authViewModel = AuthViewModel(SharedPreferencesMock()),
+            stravaViewModel = StravaViewModel(LocalContext.current),
+            navController = NavHostController(LocalContext.current)
+        )
     }
 }

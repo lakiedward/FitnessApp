@@ -18,6 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.model.RaceModel
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.mock.SharedPreferencesMock
+import com.example.fitnessapp.components.TopBar
+import com.example.fitnessapp.components.BottomNavigationBar
 
 @Composable
 fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
@@ -191,4 +196,13 @@ fun RaceRow(race: RaceModel) {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SeasonScreenPreview() {
+    SeasonScreen(
+        navController = rememberNavController(),
+        authViewModel = AuthViewModel(SharedPreferencesMock())
+    )
 }

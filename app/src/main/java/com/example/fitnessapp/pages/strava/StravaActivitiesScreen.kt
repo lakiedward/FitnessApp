@@ -27,12 +27,7 @@ fun StravaActivitiesScreen(
     val jwtToken = (authState as? AuthState.Authenticated)?.jwtToken
     val ftpEstimate by stravaViewModel.ftpEstimate.collectAsState()
 
-    // Fetch activities when JWT changes
-    LaunchedEffect(jwtToken) {
-        if (!jwtToken.isNullOrEmpty()) {
-            stravaViewModel.fetchStravaActivities(jwtToken)
-        }
-    }
+    // Removed fetchStravaActivities call - activities are managed by sync-live
 
     Scaffold(
         topBar = {
@@ -58,13 +53,11 @@ fun StravaActivitiesScreen(
         ) {
             Button(
                 onClick = {
-                    if (!jwtToken.isNullOrEmpty()) {
-                        stravaViewModel.fetchStravaActivities(jwtToken)
-                    }
+                    // Removed fetchStravaActivities call - activities are managed by sync-live
                 },
                 modifier = Modifier.padding(16.dp)
             ) {
-                Text("Fetch Activities")
+                Text("Activities from Sync")
                 }
                 Button(
                     onClick = { stravaViewModel.estimateFtp() },

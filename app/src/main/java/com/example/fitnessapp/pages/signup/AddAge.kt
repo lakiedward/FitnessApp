@@ -26,7 +26,6 @@ import com.example.fitnessapp.R
 import com.example.fitnessapp.model.UserDetalis
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
-import com.example.fitnessapp.ui.theme.SectionTitle
 import androidx.compose.foundation.clickable
 
 

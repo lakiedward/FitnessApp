@@ -1,76 +1,69 @@
 package com.example.fitnessapp.ui.theme
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Shapes
-import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF1EB980),
-    secondary = Color(0xFF037171),
-    background = Color.Black,
-    surface = Color.DarkGray,
+// Definirea culorilor brandului
+val BrandPurple = Color(0xFF6D28D9)
+val BrandPurpleLight = Color(0xFFF3E8FF)
+val BrandSecondary = Color(0xFF03DAC6)
+
+// Scheme de culori statice
+private val lightColorScheme = lightColorScheme(
+    primary = BrandPurple,
+    secondary = BrandSecondary,
+    background = Color.White,
+    surface = Color.White,
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+    onBackground = Color.Black,
+    onSurface = Color.Black,
+    surfaceVariant = BrandPurpleLight
+)
+
+private val darkColorScheme = darkColorScheme(
+    primary = BrandPurple,
+    secondary = BrandSecondary,
+    background = Color(0xFF121212),
+    surface = Color(0xFF121212),
     onPrimary = Color.White,
     onSecondary = Color.White,
     onBackground = Color.White,
-    onSurface = Color.White
+    onSurface = Color.White,
+    surfaceVariant = BrandPurpleLight
 )
-
-private val LightColorScheme = lightColorScheme(
-    primary = Color.Black,
-    secondary = Color.Black,
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.Black,
-    onSecondary = Color.White,
-    onBackground = Color.Black,
-    onSurface = Color.Black
-)
-
-private val FitnessShapes = Shapes(
-    extraSmall = RoundedCornerShape(4.dp),
-    small = RoundedCornerShape(8.dp),
-    medium = RoundedCornerShape(12.dp),
-    large = RoundedCornerShape(16.dp),
-    extraLarge = RoundedCornerShape(24.dp)
-)
-
-@Composable
-fun SectionTitle(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        textAlign = TextAlign.Center,
-        color = MaterialTheme.colorScheme.onBackground,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp)
-    )
-}
-
 
 @Composable
 fun FitnessAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val context = LocalContext.current
+    val colorScheme = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && dynamicColor) {
+        if (isSystemInDarkTheme()) {
+            dynamicDarkColorScheme(context)
+        } else {
+            dynamicLightColorScheme(context)
+        }
+    } else {
+        if (isSystemInDarkTheme()) {
+            darkColorScheme
+        } else {
+            lightColorScheme
+        }
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        shapes = FitnessShapes,
         content = content
     )
 }

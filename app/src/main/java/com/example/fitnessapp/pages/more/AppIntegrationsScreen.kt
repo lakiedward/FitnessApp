@@ -1,59 +1,64 @@
 package com.example.fitnessapp.pages.more
 
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.fitnessapp.R
-import com.example.fitnessapp.viewmodel.StravaViewModel
-import kotlinx.coroutines.launch
-import com.example.fitnessapp.viewmodel.StravaState
-import androidx.compose.runtime.livedata.observeAsState
-import com.example.fitnessapp.viewmodel.AuthViewModel
-import com.example.fitnessapp.viewmodel.AuthState
 import androidx.navigation.NavController
+import com.example.fitnessapp.R
+import com.example.fitnessapp.viewmodel.AuthState
+import com.example.fitnessapp.viewmodel.AuthViewModel
+import com.example.fitnessapp.viewmodel.StravaState
+import com.example.fitnessapp.viewmodel.StravaViewModel
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 
 private const val TAG = "AppIntegrationsScreen"
-
-@Composable
-fun TopBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.iclogo),
-            contentDescription = "App Logo",
-            modifier = Modifier.size(40.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = "Connect",
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,344 +73,444 @@ fun AppIntegrationsScreen(
     val scope = rememberCoroutineScope()
     val stravaState by stravaViewModel.stravaState.collectAsState()
     val stravaUserData by stravaViewModel.stravaUserData.collectAsState()
+    val stravaFtpEstimate by stravaViewModel.ftpEstimate.collectAsState()
     val stravaAthlete by stravaViewModel.stravaAthlete.collectAsState()
     val authState = authViewModel.authState.observeAsState()
+    var isConnecting by remember { mutableStateOf(false) }
+    var ftpEstimate by remember { mutableStateOf<Float?>(null) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isSyncing by remember { mutableStateOf(false) }
+    var syncMessage by remember { mutableStateOf<String?>(null) }
 
-    val handleConnect: () -> Unit = {
+    // Function to fetch FTP estimate
+    fun fetchFtpEstimate(token: String) {
         scope.launch {
             try {
-                val authUrl = stravaViewModel.connect()
-                Log.d(TAG, "Opening Strava auth URL: $authUrl")
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authUrl))
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
+                val ftpUrl = "${com.example.fitnessapp.api.ApiConfig.BASE_URL}strava/estimate-ftp"
+                Log.d(TAG, "FTP estimate URL: $ftpUrl")
+
+                val response = withContext(Dispatchers.IO) {
+                    val url = URL(ftpUrl)
+                    val connection = url.openConnection() as HttpURLConnection
+                    connection.requestMethod = "GET"
+                    connection.setRequestProperty("Authorization", "Bearer $token")
+                    connection.setRequestProperty("Content-Type", "application/json")
+                    connection.connectTimeout = 60000
+                    connection.readTimeout = 60000
+
+                    if (connection.responseCode == 200) {
+                        val responseBody = connection.inputStream.bufferedReader().use { it.readText() }
+                        val ftpData = Gson().fromJson(responseBody, JsonObject::class.java)
+                        ftpData.get("estimated_ftp")?.asFloat
+                    } else {
+                        null
+                    }
+                }
+
+                if (response != null) {
+                    ftpEstimate = response
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "Error starting Strava auth flow", e)
-                Toast.makeText(context, "Error connecting to Strava: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e(TAG, "Error fetching FTP estimate", e)
             }
         }
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+    // Function to open URLs
+    fun openUrl(url: String) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to open URL", e)
+            errorMessage = "Failed to open browser: ${e.message}"
+        }
+    }
+
+    // Check initial connection status
+    LaunchedEffect(Unit) {
+        stravaViewModel.checkConnectionStatus()
+        val token = authViewModel.getToken()
+        if (!token.isNullOrEmpty()) {
+            fetchFtpEstimate(token)
+        }
+    }
+
+    // Handle Strava authentication
+    LaunchedEffect(stravaState) {
+        when (val currentState = stravaState) {
+            is StravaState.Connected -> {
+                isConnecting = false
+                errorMessage = null
+                syncMessage = "Connected! You can now access your activities."
+            }
+            is StravaState.Error -> {
+                isConnecting = false
+                isSyncing = false
+                if (!currentState.message.contains("Rate Limit") &&
+                    !currentState.message.contains("Job was cancelled") &&
+                    !currentState.message.contains("Strava account not connected yet")
+                ) {
+                    errorMessage = currentState.message
+                    syncMessage = null
+                }
+            }
+            is StravaState.Connecting -> {
+                isConnecting = true
+                errorMessage = null
+                syncMessage = null
+            }
+            else -> {
+                isConnecting = false
+                errorMessage = null
+                syncMessage = null
+            }
+        }
+    }
+
+    // Handle FTP estimate results
+    LaunchedEffect(stravaFtpEstimate) {
+        if (stravaFtpEstimate != null) {
+            ftpEstimate = stravaFtpEstimate!!.estimatedFTP
+        }
+    }
+
+    fun connectToStrava() {
+        isConnecting = true
+        scope.launch {
+            try {
+                val authUrl = stravaViewModel.connect()
+                openUrl(authUrl)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error starting OAuth", e)
+                isConnecting = false
+                errorMessage = "Failed to start OAuth: ${e.message}"
+            }
+        }
+    }
+
+    fun syncActivities() {
+        navController.navigate("strava_sync_loading")
+    }
+
+    // UI
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
     ) {
+        // Header
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF6366F1)),
+            shape = RoundedCornerShape(0.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.iclogo),
+                    contentDescription = "App Logo",
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "App Integrations",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        // Content
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            TopBar()
-            
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Banner de autentificare
+            // Authentication Banner (simplified)
             if (authState.value is AuthState.Authenticated) {
-                Box(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                        .background(Color(0xFF4CAF50), shape = RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.Center
+                        .background(
+                            Color(0xFF10B981).copy(alpha = 0.1f),
+                            RoundedCornerShape(8.dp)
+                        )
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_check_circle),
+                        contentDescription = "Authenticated",
+                        tint = Color(0xFF10B981),
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Ești autentificat!",
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(8.dp)
+                        text = "You are authenticated",
+                        color = Color(0xFF10B981),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            // Strava Integration Section (simplified)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Text(
-                    text = "App Integrations",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-
-                // Strava Integration Card
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    // Header
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Header
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_strava),
+                            contentDescription = "Strava",
+                            modifier = Modifier.size(32.dp),
+                            tint = Color.Unspecified
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Strava Integration",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    when {
+                        stravaState is StravaState.Connected -> {
+                            // Connected State (simplified)
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_check_circle),
+                                        contentDescription = "Connected",
+                                        tint = Color(0xFF6366F1),
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "Connected${if (stravaAthlete?.firstName != null) " as ${stravaAthlete?.firstName}" else ""}",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = Color(0xFF6366F1),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                // Action Buttons (simplified)
+                                if (authState.value is AuthState.Authenticated) {
+                                    Button(
+                                        onClick = onNavigateToStravaActivities,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFF6366F1)
+                                        ),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("View Activities")
+                                    }
+                                }
+
+                                Button(
+                                    onClick = {
+                                        isSyncing = true
+                                        syncMessage = "Starting sync..."
+                                        scope.launch {
+                                            try {
+                                                syncActivities()
+                                            } catch (e: Exception) {
+                                                Log.e(TAG, "Error during sync", e)
+                                                syncMessage = "Error: ${e.message}"
+                                            } finally {
+                                                isSyncing = false
+                                            }
+                                        }
+                                    },
+                                    enabled = !isSyncing,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF6366F1)
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    if (isSyncing) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(16.dp),
+                                            color = Color.White,
+                                            strokeWidth = 2.dp
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                    }
+                                    Text(if (isSyncing) "Syncing..." else "Sync Activities")
+                                }
+
+                                // Management Buttons (simplified)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    OutlinedButton(
+                                        onClick = { stravaViewModel.refreshStravaToken() },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("Refresh", style = MaterialTheme.typography.bodySmall)
+                                    }
+                                    OutlinedButton(
+                                        onClick = {
+                                            stravaViewModel.disconnect()
+                                            isConnecting = false
+                                            errorMessage = null
+                                            syncMessage = null
+                                            ftpEstimate = null
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            contentColor = MaterialTheme.colorScheme.error
+                                        ),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("Disconnect", style = MaterialTheme.typography.bodySmall)
+                                    }
+                                }
+
+                                // Performance Metrics (simplified)
+                                if (ftpEstimate != null) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(
+                                                Color(0xFFF8FAFC),
+                                                RoundedCornerShape(8.dp)
+                                            )
+                                            .padding(12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "FTP",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color(0xFF1F2937)
+                                        )
+                                        Text(
+                                            text = "${ftpEstimate!!.toInt()} W",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = Color(0xFF6366F1),
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        isConnecting -> {
+                            // Connecting State (simplified)
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(32.dp),
+                                    color = Color(0xFF6366F1),
+                                    strokeWidth = 3.dp
+                                )
+                                Text(
+                                    text = "Connecting to Strava...",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color(0xFF6366F1)
+                                )
+                            }
+                        }
+                        else -> {
+                            // Not Connected State (simplified)
+                            Button(
+                                onClick = { connectToStrava() },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF6366F1)
+                                ),
+                                shape = RoundedCornerShape(8.dp)
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_strava),
                                     contentDescription = "Strava Logo",
-                                    modifier = Modifier.size(32.dp)
+                                    modifier = Modifier.size(20.dp)
                                 )
-                                Text(
-                                    text = "Strava Integration",
-                                    style = MaterialTheme.typography.titleLarge
-                                )
-                            }
-                            
-                            // Status icon
-                            when (stravaState) {
-                                is StravaState.Connected -> {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_check_circle),
-                                        contentDescription = "Connected",
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-                                is StravaState.Connecting -> {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(24.dp),
-                                        strokeWidth = 2.dp
-                                    )
-                                }
-                                else -> {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_link),
-                                        contentDescription = "Not Connected",
-                                        tint = MaterialTheme.colorScheme.outline,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        when (stravaState) {
-                            is StravaState.Connected -> {
-                                // Connected state
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                                    ),
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                            Text(
-                                            text = "Connected as ${stravaAthlete?.firstName ?: "User"}",
-                                style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                                        )
-                                        // Buton pentru activități Strava (vizibil doar dacă userul e autentificat)
-                                        if (authState.value is AuthState.Authenticated) {
-                                            Button(
-                                                onClick = onNavigateToStravaActivities,
-                                                modifier = Modifier.fillMaxWidth(),
-                                                colors = ButtonDefaults.buttonColors(
-                                                    containerColor = Color.Gray
-                                                ),
-                                                shape = RoundedCornerShape(12.dp)
-                                            ) {
-                                                Text("Vezi activitățile din Strava")
-                                            }
-                                        }
-                                        TextButton(
-                                            onClick = { stravaViewModel.disconnect() },
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Text("Disconnect")
-                                        }
-                                        TextButton(
-                                            onClick = { stravaViewModel.refreshStravaToken() },
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Text("Refresh Token")
-                                        }
-                        }
-                    }
-                }
-                            is StravaState.Connecting -> {
-                                Column(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    CircularProgressIndicator()
-                                    Text(
-                                        "Connecting to Strava...",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            }
-                            is StravaState.Error -> {
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.errorContainer
-                                    ),
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Text(
-                                            text = (stravaState as StravaState.Error).message,
-                                            color = MaterialTheme.colorScheme.onErrorContainer
-                                        )
-                                        Button(
-                                            onClick = handleConnect,
-                                            modifier = Modifier.align(Alignment.End),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = MaterialTheme.colorScheme.error,
-                                                contentColor = MaterialTheme.colorScheme.onError
-                                            )
-                                        ) {
-                                            Text("Try Again")
-                                        }
-                                    }
-                                }
-                            }
-                            else -> {
-                                Button(
-                                    onClick = handleConnect,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Gray
-                                    ),
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.ic_strava),
-                                            contentDescription = "Strava Logo",
-                                            modifier = Modifier.size(24.dp)
-                    )
-                                        Text("Connect to Strava")
-                                    }
-                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Connect to Strava")
                             }
                         }
                     }
                 }
             }
-        }
-    }
-}
 
-@Composable
-fun IntegrationStatusCard(
-    logoResId: Int,
-    appName: String,
-    description: String,
-    isConnected: Boolean,
-    onConnectClick: () -> Unit,
-    onDisconnectClick: () -> Unit = {}
-) {
-    val borderColor = if (isConnected) Color(0xFF4CAF50) else Color.LightGray
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(2.dp, borderColor, RoundedCornerShape(12.dp))
-            .padding(8.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = logoResId),
-                    contentDescription = "$appName logo",
+            // Status Messages (simplified)
+            if (syncMessage != null) {
+                Row(
                     modifier = Modifier
-                        .height(36.dp)
-                        .padding(end = 12.dp)
-                )
-
-                Text(
-                    text = appName,
-                    style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp)
-                )
+                        .fillMaxWidth()
+                        .background(
+                            if (syncMessage!!.startsWith("✓"))
+                                Color(0xFFF0F9FF)
+                            else Color(0xFFF8FAFC),
+                            RoundedCornerShape(8.dp)
+                        )
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = syncMessage!!,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (syncMessage!!.startsWith("✓"))
+                            Color(0xFF6366F1)
+                        else Color(0xFF1F2937)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodyMedium.copy(color = Color.DarkGray)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (isConnected) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        ConnectedStatus(modifier = Modifier.size(32.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Connected", color = Color(0xFF4CAF50))
-                    }
-
-                    TextButton(onClick = onDisconnectClick) {
-                        Text("Disconnect")
-                    }
-                } else {
-                    Button(
-                        onClick = onConnectClick,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        border = ButtonDefaults.outlinedButtonBorder
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_link),
-                            contentDescription = "Connect",
-                            modifier = Modifier.size(18.dp)
+            // Error Message (simplified)
+            if (errorMessage != null) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Color(0xFFF8FAFC),
+                            RoundedCornerShape(8.dp)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Connect")
-                    }
-
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = errorMessage!!,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFFDC2626)
+                    )
                 }
             }
         }
     }
 }
-
-@Composable
-fun ConnectedStatus(modifier: Modifier = Modifier) {
-    Icon(
-        painter = painterResource(id = R.drawable.ic_check_circle),
-        contentDescription = "Connected",
-        tint = Color(0xFF4CAF50),
-        modifier = modifier
-    )
-}
-
-

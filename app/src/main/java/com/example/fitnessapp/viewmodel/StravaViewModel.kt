@@ -6,28 +6,25 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.fitnessapp.api.ApiConfig
+import com.example.fitnessapp.api.RetrofitClient
 import com.example.fitnessapp.api.StravaApiService
-import com.example.fitnessapp.model.*
+import com.example.fitnessapp.model.ActivityStreamsResponse
+import com.example.fitnessapp.model.FTPEstimate
+import com.example.fitnessapp.model.StravaActivity
+import com.example.fitnessapp.model.StravaAthlete
+import com.example.fitnessapp.model.StravaUserData
 import com.example.fitnessapp.utils.AuthManager
-import com.google.gson.Gson
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.isActive
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.net.URL
-import java.util.Date
-import kotlinx.coroutines.flow.asStateFlow
-import androidx.lifecycle.asLiveData
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.CancellationException
 
 sealed class StravaState {
     object Initial : StravaState()
@@ -46,6 +43,9 @@ class StravaViewModel(private val context: Context) : ViewModel() {
 
     private val _stravaActivities = MutableStateFlow<List<StravaActivity>>(emptyList())
     val stravaActivities: StateFlow<List<StravaActivity>> = _stravaActivities.asStateFlow()
+
+    private val _databaseActivities = MutableStateFlow<List<StravaActivity>>(emptyList())
+    val databaseActivities: StateFlow<List<StravaActivity>> = _databaseActivities.asStateFlow()
 
     private val _stravaAthlete = MutableStateFlow<StravaAthlete?>(null)
     val stravaAthlete: StateFlow<StravaAthlete?> = _stravaAthlete.asStateFlow()
@@ -105,12 +105,8 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         Log.d("STRAVA_DEBUG", "[init] isOAuthInProgress: $isOAuthInProgress")
         Log.d("STRAVA_DEBUG", "[init] justCompletedOAuth: $justCompletedOAuth")
         
-        // Initialize API service first
-        val retrofit = Retrofit.Builder()
-            .baseUrl(ApiConfig.BASE_URL) 
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        apiService = retrofit.create(StravaApiService::class.java)
+        // Use the proper RetrofitClient with configured timeouts
+        apiService = RetrofitClient.retrofit.create(StravaApiService::class.java)
         
         // Initial check only - don't start periodic checks
         Log.d("STRAVA_DEBUG", "[init] Performing initial connection check")
@@ -253,47 +249,47 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                             result
                         }
                         
-                        Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Response code: ${response.code()}")
-                        Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Response successful: ${response.isSuccessful}")
+                Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Response code: ${response.code()}")
+                Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Response successful: ${response.isSuccessful}")
+                
+                if (response.isSuccessful) {
+                    val tokenData = response.body()
+                    Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Token data received: ${tokenData != null}")
+                    
+                    if (tokenData != null && !tokenData.accessToken.isNullOrEmpty()) {
+                        Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Valid token found, setting Connected")
+                        Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Token: ${tokenData.accessToken.take(10)}...${tokenData.accessToken.takeLast(10)}")
                         
-                        if (response.isSuccessful) {
-                            val tokenData = response.body()
-                            Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Token data received: ${tokenData != null}")
-                            
-                            if (tokenData != null && !tokenData.accessToken.isNullOrEmpty()) {
-                                Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Valid token found, setting Connected")
-                                Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Token: ${tokenData.accessToken.take(10)}...${tokenData.accessToken.takeLast(10)}")
-                                
-                                // Save the token
-                                authManager.saveStravaToken(tokenData)
-                                Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Token saved to SharedPreferences")
-                                
-                                // Set connected state
-                                _stravaUserData.value = StravaUserData(
-                                    userId = authManager.getUserId() ?: 0,
-                                    stravaId = 0, // Will be updated when we get athlete data
-                                    accessToken = tokenData.accessToken,
-                                    refreshToken = tokenData.refreshToken,
-                                    tokenExpiresAt = tokenData.expiresAt
-                                )
-                                Log.d("STRAVA_DEBUG", "[checkConnectionStatus] StravaUserData created")
-                                
-                                Log.d("STRAVA_DEBUG", "[checkConnectionStatus] About to set Connected state")
-                                setStravaState(StravaState.Connected(_stravaUserData.value!!))
-                                Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Connected state set successfully")
-                                
-                                // Fetch athlete data in background
-                                Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Fetching athlete data in background")
-                                fetchAthleteData()
-                            } else {
-                                Log.d("STRAVA_DEBUG", "[checkConnectionStatus] No valid token, setting NotConnected")
-                                setStravaState(StravaState.NotConnected)
-                            }
-                        } else {
-                            Log.d("STRAVA_DEBUG", "[checkConnectionStatus] API call failed, setting NotConnected")
-                            Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Error body: ${response.errorBody()?.string()}")
-                            setStravaState(StravaState.NotConnected)
-                        }
+                        // Save the token
+                        authManager.saveStravaToken(tokenData)
+                        Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Token saved to SharedPreferences")
+                        
+                        // Set connected state
+                        _stravaUserData.value = StravaUserData(
+                            userId = authManager.getUserId() ?: 0,
+                            stravaId = 0, // Will be updated when we get athlete data
+                            accessToken = tokenData.accessToken,
+                            refreshToken = tokenData.refreshToken,
+                            tokenExpiresAt = tokenData.expiresAt
+                        )
+                        Log.d("STRAVA_DEBUG", "[checkConnectionStatus] StravaUserData created")
+                        
+                        Log.d("STRAVA_DEBUG", "[checkConnectionStatus] About to set Connected state")
+                        setStravaState(StravaState.Connected(_stravaUserData.value!!))
+                        Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Connected state set successfully")
+                        
+                        // Fetch athlete data in background
+                        Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Fetching athlete data in background")
+                        fetchAthleteData()
+                    } else {
+                        Log.d("STRAVA_DEBUG", "[checkConnectionStatus] No stored token, setting NotConnected")
+                        setStravaState(StravaState.NotConnected)
+                    }
+                } else {
+                    Log.d("STRAVA_DEBUG", "[checkConnectionStatus] API call failed, setting NotConnected")
+                    Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Error body: ${response.errorBody()?.string()}")
+                    setStravaState(StravaState.NotConnected)
+                }
                     }
                 } else {
                     Log.d("STRAVA_DEBUG", "[checkConnectionStatus] No stored token, setting NotConnected")
@@ -457,12 +453,20 @@ class StravaViewModel(private val context: Context) : ViewModel() {
     fun disconnect() {
         viewModelScope.launch {
             try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                val response = apiService.disconnectStravaAccount("Bearer $jwtToken")
+                if (response.isSuccessful && response.body()?.get("status") == "success") {
                 authManager.clearStravaToken()
                 _stravaState.value = StravaState.Initial
                 _stravaUserData.value = null
                 _stravaAthlete.value = null
                 _stravaActivities.value = emptyList()
                 expectingConnectionAfterOAuth = false
+                } else {
+                    val message = response.body()?.get("message") ?: response.errorBody()?.string() ?: "Unknown error"
+                    Log.e("StravaViewModel", "Error disconnecting from Strava: $message")
+                    _stravaState.value = StravaState.Error("Failed to disconnect: $message")
+                }
             } catch (e: Exception) {
                 Log.e("StravaViewModel", "Error disconnecting from Strava", e)
                 _stravaState.value = StravaState.Error("Failed to disconnect: ${e.message}")
@@ -479,6 +483,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 _stravaUserData.value = null
                 _stravaAthlete.value = null
                 _stravaActivities.value = emptyList()
+                _databaseActivities.value = emptyList()
                 _activitiesBySport.value = emptyMap()
                 _ftpEstimate.value = null
                 expectingConnectionAfterOAuth = false
@@ -496,6 +501,92 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 Log.d("STRAVA_DEBUG", "[forceClearAllData] Singleton instance cleared")
             } catch (e: Exception) {
                 Log.e("STRAVA_DEBUG", "[forceClearAllData] Error clearing data", e)
+            }
+        }
+    }
+
+    // Get activity by ID for detail screen
+    suspend fun getActivityById(activityId: Long): StravaActivity? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+
+                Log.d("StravaViewModel", "Looking for activity $activityId")
+                Log.d("StravaViewModel", "Live activities count: ${stravaActivities.value.size}")
+                Log.d(
+                    "StravaViewModel",
+                    "Database activities count: ${databaseActivities.value.size}"
+                )
+
+                // First check live activities
+                val liveActivity = stravaActivities.value.find { it.id?.toLong() == activityId }
+                if (liveActivity != null) {
+                    Log.d("StravaViewModel", "Found activity $activityId in live activities")
+                    return@withContext liveActivity
+                }
+
+                // If not found in live activities, check database activities
+                val currentActivities = databaseActivities.value
+                Log.d(
+                    "StravaViewModel",
+                    "Searching in ${currentActivities.size} database activities"
+                )
+                val dbActivity = currentActivities.find { it.id?.toLong() == activityId }
+                if (dbActivity != null) {
+                    Log.d("StravaViewModel", "Found activity $activityId in database activities")
+                    return@withContext dbActivity
+                }
+
+                Log.w(
+                    "StravaViewModel",
+                    "Activity $activityId not found in cache. Available IDs in live: ${stravaActivities.value.map { it.id }}"
+                )
+                Log.w(
+                    "StravaViewModel",
+                    "Available IDs in database: ${currentActivities.map { it.id }}"
+                )
+
+                // If not found in cache, try to fetch from backend
+                Log.d("StravaViewModel", "Attempting to fetch activity $activityId from backend")
+                try {
+                    // Try to get the activity's basic data by calling activities-db for a wider range
+                    // This is a fallback - in a real app you might have a specific endpoint for single activity
+                    val today =
+                        java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                            .format(java.util.Date())
+                    val oneYearAgo =
+                        java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                            .format(
+                                java.util.Date(System.currentTimeMillis() - 365L * 24 * 60 * 60 * 1000)
+                            )
+
+                    Log.d(
+                        "StravaViewModel",
+                        "Fetching activities from $oneYearAgo to $today to find activity $activityId"
+                    )
+                    val activities = getActivitiesFromDatabase(oneYearAgo, today)
+
+                    val fetchedActivity = activities.find { it.id?.toLong() == activityId }
+                    if (fetchedActivity != null) {
+                        Log.d(
+                            "StravaViewModel",
+                            "Successfully fetched activity $activityId from backend"
+                        )
+                        return@withContext fetchedActivity
+                    } else {
+                        Log.w(
+                            "StravaViewModel",
+                            "Activity $activityId not found even after fetching from backend"
+                        )
+                    }
+                } catch (e: Exception) {
+                    Log.e("StravaViewModel", "Error fetching activity $activityId from backend", e)
+                }
+
+                null
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Error getting activity by ID $activityId", e)
+                null
             }
         }
     }
@@ -723,55 +814,6 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         }
     }
 
-    fun refreshActivities() {
-        Log.d("STRAVA_DEBUG", "=== refreshActivities() STARTED ===")
-        Log.d("STRAVA_DEBUG", "[refreshActivities] Current state: ${_stravaState.value}")
-        
-        viewModelScope.launch {
-            try {
-                Log.d("STRAVA_DEBUG", "[refreshActivities] Starting activity refresh")
-                val jwtToken = authManager.getJwtToken()
-                Log.d("STRAVA_DEBUG", "[refreshActivities] JWT token exists: ${!jwtToken.isNullOrEmpty()}")
-                
-                if (jwtToken == null) {
-                    Log.e("STRAVA_DEBUG", "[refreshActivities] No JWT token")
-                    return@launch
-                }
-                
-                Log.d("STRAVA_DEBUG", "[refreshActivities] Making API call to get activities")
-                val response = withTimeout(180000) { // 3 minutes timeout for activity refresh
-                    withContext(Dispatchers.IO) {
-                        apiService.getActivities("Bearer $jwtToken").execute()
-                    }
-                }
-                
-                Log.d("STRAVA_DEBUG", "[refreshActivities] Response code: ${response.code()}")
-                Log.d("STRAVA_DEBUG", "[refreshActivities] Response successful: ${response.isSuccessful}")
-                
-                if (response.isSuccessful) {
-                    val activities = response.body() ?: emptyList()
-                    Log.d("STRAVA_DEBUG", "[refreshActivities] Activities received: ${activities.size}")
-                    _stravaActivities.value = activities
-                    Log.d("STRAVA_DEBUG", "[refreshActivities] Activities updated in state")
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("STRAVA_DEBUG", "[refreshActivities] API call failed: ${response.code()}")
-                    Log.e("STRAVA_DEBUG", "[refreshActivities] Error body: $errorBody")
-                    // Don't set error state, just log the warning
-                    Log.w("STRAVA_DEBUG", "[refreshActivities] Failed to refresh activities: $errorBody")
-                }
-            } catch (e: TimeoutCancellationException) {
-                Log.e("STRAVA_DEBUG", "[refreshActivities] Activity refresh timed out after 3 minutes", e)
-                Log.w("STRAVA_DEBUG", "[refreshActivities] Failed to refresh activities: timeout")
-            } catch (e: Exception) {
-                Log.e("STRAVA_DEBUG", "[refreshActivities] Exception during activity refresh", e)
-                // Don't set error state, just log the warning
-                Log.w("STRAVA_DEBUG", "[refreshActivities] Failed to refresh activities: ${e.message}")
-            }
-        }
-        Log.d("STRAVA_DEBUG", "=== refreshActivities() COMPLETED ===")
-    }
-
     fun fetchActivitiesBySport() {
         viewModelScope.launch {
             try {
@@ -785,43 +827,19 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         }
     }
 
-    fun fetchStravaActivities(jwtToken: String) {
-        viewModelScope.launch {
-            Log.d("STRAVA_DEBUG", "fetchStravaActivities() called with JWT: $jwtToken")
-            try {
-                val response = withTimeout(180000) { // 3 minutes timeout for activity fetch
-                    withContext(Dispatchers.IO) {
-                        apiService.getActivities("Bearer $jwtToken").execute()
-                    }
-                }
-                if (response.isSuccessful) {
-                    val activities = response.body() ?: emptyList()
-                    Log.d("STRAVA_DEBUG", "Fetched "+activities.size+" activities")
-                    _stravaActivities.value = activities
-                } else {
-                    Log.e("STRAVA_DEBUG", "Failed to fetch activities: "+response.errorBody()?.string())
-                }
-            } catch (e: TimeoutCancellationException) {
-                Log.e("STRAVA_DEBUG", "Activity fetch timed out after 3 minutes", e)
-            } catch (e: Exception) {
-                Log.e("STRAVA_DEBUG", "Exception fetching activities", e)
-            }
-        }
-    }
-
     fun syncStravaActivities() {
         val jwtToken = authManager.getJwtToken() ?: return
         viewModelScope.launch {
             try {
                 val response = apiService.syncStravaActivities("Bearer $jwtToken")
                 if (response.isSuccessful) {
-                    // Poți afișa un mesaj de succes
-                    refreshActivities()
+                    // Sync completed successfully
+                    Log.d("StravaViewModel", "Sync completed successfully")
                 } else {
-                    // Tratează eroarea
+                    Log.e("StravaViewModel", "Sync failed: ${response.errorBody()?.string()}")
                 }
             } catch (e: Exception) {
-                // Tratează excepția
+                Log.e("StravaViewModel", "Error during sync", e)
             }
         }
     }
@@ -836,10 +854,9 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                     val syncResult = response.body()
                     Log.d("StravaViewModel", "Sync check result: ${syncResult?.message}")
                     
-                    // Dacă sync-ul a fost făcut, actualizează activitățile
                     if (syncResult?.activities_synced != null && syncResult.activities_synced > 0) {
                         Log.d("StravaViewModel", "Activities synced: ${syncResult.activities_synced}")
-                        refreshActivities()
+                        // No need to refresh activities since sync-live handles this
                     } else {
                         Log.d("StravaViewModel", "No new activities to sync")
                     }
@@ -997,6 +1014,131 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         Log.d("STRAVA_DEBUG", "[resetOAuthFlags] justCompletedOAuth after: $justCompletedOAuth")
         Log.d("STRAVA_DEBUG", "[resetOAuthFlags] expectingConnectionAfterOAuth after: $expectingConnectionAfterOAuth")
         Log.d("STRAVA_DEBUG", "=== resetOAuthFlags() COMPLETED ===")
+    }
+
+    // Get activities from database for specific date range
+    suspend fun getActivitiesFromDatabase(startDate: String, endDate: String): List<StravaActivity> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                val response = apiService.getActivitiesFromDb("Bearer $jwtToken", startDate, endDate)
+                
+                if (response.isSuccessful) {
+                    val activities = response.body() ?: emptyList()
+
+                    // Update the database activities StateFlow
+                    val currentDbActivities = _databaseActivities.value.toMutableList()
+                    activities.forEach { newActivity ->
+                        // Add if not already present
+                        if (currentDbActivities.none { it.id == newActivity.id }) {
+                            currentDbActivities.add(newActivity)
+                        }
+                    }
+                    _databaseActivities.value = currentDbActivities
+
+                    Log.d(
+                        "StravaViewModel",
+                        "Got ${activities.size} activities from database for $startDate to $endDate"
+                    )
+                    activities
+                } else {
+                    Log.e(
+                        "StravaViewModel",
+                        "Failed to get activities from database: ${response.errorBody()?.string()}"
+                    )
+                    emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Error getting activities from database", e)
+                emptyList()
+            }
+        }
+    }
+
+    // Get GPX file URL for specific activity
+    suspend fun getActivityGpxUrl(activityId: Long): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                val response = apiService.getActivityGpx("Bearer $jwtToken", activityId)
+                
+                if (response.isSuccessful) {
+                    val result = response.body()
+                    if (result?.get("status") == "success") {
+                        val url = result["url"]
+                        Log.d("StravaViewModel", "Got GPX URL for activity $activityId")
+                        url
+                    } else {
+                        Log.e("StravaViewModel", "Failed to get GPX URL: ${result?.get("message")}")
+                        null
+                    }
+                } else {
+                    Log.e("StravaViewModel", "Failed to get GPX URL: ${response.errorBody()?.string()}")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Error getting GPX URL for activity $activityId", e)
+                null
+            }
+        }
+    }
+
+    // Get map view URL for specific activity
+    suspend fun getActivityMapView(activityId: Long): Map<String, String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                val response = apiService.getActivityMapView("Bearer $jwtToken", activityId)
+
+                if (response.isSuccessful) {
+                    val result = response.body() ?: emptyMap()
+                    Log.d("StravaViewModel", "Got map view data for activity $activityId: $result")
+                    result
+                } else {
+                    Log.e(
+                        "StravaViewModel",
+                        "Failed to get map view: ${response.errorBody()?.string()}"
+                    )
+                    emptyMap()
+                }
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Error getting map view for activity $activityId", e)
+                emptyMap()
+            }
+        }
+    }
+
+    // Get activity streams data for detailed analysis (DEPRECATED - using DB version instead)
+    suspend fun getActivityStreams(activityId: Long): ActivityStreamsResponse? {
+        // This method is deprecated - use getActivityStreamsFromDB instead
+        return null
+    }
+
+    // Get activity streams from database
+    suspend fun getActivityStreamsFromDB(activityId: Long): Map<String, Any> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                Log.d("StravaViewModel", "Requesting streams from DB for activity $activityId")
+
+                val response = apiService.getActivityStreamsFromDB("Bearer $jwtToken", activityId)
+                Log.d("StravaViewModel", "Streams from DB response code: ${response.code()}")
+                
+                if (response.isSuccessful) {
+                    response.body() ?: emptyMap()
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e(
+                        "StravaViewModel",
+                        "Failed to get streams from DB: HTTP ${response.code()} - $errorBody"
+                    )
+                    emptyMap()
+                }
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Error getting streams from DB for activity $activityId", e)
+                emptyMap()
+            }
+        }
     }
 }
 

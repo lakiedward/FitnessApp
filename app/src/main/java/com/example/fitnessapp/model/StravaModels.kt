@@ -309,3 +309,23 @@ data class EfficiencyTrend(
     val suggestedFTPChange: Float? = null,
     val notes: String? = null
 )
+
+data class ActivityStreamsResponse(
+    @SerializedName("activity_id")
+    val activityId: Long,
+    @SerializedName("activity_name")
+    val activityName: String,
+    @SerializedName("activity_type")
+    val activityType: String,
+    val source: String, // "database" or "strava_api"
+    val streams: Map<String, StreamData>,
+    @SerializedName("available_streams")
+    val availableStreams: List<String>
+)
+
+data class StreamData(
+    val data: List<Float>,
+    @SerializedName("data_length")
+    val dataLength: Int,
+    val resolution: Int
+)
