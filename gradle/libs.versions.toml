@@ -2,7 +2,7 @@
 
 [versions]
 playServicesAuth = "20.7.0"
-agp = "8.9.2"
+agp = "8.11.0"
 converterGson = "2.9.0"
 kotlin = "1.9.22"
 coreKtx = "1.15.0"
@@ -27,6 +27,7 @@ playServicesMaps = "19.0.0"
 compilercommon = "3.2.0-alpha11"
 playServicesFitness = "21.2.0"
 benchmarkMacro = "1.3.4"
+appcompat = "1.7.1"
 
 [libraries]
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
@@ -58,6 +59,7 @@ play-services-maps = { group = "com.google.android.gms", name = "play-services-m
 androidx-compilercommon = { group = "androidx.databinding", name = "compilerCommon", version.ref = "compilercommon" }
 play-services-fitness = { group = "com.google.android.gms", name = "play-services-fitness", version.ref = "playServicesFitness" }
 androidx-benchmark-macro = { group = "androidx.benchmark", name = "benchmark-macro", version.ref = "benchmarkMacro" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

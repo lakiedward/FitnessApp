@@ -20,6 +20,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.api.ApiService
+import com.example.fitnessapp.api.RetrofitClient
 import com.example.fitnessapp.model.ChoosedSports
 import com.example.fitnessapp.model.UserDetalis
 import com.example.fitnessapp.pages.LoginScreen
@@ -49,6 +51,7 @@ import com.example.fitnessapp.pages.strava.StravaActivitiesScreen
 import com.example.fitnessapp.pages.strava.StravaSyncLoadingScreen
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.viewmodel.AuthViewModel
+import com.example.fitnessapp.viewmodel.HealthConnectViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModel
 import kotlinx.coroutines.launch
 
@@ -56,6 +59,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var authViewModel: AuthViewModel
     private val stravaViewModel: StravaViewModel by lazy {
         StravaViewModel.getInstance(applicationContext)
+    }
+    private val healthConnectViewModel: HealthConnectViewModel by lazy {
+        HealthConnectViewModel.getInstance(applicationContext)
     }
 
     // Variabilă pentru codul Strava primit când userul nu e logat
@@ -91,7 +97,14 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val userDetalis = remember { mutableStateOf(UserDetalis(0, 0f, 0f, "", "")) }
                 val choosedSports = remember { mutableStateOf(ChoosedSports()) }
-                AppNavigation(navController, authViewModel, userDetalis, choosedSports, stravaViewModel)
+                AppNavigation(
+                    navController,
+                    authViewModel,
+                    userDetalis,
+                    choosedSports,
+                    stravaViewModel,
+                    healthConnectViewModel
+                )
             }
         }
     }
@@ -159,7 +172,8 @@ fun AppNavigation(
     authViewModel: AuthViewModel,
     userDetalis: MutableState<UserDetalis>,
     choosedSports: MutableState<ChoosedSports>,
-    stravaViewModel: StravaViewModel
+    stravaViewModel: StravaViewModel,
+    healthConnectViewModel: HealthConnectViewModel
 ) {
     NavHost(navController = navController, startDestination = "login_screen") {
         composable("login_screen") {
@@ -170,10 +184,10 @@ fun AppNavigation(
         }
         composable("app_integrations") {
             AppIntegrationsScreen(
-                onNavigateToStravaActivities = { navController.navigate("strava_activities") },
                 authViewModel = authViewModel,
                 stravaViewModel = stravaViewModel,
-                navController = navController
+                healthConnectViewModel = healthConnectViewModel,
+                apiService = RetrofitClient.retrofit.create(ApiService::class.java)
             )
         }
         composable("add_age_screen") {

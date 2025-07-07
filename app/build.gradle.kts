@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.fitnessapp"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -36,6 +36,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -44,18 +45,20 @@ android {
         compose = true
     }
     composeOptions {
-             kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-        }
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+    }
 }
 
 dependencies {
 
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     val composeBom = platform("androidx.compose:compose-bom:2024.02.00")
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
     // Core Android
     implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
 
@@ -87,6 +90,9 @@ dependencies {
     // Google Fit & Auth
     implementation("com.google.android.gms:play-services-fitness:21.1.0")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    // Health Connect
+    implementation("androidx.health.connect:connect-client:1.2.0-alpha02")
 
     // Coil (image loading)
     implementation("io.coil-kt:coil-compose:2.5.0")

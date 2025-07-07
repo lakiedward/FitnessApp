@@ -58,6 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.mock.SharedPreferencesMock
 import com.example.fitnessapp.viewmodel.AuthViewModel
@@ -475,7 +476,18 @@ private fun ErrorCard(errorMessage: String, homeViewModel: HomeViewModel) {
 }
 
 @Composable
-private fun ModernBottomNavigation(navController: NavController) {
+fun ModernBottomNavigation(navController: NavController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val navigationItems = mapOf(
+        "home_screen" to (Icons.Filled.Home to "Home"),
+        "calendar_screen" to (Icons.Filled.CalendarToday to "Calendar"),
+        "training_plans" to (Icons.Filled.Assignment to "Plans"),
+        "profile" to (Icons.Filled.Person to "Profile"),
+        "more" to (Icons.Filled.MoreHoriz to "More")
+    )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -491,42 +503,31 @@ private fun ModernBottomNavigation(navController: NavController) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BottomNavItem(
-                icon = Icons.Filled.Home,
-                label = "Home",
-                isSelected = true,
-                onClick = { /* Already on home */ }
-            )
-            BottomNavItem(
-                icon = Icons.Filled.CalendarToday,
-                label = "Calendar",
-                isSelected = false,
-                onClick = { navController.navigate("calendar_screen") }
-            )
-            BottomNavItem(
-                icon = Icons.Filled.Assignment,
-                label = "Plans",
-                isSelected = false,
-                onClick = { navController.navigate("training_plans") }
-            )
-            BottomNavItem(
-                icon = Icons.Filled.Person,
-                label = "Profile",
-                isSelected = false,
-                onClick = { navController.navigate("profile") }
-            )
-            BottomNavItem(
-                icon = Icons.Filled.MoreHoriz,
-                label = "More",
-                isSelected = false,
-                onClick = { navController.navigate("more") }
-            )
+            navigationItems.forEach { (route, C) ->
+                val (icon, label) = C
+                BottomNavItem(
+                    icon = icon,
+                    label = label,
+                    isSelected = currentRoute == route,
+                    onClick = {
+                        navController.navigate(route) {
+                            navController.graph.startDestinationRoute?.let { startDestinationRoute ->
+                                popUpTo(startDestinationRoute) {
+                                    saveState = true
+                                }
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun BottomNavItem(
+fun BottomNavItem(
     icon: ImageVector,
     label: String,
     isSelected: Boolean,

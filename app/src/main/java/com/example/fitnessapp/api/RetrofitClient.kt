@@ -15,9 +15,9 @@ object RetrofitClient {
 
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(logging)
-        .connectTimeout(180, TimeUnit.SECONDS)
-        .readTimeout(180, TimeUnit.SECONDS)
-        .writeTimeout(180, TimeUnit.SECONDS)
+        .connectTimeout(300, TimeUnit.SECONDS)  // 5 minutes - increased for batch processing
+        .readTimeout(300, TimeUnit.SECONDS)     // 5 minutes - increased for batch processing
+        .writeTimeout(300, TimeUnit.SECONDS)    // 5 minutes - increased for batch processing
         .build()
 
     val retrofit: Retrofit by lazy {

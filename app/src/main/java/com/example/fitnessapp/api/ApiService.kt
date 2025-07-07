@@ -3,6 +3,13 @@ package com.example.fitnessapp.api
 
 import com.example.fitnessapp.model.CyclingFtpResponse
 import com.example.fitnessapp.model.DetaliiUserCycling
+import com.example.fitnessapp.model.DeleteActivityResponse
+import com.example.fitnessapp.model.HealthConnectActivity
+import com.example.fitnessapp.model.HealthConnectStats
+import com.example.fitnessapp.model.HealthConnectSyncRequest
+import com.example.fitnessapp.model.HealthConnectSyncResponse
+import com.example.fitnessapp.model.LastSyncResponse
+import com.example.fitnessapp.model.ManualSyncRequest
 import com.example.fitnessapp.model.PacePredictions
 import com.example.fitnessapp.model.RacesModelResponse
 import com.example.fitnessapp.model.RunningFtpResponse
@@ -21,11 +28,13 @@ import com.example.fitnessapp.model.UserWeekAvailability
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -138,4 +147,42 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body trainingDateUpdate: TrainingDateUpdate
     ): Response<Map<String, String>>
+
+    // Health Connect endpoints
+    @POST("health-connect/sync-activities")
+    suspend fun syncHealthConnectActivities(
+        @Header("Authorization") token: String,
+        @Body syncRequest: HealthConnectSyncRequest
+    ): Response<HealthConnectSyncResponse>
+
+    @GET("health-connect/last-sync")
+    suspend fun getLastHealthConnectSync(
+        @Header("Authorization") token: String
+    ): Response<LastSyncResponse>
+
+    @POST("health-connect/manual-sync")
+    suspend fun triggerManualHealthConnectSync(
+        @Header("Authorization") token: String,
+        @Body syncRequest: HealthConnectSyncRequest
+    ): Response<HealthConnectSyncResponse>
+
+    @GET("health-connect/activities")
+    suspend fun getHealthConnectActivities(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int = 1,
+        @Query("per_page") perPage: Int = 20,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null
+    ): Response<List<HealthConnectActivity>>
+
+    @GET("health-connect/stats")
+    suspend fun getHealthConnectStats(
+        @Header("Authorization") token: String
+    ): Response<HealthConnectStats>
+
+    @DELETE("health-connect/activities/{activityId}")
+    suspend fun deleteHealthConnectActivity(
+        @Header("Authorization") token: String,
+        @Path("activityId") activityId: String
+    ): Response<DeleteActivityResponse>
 }

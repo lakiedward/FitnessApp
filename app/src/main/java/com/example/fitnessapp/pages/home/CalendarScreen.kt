@@ -27,17 +27,12 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Assignment
-import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Pool
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.SportsHandball
@@ -70,7 +65,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -111,6 +105,7 @@ fun InfiniteCalendarPage(
     val stravaActivities by stravaViewModel.stravaActivities.collectAsState()
 
     // Maintain state for database activities
+    var isInitialLoading by remember { mutableStateOf(true) }
     var databaseActivities by remember { mutableStateOf<List<StravaActivity>>(emptyList()) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -130,26 +125,40 @@ fun InfiniteCalendarPage(
     var selectedActivityId by remember { mutableStateOf<Long?>(null) }
 
     // Function to calculate date range based on visible items and fetch activities
-    fun loadActivitiesForDateRange() {
+    fun loadActivitiesForDateRange(isInitialLoad: Boolean, onFinished: () -> Unit = {}) {
         coroutineScope.launch {
             try {
-                // Calculate date range based on current visible area plus buffer
-                val firstVisibleIndex = listState.firstVisibleItemIndex
-                val visibleItemCount = listState.layoutInfo.visibleItemsInfo.size
+                val startCalendar: Calendar
+                val endCalendar: Calendar
                 val bufferDays = 30 // Load 30 days before and after visible area
 
-                // Calculate start and end dates
-                val startIndex = firstVisibleIndex - bufferDays
-                val endIndex = firstVisibleIndex + visibleItemCount + bufferDays
+                if (isInitialLoad) {
+                    // For the initial load, calculate range around today without using listState
+                    startCalendar = Calendar.getInstance().apply {
+                        time = today.time
+                        add(Calendar.DAY_OF_MONTH, -bufferDays)
+                    }
+                    endCalendar = Calendar.getInstance().apply {
+                        time = today.time
+                        add(Calendar.DAY_OF_MONTH, bufferDays)
+                    }
+                } else {
+                    // For subsequent loads, use the listState to determine the visible range
+                    val firstVisibleIndex = listState.firstVisibleItemIndex
+                    val visibleItemCount = listState.layoutInfo.visibleItemsInfo.size
 
-                val startCalendar = Calendar.getInstance().apply {
-                    time = today.time
-                    add(Calendar.DAY_OF_MONTH, (startIndex - Int.MAX_VALUE / 2).toInt())
-                }
+                    val startIndex = firstVisibleIndex - bufferDays
+                    val endIndex = firstVisibleIndex + visibleItemCount + bufferDays
 
-                val endCalendar = Calendar.getInstance().apply {
-                    time = today.time
-                    add(Calendar.DAY_OF_MONTH, (endIndex - Int.MAX_VALUE / 2).toInt())
+                    startCalendar = Calendar.getInstance().apply {
+                        time = today.time
+                        add(Calendar.DAY_OF_MONTH, (startIndex - Int.MAX_VALUE / 2).toInt())
+                    }
+
+                    endCalendar = Calendar.getInstance().apply {
+                        time = today.time
+                        add(Calendar.DAY_OF_MONTH, (endIndex - Int.MAX_VALUE / 2).toInt())
+                    }
                 }
 
                 val startDate =
@@ -166,18 +175,22 @@ fun InfiniteCalendarPage(
                 Log.d("CalendarScreen", "Loaded ${activities.size} activities from database")
             } catch (e: Exception) {
                 Log.e("CalendarScreen", "Error loading activities for date range", e)
+            } finally {
+                onFinished()
             }
         }
     }
 
     // Load initial activities when the component is first created
     LaunchedEffect(Unit) {
-        loadActivitiesForDateRange()
+        loadActivitiesForDateRange(isInitialLoad = true, onFinished = { isInitialLoading = false })
     }
 
     // Load more activities when scroll position changes significantly
     LaunchedEffect(listState.firstVisibleItemIndex) {
-        loadActivitiesForDateRange()
+        if (!isInitialLoading) {
+            loadActivitiesForDateRange(isInitialLoad = false)
+        }
     }
 
     Scaffold(
@@ -200,104 +213,120 @@ fun InfiniteCalendarPage(
                     )
                 )
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                // Header
-                CalendarHeader(today, listState, coroutineScope)
-
-                // Calendar Content
-                Card(
+            if (isInitialLoading) {
+                Column(
                     modifier = Modifier.fillMaxSize(),
-                    shape = RoundedCornerShape(24.dp, 24.dp, 0.dp, 0.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    LazyColumn(
-                        state = listState,
+                    androidx.compose.material3.CircularProgressIndicator(color = Color.White)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Loading calendar activities...",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    // Header
+                    CalendarHeader(today, listState, coroutineScope)
+
+                    // Calendar Content
+                    Card(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        shape = RoundedCornerShape(24.dp, 24.dp, 0.dp, 0.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
-                        items(Int.MAX_VALUE) { index ->
-                            val calendar = Calendar.getInstance().apply {
-                                time = today.time
-                                add(
-                                    Calendar.DAY_OF_MONTH,
-                                    (index - Int.MAX_VALUE / 2).toInt()
-                                )
-                            }
-                            val trainingForDay = trainingPlans.find {
-                                it.date == SimpleDateFormat(
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(Int.MAX_VALUE) { index ->
+                                val calendar = Calendar.getInstance().apply {
+                                    time = today.time
+                                    add(
+                                        Calendar.DAY_OF_MONTH,
+                                        (index - Int.MAX_VALUE / 2).toInt()
+                                    )
+                                }
+                                val trainingForDay = trainingPlans.find {
+                                    it.date == SimpleDateFormat(
+                                        "yyyy-MM-dd",
+                                        Locale.getDefault()
+                                    ).format(calendar.time)
+                                }
+
+                                // Combined search: first from live activities, then from database activities
+                                val dayDateString = SimpleDateFormat(
                                     "yyyy-MM-dd",
                                     Locale.getDefault()
                                 ).format(calendar.time)
-                            }
 
-                            // Combined search: first from live activities, then from database activities
-                            val dayDateString = SimpleDateFormat(
-                                "yyyy-MM-dd",
-                                Locale.getDefault()
-                            ).format(calendar.time)
-
-                            val stravaForDay = stravaActivities.find { activity ->
-                                val activityDate = try {
-                                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                                        .format(
-                                            SimpleDateFormat(
-                                                "yyyy-MM-dd'T'HH:mm:ss'Z'",
-                                                Locale.getDefault()
+                                val stravaForDay = stravaActivities.find { activity ->
+                                    val activityDate = try {
+                                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                            .format(
+                                                SimpleDateFormat(
+                                                    "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                                    Locale.getDefault()
+                                                )
+                                                    .parse(activity.startDate)
+                                                    ?: activity.startDate
                                             )
-                                                .parse(activity.startDate)
-                                                ?: activity.startDate
-                                        )
-                                } catch (e: Exception) {
-                                    // Fallback: try to extract date directly if it's already in the right format
-                                    activity.startDate.take(10)
-                                }
-                                activityDate == dayDateString
-                            } ?: databaseActivities.find { activity ->
-                                val activityDate = try {
-                                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                                        .format(
-                                            SimpleDateFormat(
-                                                "yyyy-MM-dd'T'HH:mm:ss'Z'",
-                                                Locale.getDefault()
+                                    } catch (e: Exception) {
+                                        // Fallback: try to extract date directly if it's already in the right format
+                                        activity.startDate.take(10)
+                                    }
+                                    activityDate == dayDateString
+                                } ?: databaseActivities.find { activity ->
+                                    val activityDate = try {
+                                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                            .format(
+                                                SimpleDateFormat(
+                                                    "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                                    Locale.getDefault()
+                                                )
+                                                    .parse(activity.startDate)
+                                                    ?: activity.startDate
                                             )
-                                                .parse(activity.startDate)
-                                                ?: activity.startDate
-                                        )
-                                } catch (e: Exception) {
-                                    // Fallback: try to extract date directly if it's already in the right format
-                                    activity.startDate.take(10)
+                                    } catch (e: Exception) {
+                                        // Fallback: try to extract date directly if it's already in the right format
+                                        activity.startDate.take(10)
+                                    }
+                                    activityDate == dayDateString
                                 }
-                                activityDate == dayDateString
-                            }
 
-                            ModernCalendarDayItem(
-                                day = calendar.time,
-                                isToday = isSameDay(calendar.time, today.time),
-                                training = trainingForDay,
-                                stravaActivity = stravaForDay,
-                                navController = navController,
-                                stravaViewModel = stravaViewModel,
-                                onDateClick = {
-                                    if (trainingForDay != null) {
-                                        selectedTrainingPlan = trainingForDay
-                                        showDatePicker = true
+                                ModernCalendarDayItem(
+                                    day = calendar.time,
+                                    isToday = isSameDay(calendar.time, today.time),
+                                    training = trainingForDay,
+                                    stravaActivity = stravaForDay,
+                                    navController = navController,
+                                    stravaViewModel = stravaViewModel,
+                                    onDateClick = {
+                                        if (trainingForDay != null) {
+                                            selectedTrainingPlan = trainingForDay
+                                            showDatePicker = true
+                                        }
+                                    },
+                                    onTrainingClick = {
+                                        if (trainingForDay != null) {
+                                            navController.navigate("loading_training/${trainingForDay.id}")
+                                        }
+                                    },
+                                    onMapClick = { activityId ->
+                                        selectedActivityId = activityId
+                                        showMapDialog = true
                                     }
-                                },
-                                onTrainingClick = {
-                                    if (trainingForDay != null) {
-                                        navController.navigate("loading_training/${trainingForDay.id}")
-                                    }
-                                },
-                                onMapClick = { activityId ->
-                                    selectedActivityId = activityId
-                                    showMapDialog = true
-                                }
-                            )
+                                )
+                            }
                         }
                     }
                 }
@@ -449,85 +478,6 @@ fun StravaMapDialog(
     }
 }
 
-@Composable
-private fun ModernBottomNavigation(navController: NavController) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            BottomNavItem(
-                icon = Icons.Filled.Home,
-                label = "Home",
-                isSelected = false,
-                onClick = { navController.navigate("home_screen") }
-            )
-            BottomNavItem(
-                icon = Icons.Filled.CalendarToday,
-                label = "Calendar",
-                isSelected = true,
-                onClick = { /* Already on calendar */ }
-            )
-            BottomNavItem(
-                icon = Icons.Filled.Assignment,
-                label = "Plans",
-                isSelected = false,
-                onClick = { navController.navigate("training_plans") }
-            )
-            BottomNavItem(
-                icon = Icons.Filled.Person,
-                label = "Profile",
-                isSelected = false,
-                onClick = { navController.navigate("profile") }
-            )
-            BottomNavItem(
-                icon = Icons.Filled.MoreHoriz,
-                label = "More",
-                isSelected = false,
-                onClick = { navController.navigate("more") }
-            )
-        }
-    }
-}
-
-@Composable
-private fun BottomNavItem(
-    icon: ImageVector,
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable { onClick() }
-            .padding(8.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            modifier = Modifier.size(24.dp),
-            tint = if (isSelected) Color(0xFF6366F1) else Color(0xFF9CA3AF)
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-            color = if (isSelected) Color(0xFF6366F1) else Color(0xFF9CA3AF)
-        )
-    }
-}
 
 @Composable
 private fun CalendarHeader(

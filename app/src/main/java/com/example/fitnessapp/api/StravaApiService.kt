@@ -147,4 +147,10 @@ interface StravaApiService {
         @Header("Authorization") jwtToken: String,
         @Path("activity_id") activityId: Long
     ): retrofit2.Response<Map<String, Any>>
+
+    @GET("strava/activity/{activity_id}/power-curve")
+    suspend fun getActivityPowerCurve(
+        @Header("Authorization") jwtToken: String,
+        @Path("activity_id") activityId: Long
+    ): retrofit2.Response<com.example.fitnessapp.model.PowerCurveResponse>
 }

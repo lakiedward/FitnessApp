@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
@@ -87,7 +88,9 @@ fun ActivityChartsComponent(
     var showPower by remember { mutableStateOf(true) }
     var showHr by remember { mutableStateOf(true) }
     var showCad by remember { mutableStateOf(true) }
-    
+
+    val chartPadding = 16.dp
+
     // Load streams data on component creation
     LaunchedEffect(activityId) {
         scope.launch {
@@ -115,6 +118,12 @@ fun ActivityChartsComponent(
 
     // Use Column layout to ensure proper ordering: Chart first, then card content
     Column(modifier = modifier.fillMaxWidth()) {
+        selectedMarker?.let { marker ->
+            MinimalistMarkerDisplay(
+                markerData = marker
+            )
+        }
+
         // Chart section with highest z-index
         if (!isLoading && combinedMetrics != null) {
             Box(
@@ -143,17 +152,12 @@ fun ActivityChartsComponent(
                                         return@detectTapGestures
                                     }
 
-                                    val paddingPx = with(density) { 60.dp.toPx() }
+                                    val paddingPx = with(density) { chartPadding.toPx() }
                                     val chartWidth = size.width - 2 * paddingPx
 
-                                    // Check if tap is outside the drawable chart area, if so, dismiss marker
-                                    if (offset.x < paddingPx || offset.x > size.width - paddingPx) {
-                                        selectedMarker = null
-                                        return@detectTapGestures
-                                    }
-
                                     // Find the index in the original data corresponding to the tap position
-                                    val progress = (offset.x - paddingPx) / chartWidth
+                                    val progress =
+                                        ((offset.x - paddingPx) / chartWidth).coerceIn(0f, 1f)
                                     val dataSize = combinedMetrics!!.time.size
                                     val index = (progress * (dataSize - 1))
                                         .roundToInt()
@@ -184,7 +188,8 @@ fun ActivityChartsComponent(
                             showPower = showPower,
                             showHeartRate = showHr,
                             showCadence = showCad,
-                            selectedMarker = selectedMarker
+                            selectedMarker = selectedMarker,
+                            chartPadding = with(density) { chartPadding.toPx() }
                         )
                     }
                 }
@@ -218,28 +223,6 @@ fun ActivityChartsComponent(
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF1F2937) // Dark text for light theme
                     )
-
-                    // Data source indicator
-                    if (dataSource != null) {
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (dataSource == "database") {
-                                    Color(0xFF059669)
-                                } else {
-                                    Color(0xFFF59E0B)
-                                }
-                            ),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Text(
-                                text = dataSource?.uppercase() ?: "",
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -325,22 +308,6 @@ private fun ChartContent(
     )
 
     Spacer(modifier = Modifier.height(16.dp))
-
-    // Chart stats section
-    ChartStatsSection(
-        metrics = metrics,
-        showPower = showPower,
-        showHeartRate = showHeartRate,
-        showCadence = showCadence
-    )
-
-    // Advanced Marker Card
-    if (selectedMarker != null) {
-        AdvancedMarkerCard(
-            markerData = selectedMarker,
-            onDismiss = onDismissMarker
-        )
-    }
 }
 
 @Composable
@@ -393,109 +360,19 @@ private fun MetricFilterRow(
 }
 
 @Composable
-private fun ChartStatsSection(
-    metrics: CombinedMetrics,
-    showPower: Boolean,
-    showHeartRate: Boolean,
-    showCadence: Boolean
+private fun MinimalistMarkerDisplay(
+    markerData: AdvancedMarkerData
 ) {
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF8FAFC) // Slightly lighter background for depth
-        ),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Chart Summary",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1F2937) // Dark text
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Show active metrics
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                if (showPower && metrics.power?.isNotEmpty() == true) {
-                    MetricBadge(
-                        "Avg Power",
-                        Color(0xFFFF6B35),
-                        metrics.power.average().toInt().toString(),
-                        "W"
-                    )
-                }
-                if (showHeartRate && metrics.heartRate?.isNotEmpty() == true) {
-                    MetricBadge(
-                        "Avg HR",
-                        Color(0xFFEF4444),
-                        metrics.heartRate.average().toInt().toString(),
-                        "bpm"
-                    )
-                }
-                if (showCadence && metrics.cadence?.isNotEmpty() == true) {
-                    MetricBadge(
-                        "Avg Cadence",
-                        Color(0xFF22C55E),
-                        metrics.cadence.average().toInt().toString(),
-                        "rpm"
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun MetricBadge(
-    label: String,
-    color: Color,
-    value: String,
-    unit: String
-) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.1f)),
-        shape = RoundedCornerShape(6.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = color,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = "$value $unit",
-                style = MaterialTheme.typography.labelSmall,
-                color = color.copy(alpha = 0.9f)
-            )
-        }
-    }
-}
-
-@Composable
-private fun AdvancedMarkerCard(
-    markerData: AdvancedMarkerData,
-    onDismiss: () -> Unit
-) {
-    Card(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.Start
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -517,19 +394,14 @@ private fun AdvancedMarkerCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
                 MetricDisplay("Power", markerData.power, Color(0xFFFF6B35))
                 MetricDisplay("HR", markerData.heartRate, Color(0xFFEF4444))
                 MetricDisplay("Cadence", markerData.cadence, Color(0xFF22C55E))
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "X Position: ${markerData.xPosition.toInt()}px",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color(0xFF6B7280)
-            )
         }
     }
 }
@@ -571,126 +443,160 @@ private fun DrawScope.drawTrainerRoadStyleChart(
     showPower: Boolean,
     showHeartRate: Boolean,
     showCadence: Boolean,
-    selectedMarker: AdvancedMarkerData?
+    selectedMarker: AdvancedMarkerData?,
+    chartPadding: Float
 ) {
-    val padding = 60f
-    // Draw vertical marker line if a marker is selected
+    val chartWidth = size.width - 2 * chartPadding
+    val chartHeight = size.height - 2 * chartPadding
+
+    val gridColor = Color(0xFFD1D5DB)
+    val axisColor = Color(0xFF9CA3AF)
+
+    for (i in 0..4) {
+        val y = chartPadding + (i.toFloat() / 4) * chartHeight
+        drawLine(
+            color = if (i == 0 || i == 4) axisColor else gridColor,
+            start = Offset(chartPadding, y),
+            end = Offset(size.width - chartPadding, y),
+            strokeWidth = if (i == 0 || i == 4) 1f else 0.5f
+        )
+    }
+
+    val timeData = metrics.time
+    if (timeData.isNotEmpty()) {
+        val maxTime = timeData.maxOrNull() ?: 0f
+        val timeStep = 600f
+        var currentTime = 0f
+
+        while (currentTime <= maxTime) {
+            val progress = currentTime / maxTime
+            val x = chartPadding + progress * chartWidth
+            drawLine(
+                color = gridColor.copy(alpha = 0.6f),
+                start = Offset(x, chartPadding),
+                end = Offset(x, size.height - chartPadding),
+                strokeWidth = 0.5f
+            )
+            currentTime += timeStep
+        }
+    }
+
     selectedMarker?.let { marker ->
-        val x = marker.xPosition.coerceIn(padding, size.width - padding)
+        val x = marker.xPosition.coerceIn(chartPadding, size.width - chartPadding)
         drawLine(
-            color = Color.Gray.copy(alpha = 0.7f),
-            start = Offset(x, padding),
-            end = Offset(x, size.height - padding),
-            strokeWidth = 2f,
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 10f), 0f)
+            color = Color(0xFF1F2937).copy(alpha = 0.8f),
+            start = Offset(x, chartPadding),
+            end = Offset(x, size.height - chartPadding),
+            strokeWidth = 2.5f,
+            pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f), 0f)
         )
     }
 
-    // Draw subtle grid lines
-    val gridColor = Color(0xFFE5E7EB)
-    for (i in 1 until 5) {
-        val y = padding + (i.toFloat() / 5) * (size.height - 2 * padding)
-        drawLine(
-            color = gridColor,
-            start = Offset(padding, y),
-            end = Offset(size.width - padding, y),
-            strokeWidth = 0.5f
-        )
-    }
-
-    // Draw actual metric curves
     if (showPower && metrics.power != null) {
-        drawMetricCurve(
+        drawEnhancedMetricCurve(
             data = metrics.power,
             color = Color(0xFFFF6B35),
-            chartWidth = size.width - 2 * padding,
-            chartHeight = size.height - 2 * padding,
-            padding = padding
+            fillColor = Color(0xFFFF6B35).copy(alpha = 0.1f),
+            chartWidth = chartWidth,
+            chartHeight = chartHeight,
+            padding = chartPadding,
+            drawFill = true
         )
     }
 
     if (showHeartRate && metrics.heartRate != null) {
-        drawMetricCurve(
+        drawEnhancedMetricCurve(
             data = metrics.heartRate,
             color = Color(0xFFEF4444),
-            chartWidth = size.width - 2 * padding,
-            chartHeight = size.height - 2 * padding,
-            padding = padding
+            fillColor = Color(0xFFEF4444).copy(alpha = 0.08f),
+            chartWidth = chartWidth,
+            chartHeight = chartHeight,
+            padding = chartPadding,
+            drawFill = false
         )
     }
 
     if (showCadence && metrics.cadence != null) {
-        drawMetricCurve(
+        drawEnhancedMetricCurve(
             data = metrics.cadence,
             color = Color(0xFF22C55E),
-            chartWidth = size.width - 2 * padding,
-            chartHeight = size.height - 2 * padding,
-            padding = padding
+            fillColor = Color(0xFF22C55E).copy(alpha = 0.08f),
+            chartWidth = chartWidth,
+            chartHeight = chartHeight,
+            padding = chartPadding,
+            drawFill = false
         )
     }
 }
 
-/**
- * Processes and draws a single metric curve on the canvas.
- *
- * This function performs the following steps:
- * 1. **Smoothing**: Applies a 60-second moving average to reduce noise.
- * 2. **Down-sampling**: Reduces the number of points to a maximum of 600 for performance.
- * 3. **Normalization**: Scales the data to a 0.0-0.8 range to fit visually within the chart,
- *    similar to the TrainerRoad style.
- * 4. **Drawing**: Renders the processed data as a smooth curve on the canvas.
- */
-private fun DrawScope.drawMetricCurve(
+private fun DrawScope.drawEnhancedMetricCurve(
     data: List<Float>,
     color: Color,
+    fillColor: Color,
     chartWidth: Float,
     chartHeight: Float,
-    padding: Float
+    padding: Float,
+    drawFill: Boolean = false
 ) {
-    val maxPoints = 600
-    val smoothWindow = 60
+    val maxPoints = 400
+    val smoothWindow = 15
 
     if (data.size < 2) return
 
-    // 1. Smoothing (moving average)
     val smoothed = data.windowed(size = smoothWindow, step = 1, partialWindows = true) {
         it.average().toFloat()
     }
 
-    // 2. Down-sampling
     val factor = (smoothed.size.toFloat() / maxPoints).coerceAtLeast(1f).toInt()
     val sampled = smoothed.chunked(factor) { it.average().toFloat() }
 
-    // 3. Normalization (0 - 0.8)
     val minVal = sampled.minOrNull() ?: 0f
     val maxVal = sampled.maxOrNull() ?: 1f
+    val range = maxVal - minVal
 
-    if (maxVal == minVal) return // Avoid division by zero and drawing a flat line at the bottom
+    if (range == 0f) return
 
     val path = Path()
+    val fillPath = Path()
 
     sampled.forEachIndexed { index, value ->
-        // Normalize the value to a 0.0 - 0.8 range
-        val normalizedValue = ((value - minVal) / (maxVal - minVal)) * 0.8f
-
-        // Calculate x and y coordinates on the canvas
+        val normalizedValue = 0.1f + ((value - minVal) / range) * 0.8f
         val x = padding + (index.toFloat() / (sampled.size - 1).coerceAtLeast(1)) * chartWidth
         val y = padding + chartHeight - (normalizedValue * chartHeight)
 
         if (index == 0) {
             path.moveTo(x, y)
+            if (drawFill) {
+                fillPath.moveTo(x, padding + chartHeight)
+                fillPath.lineTo(x, y)
+            }
         } else {
             path.lineTo(x, y)
+            if (drawFill) {
+                fillPath.lineTo(x, y)
+            }
         }
     }
 
-    // Draw the final path
+    if (drawFill && sampled.isNotEmpty()) {
+        val lastX = padding + chartWidth
+        val bottomY = padding + chartHeight
+        fillPath.lineTo(lastX, bottomY)
+        fillPath.close()
+
+        drawPath(
+            path = fillPath,
+            color = fillColor
+        )
+    }
+
     drawPath(
         path = path,
-        color = color.copy(alpha = 140f / 255f), // Alpha = 140 as specified
+        color = color.copy(alpha = 0.9f),
         style = Stroke(
-            width = 1.5f, // lineWidth = 1.2f as specified
-            cap = StrokeCap.Round
+            width = 2.2f,
+            cap = StrokeCap.Round,
+            join = StrokeJoin.Round
         )
     )
 }

@@ -329,3 +329,35 @@ data class StreamData(
     val dataLength: Int,
     val resolution: Int
 )
+
+data class PowerCurveResponse(
+    @SerializedName("activity_info")
+    val activityInfo: PowerCurveActivityInfo,
+    @SerializedName("power_curve")
+    val powerCurve: PowerCurveData,
+    @SerializedName("reference_data")
+    val referenceData: PowerCurveReferenceData
+)
+
+data class PowerCurveActivityInfo(
+    val id: Long,
+    val name: String,
+    val date: String, // ISO format: "2024-01-15T08:30:00Z"
+    val type: String // "Ride", "VirtualRide"
+)
+
+data class PowerCurveData(
+    val intervals: List<Int>, // [1, 5, 10, 20, 30, 60, 120, 300, 600, 1200, 1800, 3600]
+    val labels: List<String>, // ["1s", "5s", "10s", "20s", "30s", "1m", "2m", "5m", "10m", "20m", "30m", "1h"]
+    @SerializedName("power_values")
+    val powerValues: List<Double>, // [896, 521, 389, 355, 326, 252, 176, 169, 148, 139, 132, 114]
+    @SerializedName("hr_values")
+    val hrValues: List<Double?> // [108, 105, 118, 123, 127, 127, 126, 136, 133, 130, 129, 123]
+)
+
+data class PowerCurveReferenceData(
+    @SerializedName("user_ftp")
+    val userFtp: Double?, // 250
+    @SerializedName("power_zones")
+    val powerZones: List<Double> // [125, 150, 187, 225, 262, 312, 375] (Zone 1-7)
+)

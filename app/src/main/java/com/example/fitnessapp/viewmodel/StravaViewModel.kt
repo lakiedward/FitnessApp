@@ -1140,6 +1140,35 @@ class StravaViewModel(private val context: Context) : ViewModel() {
             }
         }
     }
+
+    // Get power curve data for cycling activities
+    suspend fun getActivityPowerCurve(activityId: Long): com.example.fitnessapp.model.PowerCurveResponse? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                Log.d("StravaViewModel", "Requesting power curve for activity $activityId")
+
+                val response = apiService.getActivityPowerCurve("Bearer $jwtToken", activityId)
+                Log.d("StravaViewModel", "Power curve response code: ${response.code()}")
+
+                if (response.isSuccessful) {
+                    val powerCurve = response.body()
+                    Log.d("StravaViewModel", "Power curve data received for activity $activityId")
+                    powerCurve
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e(
+                        "StravaViewModel",
+                        "Failed to get power curve: HTTP ${response.code()} - $errorBody"
+                    )
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Error getting power curve for activity $activityId", e)
+                null
+            }
+        }
+    }
 }
 
 class StravaViewModelFactory(private val context: Context) : ViewModelProvider.Factory {

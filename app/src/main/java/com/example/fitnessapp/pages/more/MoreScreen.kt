@@ -1,16 +1,29 @@
 package com.example.fitnessapp.pages.more
 
-import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,22 +42,27 @@ import com.example.fitnessapp.R
 @Composable
 fun MoreScreen(navController: NavController) {
     val context = LocalContext.current
-    val activity = context as? Activity
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+    Scaffold(
+        bottomBar = {
+            com.example.fitnessapp.pages.home.ModernBottomNavigation(navController = navController)
+        },
+        containerColor = Color.White
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF6366F1),
+                            Color(0xFF8B5CF6),
+                            Color(0xFFA855F7)
+                        )
                     )
                 )
-            )
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        ) {
             // Header
             Row(
                 modifier = Modifier
@@ -109,7 +127,9 @@ fun MoreScreen(navController: NavController) {
                         ModernSectionItem("App Integrations") {
                             navController.navigate("app_integrations")
                         }
-                        ModernSectionItem("Change Sport Metrics") {}
+                        ModernSectionItem("Change Sport Metrics") {
+                            navController.navigate("change_sport_metrics")
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
