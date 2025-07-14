@@ -103,6 +103,15 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
+    // Bluetooth Low Energy (BLE) pentru conectarea la trainers
+    implementation("no.nordicsemi.android:ble:2.6.1")
+
+    // Pentru parsarea fișierelor .zwo și .fit (opțional)
+    implementation("org.xmlpull:xmlpull:1.1.3.1")
+
+    // Pentru grafice în timp real (opțional)
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

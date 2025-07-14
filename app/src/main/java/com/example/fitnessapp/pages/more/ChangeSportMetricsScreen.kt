@@ -60,6 +60,7 @@ fun ChangeSportMetricsScreen(
     setupViewModel: SetupViewModel = viewModel()
 ) {
     var ftpValue by remember { mutableStateOf("") }
+    var maxBpmValue by remember { mutableStateOf("") }
 
     val commonRunningDistances = listOf(
         RunningDistance(1f, "1 km"),
@@ -168,6 +169,28 @@ fun ChangeSportMetricsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
+            // Running Max BPM Section
+            item {
+                ModernSection(title = "Running Max BPM") {
+                    OutlinedTextField(
+                        value = maxBpmValue,
+                        onValueChange = { maxBpmValue = it },
+                        label = { Text("Max BPM (beats per minute)") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF6366F1),
+                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
             // Running Paces Section
             item {
                 ModernSection(title = "Running Paces") {
@@ -222,6 +245,13 @@ fun ChangeSportMetricsScreen(
                             val ftpInt = ftpValue.toIntOrNull()
                             if (ftpInt != null && ftpInt > 0) {
                                 setupViewModel.submitCyclingData(token, ftpInt)
+                            }
+
+                            // Max BPM
+                            val maxBpmInt = maxBpmValue.toIntOrNull()
+                            if (maxBpmInt != null && maxBpmInt > 0) {
+                                // TODO: Add setupViewModel method for Max BPM
+                                // setupViewModel.submitMaxBpm(token, maxBpmInt)
                             }
 
                             // Running

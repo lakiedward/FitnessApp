@@ -130,6 +130,9 @@ fun MoreScreen(navController: NavController) {
                         ModernSectionItem("Change Sport Metrics") {
                             navController.navigate("change_sport_metrics")
                         }
+                        ModernSectionItem("Training Zones") {
+                            navController.navigate("training_zones")
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))

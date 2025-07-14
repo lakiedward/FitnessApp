@@ -9,6 +9,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <!-- Bluetooth permissions pentru conectarea la trainers -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+
     <!-- Health Connect permissions -->
     <uses-permission android:name="android.permission.health.READ_STEPS" />
     <uses-permission android:name="android.permission.health.WRITE_STEPS" />
@@ -22,11 +28,15 @@
     <uses-permission android:name="android.permission.health.WRITE_EXERCISE" />
     <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
     <uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />
+    <!-- Add missing sleep permissions -->
+    <uses-permission android:name="android.permission.health.READ_SLEEP" />
+    <uses-permission android:name="android.permission.health.WRITE_SLEEP" />
 
     <!-- Package visibility for Android 11+ -->
     <queries>
         <!-- permite verificarea instalării Health Connect -->
         <package android:name="com.google.android.apps.healthdata" />
+        <package android:name="com.google.android.healthconnect.controller" />
     </queries>
 
     <application
@@ -46,6 +56,11 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCdG-W6-clMCpl_CXHJ7yD_dmJJsTmxH3Y" />
+
+        <!-- Health Connect configuration -->
+        <meta-data
+            android:name="health_permissions"
+            android:resource="@array/health_permissions" />
 
         <activity
             android:name=".MainActivity"

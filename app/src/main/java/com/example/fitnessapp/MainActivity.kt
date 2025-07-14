@@ -34,7 +34,9 @@ import com.example.fitnessapp.pages.home.WorkoutScreen
 import com.example.fitnessapp.pages.loading.LoadingScreen
 import com.example.fitnessapp.pages.loading.LoadingTrainingScreen
 import com.example.fitnessapp.pages.more.AppIntegrationsScreen
+import com.example.fitnessapp.pages.more.ChangeSportMetricsScreen
 import com.example.fitnessapp.pages.more.MoreScreen
+import com.example.fitnessapp.pages.more.TrainingZonesScreen
 import com.example.fitnessapp.pages.signup.AddAgeScreen
 import com.example.fitnessapp.pages.signup.AddEmailScreen
 import com.example.fitnessapp.pages.signup.AddFtpScreen
@@ -243,6 +245,12 @@ fun AppNavigation(
         composable("more") {
             MoreScreen(navController)
         }
+        composable("change_sport_metrics") {
+            ChangeSportMetricsScreen(navController, authViewModel)
+        }
+        composable("training_zones") {
+            TrainingZonesScreen(navController, authViewModel)
+        }
         composable("loading_screen") {
             LoadingScreen(navController, authViewModel)
         }
@@ -282,6 +290,18 @@ fun AppNavigation(
                     training = training,
                     navController = navController,
                     authViewModel = authViewModel
+                )
+            }
+        }
+        composable("workout_execution/{trainingId}") { backStackEntry ->
+            val trainingId = backStackEntry.arguments?.getString("trainingId")?.toIntOrNull()
+            val trainingPlans by authViewModel.trainingPlan.observeAsState(emptyList())
+            val training = trainingPlans.find { it.id == trainingId }
+            if (training != null) {
+                com.example.fitnessapp.pages.workout.WorkoutExecutionScreen(
+                    trainingId = trainingId ?: 0,
+                    training = training,
+                    navController = navController
                 )
             }
         }

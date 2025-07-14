@@ -53,6 +53,7 @@ import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
 import com.example.fitnessapp.R
 import com.example.fitnessapp.api.ApiService
@@ -82,7 +83,9 @@ private val HC_PERMS = setOf(
     HealthPermission.getReadPermission(HeartRateRecord::class),
     HealthPermission.getWritePermission(HeartRateRecord::class),
     HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
-    HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class)
+    HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class),
+    HealthPermission.getReadPermission(SleepSessionRecord::class),
+    HealthPermission.getWritePermission(SleepSessionRecord::class)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -196,6 +199,24 @@ fun AppIntegrationsScreen(
                 isConnecting = false
                 errorMessage = null
             }
+        }
+    }
+
+    // Force reset isConnecting when connected (additional safety check)
+    LaunchedEffect(stravaState) {
+        val currentState = stravaState
+        if (currentState is StravaState.Connected) {
+            Log.d(TAG, "Connected state detected - forcing isConnecting = false")
+            isConnecting = false
+        }
+    }
+
+    // Additional aggressive reset for isConnecting
+    LaunchedEffect(stravaState) {
+        val currentState = stravaState
+        if (currentState is StravaState.Connected && isConnecting) {
+            Log.d(TAG, "AGGRESSIVE RESET: Connected state with isConnecting=true, forcing reset")
+            isConnecting = false
         }
     }
 
@@ -544,6 +565,25 @@ fun AppIntegrationsScreen(
                                     Text("Sync Activities to Backend", color = Color.White)
                                 }
 
+                                // Buton pentru sincronizare completă
+                                Button(
+                                    onClick = {
+                                        scope.launch {
+                                            healthConnectViewModel.syncAllActivitiesToBackend(
+                                                apiService = apiService,
+                                                getJwtToken = { authViewModel.getToken() }
+                                            )
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF10B981)
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text("Full Sync (All Activities)", color = Color.White)
+                                }
+
                                 // Buton pentru sincronizare automată
                                 OutlinedButton(
                                     onClick = { 
@@ -633,6 +673,22 @@ fun AppIntegrationsScreen(
                                     shape = RoundedCornerShape(8.dp)
                                 ) {
                                     Text("Disconnect")
+                                }
+
+                                // Buton pentru debugging Health Connect
+                                Button(
+                                    onClick = {
+                                        scope.launch {
+                                            healthConnectViewModel.debugHealthConnectIssues()
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFFEF4444)
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text("🔍 Debug Health Connect Issues", color = Color.White)
                                 }
                             }
                         }
@@ -724,9 +780,10 @@ fun AppIntegrationsScreen(
                                     )
 
                                     Text(
-                                        text = "4. Return to this app",
+                                        text = "4. Return to this app (tap on Recent Apps button and select this app)",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = Color(0xFF6366F1),
+                                        fontWeight = FontWeight.Medium
                                     )
                                 }
 
@@ -745,8 +802,23 @@ fun AppIntegrationsScreen(
                                     )
                                 }
 
+                                // Add a button to manually bring user back
+                                OutlinedButton(
+                                    onClick = {
+                                        // Try to bring the app to foreground
+                                        healthConnectViewModel.verifyConnection()
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        "I granted permissions - Check connection",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+
                                 Text(
-                                    text = "We're also checking automatically every few seconds...",
+                                    text = "We're checking automatically every few seconds...",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontWeight = FontWeight.Light
@@ -800,8 +872,8 @@ fun AppIntegrationsScreen(
                                 onClick = {
                                     when (HealthConnectClient.getSdkStatus(context)) {
                                         HealthConnectClient.SDK_AVAILABLE -> {
-                                            healthConnectViewModel.connect()
-                                            permissionLauncher.launch(HC_PERMS)
+                                            // Use the improved connection flow that opens Health Connect directly
+                                            healthConnectViewModel.initiateConnection(permissionLauncher)
                                         }
 
                                         HealthConnectClient.SDK_UNAVAILABLE -> {
@@ -811,7 +883,7 @@ fun AppIntegrationsScreen(
                                         }
 
                                         HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED -> {
-                                            // HC needs to be updated - open Play Store
+                                            // HC needs an update - open Play Store
                                             errorMessage = "Health Connect requires an update."
                                             val playIntent = Intent(
                                                 Intent.ACTION_VIEW,

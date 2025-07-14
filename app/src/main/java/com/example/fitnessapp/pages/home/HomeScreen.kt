@@ -73,6 +73,17 @@ fun getTodayDate(): String {
     }
 }
 
+/**
+ * Converts decimal hours to hours and minutes format
+ * @param decimalHours the decimal hours (e.g., 8.6)
+ * @return formatted string like "8h 36m"
+ */
+fun formatSleepHours(decimalHours: Double): String {
+    val hours = decimalHours.toInt()
+    val minutes = ((decimalHours - hours) * 60).toInt()
+    return "${hours}h ${minutes}m"
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -85,17 +96,20 @@ fun HomeScreen(
     val todayWorkout = trainingPlans.find { it.date == today }
     val userTrainingData by authViewModel.userTrainingData.observeAsState()
     val homeViewModel: HomeViewModel = viewModel()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         authViewModel.getTrainingPlans()
         authViewModel.getRaces()
         authViewModel.getUserTrainingData()
         stravaViewModel.syncCheck()
+        homeViewModel.fetchSleepData(context)
     }
 
     val ftpEstimate by homeViewModel.ftpEstimate.observeAsState()
     val isLoading by homeViewModel.isLoading.observeAsState()
     val error by homeViewModel.error.observeAsState()
+    val sleepHours by homeViewModel.sleepHours.observeAsState(0.0)
 
     Scaffold(
         bottomBar = {
@@ -136,7 +150,7 @@ fun HomeScreen(
                 }
 
                 item {
-                    MetricsSection(ftpEstimate, userTrainingData, isLoading)
+                    MetricsSection(ftpEstimate, userTrainingData, isLoading, sleepHours)
                 }
 
                 if (error != null) {
@@ -334,7 +348,7 @@ private fun QuickActionCard(
 }
 
 @Composable
-private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading: Boolean?) {
+private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading: Boolean?, sleepHours: Double) {
     Column {
         Text(
             text = "Your Metrics",
@@ -358,8 +372,8 @@ private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading:
                 )
                 MetricCard(
                     title = "Sleep",
-                    value = "8.5",
-                    unit = "hrs",
+                    value = if (sleepHours > 0) formatSleepHours(sleepHours) else "--",
+                    unit = "",
                     icon = Icons.Filled.Bedtime,
                     modifier = Modifier.weight(1f)
                 )
@@ -434,11 +448,13 @@ private fun MetricCard(
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF1F2937)
                 )
-                Text(
-                    text = unit,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF9CA3AF)
-                )
+                if (unit.isNotEmpty()) {
+                    Text(
+                        text = unit,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF9CA3AF)
+                    )
+                }
             }
         }
     }
