@@ -13,6 +13,8 @@ import com.example.fitnessapp.model.ManualSyncRequest
 import com.example.fitnessapp.model.PacePredictions
 import com.example.fitnessapp.model.RacesModelResponse
 import com.example.fitnessapp.model.RunningFtpResponse
+import com.example.fitnessapp.model.SavedWorkout
+import com.example.fitnessapp.model.SavedWorkoutResponse
 import com.example.fitnessapp.model.SetupStatusResponse
 import com.example.fitnessapp.model.SportsSelectionRequest
 import com.example.fitnessapp.model.SwimPacePredictions
@@ -185,4 +187,25 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("activityId") activityId: String
     ): Response<DeleteActivityResponse>
+
+    // Delete Strava Activity
+    @DELETE("strava/activities/{strava_id}")
+    suspend fun deleteStravaActivity(
+        @Header("Authorization") token: String,
+        @Path("strava_id") stravaId: Long
+    ): Response<Map<String, String>>
+
+    // Delete App Workout Activity  
+    @DELETE("workout-execution/workouts/{workout_id}")
+    suspend fun deleteAppWorkout(
+        @Header("Authorization") token: String,
+        @Path("workout_id") workoutId: Int
+    ): Response<Map<String, String>>
+
+    // App workouts endpoint
+    @POST("workout-execution/workouts/save")
+    suspend fun saveWorkout(
+        @Header("Authorization") token: String,
+        @Body workout: SavedWorkout
+    ): Response<SavedWorkoutResponse>
 }

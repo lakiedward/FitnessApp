@@ -153,4 +153,16 @@ interface StravaApiService {
         @Header("Authorization") jwtToken: String,
         @Path("activity_id") activityId: Long
     ): retrofit2.Response<com.example.fitnessapp.model.PowerCurveResponse>
+
+    @GET("strava/activities-unified")
+    suspend fun getUnifiedActivities(
+        @Header("Authorization") jwtToken: String,
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String
+    ): retrofit2.Response<List<StravaActivity>>
+
+    @GET("strava/max-bpm")
+    suspend fun getMaxBpm(
+        @Header("Authorization") jwtToken: String
+    ): retrofit2.Response<Map<String, Any>>
 }

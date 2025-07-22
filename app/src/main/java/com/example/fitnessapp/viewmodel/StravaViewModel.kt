@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.fitnessapp.api.ApiService
 import com.example.fitnessapp.api.RetrofitClient
 import com.example.fitnessapp.api.StravaApiService
 import com.example.fitnessapp.model.ActivityStreamsResponse
@@ -62,24 +63,25 @@ class StravaViewModel(private val context: Context) : ViewModel() {
 
     private val authManager = AuthManager(context)
     private val apiService: StravaApiService
-    
+    private val mainApiService: ApiService
+
     // Add request throttling
     private var isCheckingConnection = false
     private var lastConnectionCheckTime = 0L
     private val minCheckInterval = 10000L // Minimum 10 seconds between checks (increased to avoid rate limiting)
-    
+
     // Track OAuth completion to be more patient with rate limits
     private var expectingConnectionAfterOAuth = false
-    
+
     // Flag to prevent unnecessary connection checks after OAuth
     private var justCompletedOAuth = false
-    
+
     // Job reference for checkConnectionStatus to allow cancellation
     private var checkConnectionJob: kotlinx.coroutines.Job? = null
-    
+
     // Flag to completely disable connection checks during OAuth process
     private var isOAuthInProgress = false
-    
+
     // Timestamp of last OAuth completion to prevent immediate checks
     private var lastOAuthCompletionTime = 0L
     private val oAuthCooldownPeriod = 30000L // 30 seconds cooldown after OAuth
@@ -87,13 +89,13 @@ class StravaViewModel(private val context: Context) : ViewModel() {
     companion object {
         @Volatile
         private var INSTANCE: StravaViewModel? = null
-        
+
         fun getInstance(context: Context): StravaViewModel {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: StravaViewModel(context.applicationContext).also { INSTANCE = it }
             }
         }
-        
+
         fun clearInstance() {
             INSTANCE = null
         }
@@ -104,14 +106,15 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         Log.d("STRAVA_DEBUG", "[init] Initial state: ${_stravaState.value}")
         Log.d("STRAVA_DEBUG", "[init] isOAuthInProgress: $isOAuthInProgress")
         Log.d("STRAVA_DEBUG", "[init] justCompletedOAuth: $justCompletedOAuth")
-        
+
         // Use the proper RetrofitClient with configured timeouts
         apiService = RetrofitClient.retrofit.create(StravaApiService::class.java)
-        
+        mainApiService = RetrofitClient.retrofit.create(ApiService::class.java)
+
         // Initial check only - don't start periodic checks
         Log.d("STRAVA_DEBUG", "[init] Performing initial connection check")
         checkConnectionStatus()
-        
+
         // Don't start periodic checks - they're not needed after successful connection
         Log.d("STRAVA_DEBUG", "[init] Skipping periodic connection checks to avoid unnecessary API calls")
     }
@@ -124,7 +127,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         Log.d("STRAVA_DEBUG", "[StravaViewModel] Thread: ${Thread.currentThread().name}")
         Log.d("STRAVA_DEBUG", "[StravaViewModel] isOAuthInProgress: $isOAuthInProgress")
         Log.d("STRAVA_DEBUG", "[StravaViewModel] justCompletedOAuth: $justCompletedOAuth")
-        
+
         _stravaState.value = newState
         Log.d("STRAVA_DEBUG", "[StravaViewModel] State updated successfully")
         Log.d("STRAVA_DEBUG", "[StravaViewModel] New state value: ${_stravaState.value}")
@@ -143,54 +146,54 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] isCheckingConnection: $isCheckingConnection")
         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] justCompletedOAuth: $justCompletedOAuth")
         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] checkConnectionJob: ${checkConnectionJob?.isActive}")
-        
+
         // Don't check if OAuth is in progress
         if (isOAuthInProgress) {
             Log.d("STRAVA_DEBUG", "[checkConnectionStatus] OAuth in progress, skipping check")
             return
         }
-        
+
         // Don't check if already connected - this prevents overriding Connected state
         if (_stravaState.value is StravaState.Connected) {
             Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Already connected, skipping check")
             return
         }
-        
+
         // Don't check if currently connecting - this prevents multiple simultaneous checks
         if (_stravaState.value is StravaState.Connecting) {
             Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Currently connecting, skipping check")
             return
         }
-        
+
         if (isCheckingConnection) {
             Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Already checking connection, skipping")
             return
         }
-        
+
         val currentTime = System.currentTimeMillis() / 1000
         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] currentTime: $currentTime, lastConnectionCheckTime: $lastConnectionCheckTime, minCheckInterval: $minCheckInterval")
         if (currentTime - lastConnectionCheckTime < minCheckInterval) {
             Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Too soon to check again, skipping")
             return
         }
-        
+
         // Don't check immediately after OAuth completion
         if (justCompletedOAuth) {
             Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Just completed OAuth, skipping check")
             return
         }
-        
+
         // Check OAuth cooldown period
         val timeSinceOAuth = currentTime - lastOAuthCompletionTime
         if (timeSinceOAuth < oAuthCooldownPeriod / 1000) {
             Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Within OAuth cooldown period (${timeSinceOAuth}s < ${oAuthCooldownPeriod / 1000}s), skipping check")
             return
         }
-        
+
         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] All checks passed, proceeding with connection check")
         isCheckingConnection = true
         lastConnectionCheckTime = currentTime
-        
+
         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Starting connection check")
         checkConnectionJob = viewModelScope.launch {
             Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Job started")
@@ -200,7 +203,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Starting connection verification")
                 val jwtToken = authManager.getJwtToken()
                 Log.d("STRAVA_DEBUG", "[checkConnectionStatus] JWT token exists: ${!jwtToken.isNullOrEmpty()}")
-                
+
                 if (jwtToken == null) {
                     Log.d("STRAVA_DEBUG", "[checkConnectionStatus] No JWT token, setting NotConnected")
                     setStravaState(StravaState.NotConnected)
@@ -208,16 +211,16 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                     Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Job completed - no JWT")
                     return@launch
                 }
-                
+
                 // Check if we have a stored Strava token and if it's still valid
                 val storedToken = authManager.getStravaToken()
                 Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Stored token exists: ${storedToken != null}")
-                
+
                 if (storedToken != null) {
                     val tokenExpiry = storedToken.expiresAt
                     val currentTime = System.currentTimeMillis() / 1000
                     Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Token expiry: $tokenExpiry, current time: $currentTime")
-                    
+
                     if (tokenExpiry > currentTime) {
                         // Token is still valid, set connected state
                         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Token is still valid, setting Connected")
@@ -229,7 +232,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                             tokenExpiresAt = storedToken.expiresAt
                         )
                         setStravaState(StravaState.Connected(_stravaUserData.value!!))
-                        
+
                         // Fetch athlete data in background
                         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Fetching athlete data in background")
                         fetchAthleteData()
@@ -248,22 +251,22 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                             Log.d("STRAVA_DEBUG", "[checkConnectionStatus] refreshToken error body: ${result.errorBody()?.string()}")
                             result
                         }
-                        
+
                 Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Response code: ${response.code()}")
                 Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Response successful: ${response.isSuccessful}")
-                
+
                 if (response.isSuccessful) {
                     val tokenData = response.body()
                     Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Token data received: ${tokenData != null}")
-                    
+
                     if (tokenData != null && !tokenData.accessToken.isNullOrEmpty()) {
                         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Valid token found, setting Connected")
                         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Token: ${tokenData.accessToken.take(10)}...${tokenData.accessToken.takeLast(10)}")
-                        
+
                         // Save the token
                         authManager.saveStravaToken(tokenData)
                         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Token saved to SharedPreferences")
-                        
+
                         // Set connected state
                         _stravaUserData.value = StravaUserData(
                             userId = authManager.getUserId() ?: 0,
@@ -273,11 +276,11 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                             tokenExpiresAt = tokenData.expiresAt
                         )
                         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] StravaUserData created")
-                        
+
                         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] About to set Connected state")
                         setStravaState(StravaState.Connected(_stravaUserData.value!!))
                         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Connected state set successfully")
-                        
+
                         // Fetch athlete data in background
                         Log.d("STRAVA_DEBUG", "[checkConnectionStatus] Fetching athlete data in background")
                         fetchAthleteData()
@@ -357,20 +360,20 @@ class StravaViewModel(private val context: Context) : ViewModel() {
             val response = withContext(Dispatchers.IO) {
                 apiService.exchangeCodeForToken("Bearer $jwtToken", code).execute()
             }
-            
+
             if (response.isSuccessful) {
                 val token = response.body()
                 if (token != null) {
                     Log.d("STRAVA_DEBUG", "[handleAuthCode] Token exchange successful, saving token")
                     authManager.saveStravaToken(token)
-                    
+
                     // Force refresh token to ensure we have the latest one from backend
                     Log.d("STRAVA_DEBUG", "[handleAuthCode] Force refreshing token to get latest from backend")
                     try {
                         val refreshResponse = withContext(Dispatchers.IO) {
                             apiService.refreshToken("Bearer $jwtToken").execute()
                         }
-                        
+
                         if (refreshResponse.isSuccessful) {
                             val refreshedToken = refreshResponse.body()
                             if (refreshedToken != null) {
@@ -385,11 +388,11 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                     } catch (e: Exception) {
                         Log.w("STRAVA_DEBUG", "[handleAuthCode] Error refreshing token: ${e.message}, using original token")
                     }
-                    
+
                     // Now try to get athlete data with the updated token
                     val updatedToken = authManager.getStravaToken()
                     Log.d("STRAVA_DEBUG", "[handleAuthCode] Using updated token: $updatedToken")
-                    
+
                     val athleteResponse = withContext(Dispatchers.IO) {
                         apiService.getAthlete(
                             jwtToken = "Bearer $jwtToken",
@@ -411,7 +414,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                             tokenExpiresAt = token.expiresAt
                         )
                         setStravaState(StravaState.Connected(_stravaUserData.value!!))
-                        
+
                         // Reset OAuth flags after successful connection
                         Log.d("STRAVA_DEBUG", "[handleAuthCode] Resetting OAuth flags after successful connection")
                         isOAuthInProgress = false
@@ -473,7 +476,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
             }
         }
     }
-    
+
     fun forceClearAllData() {
         Log.d("STRAVA_DEBUG", "[forceClearAllData] Force clearing all Strava data")
         viewModelScope.launch {
@@ -495,7 +498,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 checkConnectionJob = null
                 isOAuthInProgress = false
                 Log.d("STRAVA_DEBUG", "[forceClearAllData] All Strava data cleared successfully")
-                
+
                 // Clear singleton instance
                 clearInstance()
                 Log.d("STRAVA_DEBUG", "[forceClearAllData] Singleton instance cleared")
@@ -590,7 +593,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
             }
         }
     }
-    
+
     fun refreshStravaToken() {
         Log.d("STRAVA_DEBUG", "[refreshStravaToken] Attempting to refresh Strava token")
         viewModelScope.launch {
@@ -599,7 +602,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 val response = withContext(Dispatchers.IO) {
                     apiService.refreshToken("Bearer $jwtToken").execute()
                 }
-                
+
                 if (response.isSuccessful) {
                     val newToken = response.body()
                     if (newToken != null) {
@@ -621,26 +624,26 @@ class StravaViewModel(private val context: Context) : ViewModel() {
             }
         }
     }
-    
+
     // Method to check connection after OAuth with patience for rate limits
     fun checkConnectionAfterOAuth() {
         Log.d("STRAVA_DEBUG", "[checkConnectionAfterOAuth] Checking connection after OAuth completion")
         expectingConnectionAfterOAuth = true
         checkConnectionStatus()
     }
-    
+
     // Method to set connected state immediately after successful OAuth (when we trust the backend)
     fun setConnectedAfterOAuth() {
         Log.d("STRAVA_DEBUG", "=== setConnectedAfterOAuth() START ===")
         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Current state before: ${_stravaState.value}")
         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] isOAuthInProgress before: $isOAuthInProgress")
         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] checkConnectionJob before: ${checkConnectionJob?.isActive}")
-        
+
         // Cancel any ongoing checkConnectionStatus job to prevent conflicts
         checkConnectionJob?.cancel()
         checkConnectionJob = null
         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Cancelled any ongoing connection check job")
-        
+
         // Set flags to prevent interference
         isOAuthInProgress = false
         justCompletedOAuth = true
@@ -648,7 +651,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         lastOAuthCompletionTime = System.currentTimeMillis() / 1000
         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Set flags to prevent interference")
         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] OAuth completion timestamp set to: $lastOAuthCompletionTime")
-        
+
         // Try to set connected state immediately first
         try {
             val existingToken = authManager.getStravaToken()
@@ -663,11 +666,11 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 )
                 setStravaState(StravaState.Connected(_stravaUserData.value!!))
                 Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Connected state set immediately with existing token")
-                
+
                 // Fetch athlete data to get the stravaId
                 Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Fetching athlete data to get stravaId")
                 fetchAthleteData()
-                
+
                 // Schedule reset of OAuth flags after cooldown period
                 viewModelScope.launch {
                     delay(oAuthCooldownPeriod)
@@ -680,14 +683,14 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         } catch (e: Exception) {
             Log.w("STRAVA_DEBUG", "[setConnectedAfterOAuth] Error setting immediate state: ${e.message}")
         }
-        
+
         // If no existing token, try to get fresh token from backend
         viewModelScope.launch {
             try {
                 Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Starting OAuth completion process")
                 // Since OAuth was successful on backend, get the fresh token from backend first
                 Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] OAuth successful on backend, fetching fresh token")
-                
+
                 val jwtToken = authManager.getJwtToken()
                 Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] JWT token exists: ${!jwtToken.isNullOrEmpty()}")
                 if (jwtToken == null) {
@@ -699,7 +702,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                     Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] OAuth flags reset on error")
                     return@launch
                 }
-                
+
                 // Get fresh token from backend
                 Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Refreshing token to get latest from backend")
                 val refreshResponse = withContext(Dispatchers.IO) {
@@ -714,21 +717,21 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                     Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] refreshToken error body: ${result.errorBody()?.string()}")
                     result
                 }
-                
+
                 Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Refresh response code: ${refreshResponse.code()}")
                 Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Refresh response successful: ${refreshResponse.isSuccessful}")
-                
+
                 if (refreshResponse.isSuccessful) {
                     val freshToken = refreshResponse.body()
                     Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Fresh token received: ${freshToken != null}")
                     if (freshToken != null && !freshToken.accessToken.isNullOrEmpty()) {
                         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Fresh token received from backend")
                         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Fresh token: ${freshToken.accessToken.take(10)}...${freshToken.accessToken.takeLast(10)}")
-                        
+
                         // Save the fresh token
                         authManager.saveStravaToken(freshToken)
                         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Fresh token saved to SharedPreferences")
-                        
+
                         // Set connected state with fresh token
                         _stravaUserData.value = StravaUserData(
                             userId = authManager.getUserId() ?: 0,
@@ -738,19 +741,19 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                             tokenExpiresAt = freshToken.expiresAt
                         )
                         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] StravaUserData created with fresh token")
-                        
+
                         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] About to set Connected state")
                         setStravaState(StravaState.Connected(_stravaUserData.value!!))
                         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Connected state set successfully")
-                        
+
                         // Fetch athlete data to get the stravaId
                         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Fetching athlete data to get stravaId")
                         fetchAthleteData()
-                        
+
                         expectingConnectionAfterOAuth = false
                         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Flags reset - expectingConnectionAfterOAuth: $expectingConnectionAfterOAuth, justCompletedOAuth: $justCompletedOAuth, isOAuthInProgress: $isOAuthInProgress")
                         Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Connected state set successfully with fresh token")
-                        
+
                         // Schedule reset of OAuth flags after cooldown period
                         viewModelScope.launch {
                             delay(oAuthCooldownPeriod)
@@ -777,7 +780,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 if (e is CancellationException) {
                     Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Job was cancelled, but OAuth was successful")
                     Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Attempting to set connected state anyway")
-                    
+
                     // Even if the job was cancelled, try to set the connected state
                     // since we know OAuth was successful on the backend
                     try {
@@ -792,7 +795,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                             )
                             setStravaState(StravaState.Connected(_stravaUserData.value!!))
                             Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Connected state set successfully despite job cancellation")
-                            
+
                             // Fetch athlete data to get the stravaId
                             Log.d("STRAVA_DEBUG", "[setConnectedAfterOAuth] Fetching athlete data to get stravaId")
                             fetchAthleteData()
@@ -853,7 +856,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 if (response.isSuccessful) {
                     val syncResult = response.body()
                     Log.d("StravaViewModel", "Sync check result: ${syncResult?.message}")
-                    
+
                     if (syncResult?.activities_synced != null && syncResult.activities_synced > 0) {
                         Log.d("StravaViewModel", "Activities synced: ${syncResult.activities_synced}")
                         // No need to refresh activities since sync-live handles this
@@ -907,14 +910,14 @@ class StravaViewModel(private val context: Context) : ViewModel() {
             try {
                 Log.d("STRAVA_DEBUG", "[fetchFtpEstimateAfterSync] Fetching FTP estimate after sync")
                 val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
-                
+
                 // Use withTimeout for FTP estimation which might take longer
                 val result = withTimeout(300000) { // 5 minutes timeout for FTP estimation
                     withContext(Dispatchers.IO) {
                         apiService.estimateFtp("Bearer $jwtToken")
                     }
                 }
-                
+
                 _ftpEstimate.value = result
                 Log.d("STRAVA_DEBUG", "[fetchFtpEstimateAfterSync] FTP estimate received: ${result.estimatedFTP}W")
             } catch (e: TimeoutCancellationException) {
@@ -931,26 +934,26 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         Log.d("STRAVA_DEBUG", "=== fetchAthleteData() STARTED ===")
         Log.d("STRAVA_DEBUG", "[fetchAthleteData] Current state: ${_stravaState.value}")
         Log.d("STRAVA_DEBUG", "[fetchAthleteData] StravaUserData: ${_stravaUserData.value}")
-        
+
         viewModelScope.launch {
             try {
                 Log.d("STRAVA_DEBUG", "[fetchAthleteData] Starting athlete data fetch")
                 val jwtToken = authManager.getJwtToken()
                 Log.d("STRAVA_DEBUG", "[fetchAthleteData] JWT token exists: ${!jwtToken.isNullOrEmpty()}")
-                
+
                 if (jwtToken == null) {
                     Log.e("STRAVA_DEBUG", "[fetchAthleteData] No JWT token")
                     return@launch
                 }
-                
+
                 val stravaToken = authManager.getStravaToken()
                 Log.d("STRAVA_DEBUG", "[fetchAthleteData] Strava token exists: ${stravaToken != null}")
-                
+
                 if (stravaToken == null) {
                     Log.e("STRAVA_DEBUG", "[fetchAthleteData] No Strava token")
                     return@launch
                 }
-                
+
                 Log.d("STRAVA_DEBUG", "[fetchAthleteData] Making API call to get athlete data")
                 val response = withContext(Dispatchers.IO) {
                     apiService.getAthlete(
@@ -958,33 +961,33 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                         stravaToken = stravaToken.accessToken
                     ).execute()
                 }
-                
+
                 Log.d("STRAVA_DEBUG", "[fetchAthleteData] Response code: ${response.code()}")
                 Log.d("STRAVA_DEBUG", "[fetchAthleteData] Response successful: ${response.isSuccessful}")
-                
+
                 if (response.isSuccessful) {
                     val athlete = response.body()
                     Log.d("STRAVA_DEBUG", "[fetchAthleteData] Athlete data received: ${athlete != null}")
-                    
+
                     if (athlete != null) {
                         Log.d("STRAVA_DEBUG", "[fetchAthleteData] Athlete ID: ${athlete.id}")
                         Log.d("STRAVA_DEBUG", "[fetchAthleteData] Athlete name: ${athlete.firstName} ${athlete.lastName}")
-                        
+
                         _stravaAthlete.value = athlete
                         Log.d("STRAVA_DEBUG", "[fetchAthleteData] Athlete data saved")
-                        
+
                         // Update StravaUserData with athlete ID
                         val updatedUserData = _stravaUserData.value?.copy(stravaId = athlete.id)
                         _stravaUserData.value = updatedUserData
                         Log.d("STRAVA_DEBUG", "[fetchAthleteData] StravaUserData updated with athlete ID")
-                        
+
                         // Update the StravaState to reflect the new user data with athlete ID
                         if (updatedUserData != null) {
                             Log.d("STRAVA_DEBUG", "[fetchAthleteData] Updating StravaState with updated user data")
                             setStravaState(StravaState.Connected(updatedUserData))
                             Log.d("STRAVA_DEBUG", "[fetchAthleteData] StravaState updated successfully")
                         }
-                        
+
                         Log.d("STRAVA_DEBUG", "[fetchAthleteData] Athlete data fetch completed successfully")
                     } else {
                         Log.e("STRAVA_DEBUG", "[fetchAthleteData] No athlete data in response")
@@ -1005,11 +1008,11 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         Log.d("STRAVA_DEBUG", "[resetOAuthFlags] isOAuthInProgress before: $isOAuthInProgress")
         Log.d("STRAVA_DEBUG", "[resetOAuthFlags] justCompletedOAuth before: $justCompletedOAuth")
         Log.d("STRAVA_DEBUG", "[resetOAuthFlags] expectingConnectionAfterOAuth before: $expectingConnectionAfterOAuth")
-        
+
         isOAuthInProgress = false
         justCompletedOAuth = false
         expectingConnectionAfterOAuth = false
-        
+
         Log.d("STRAVA_DEBUG", "[resetOAuthFlags] isOAuthInProgress after: $isOAuthInProgress")
         Log.d("STRAVA_DEBUG", "[resetOAuthFlags] justCompletedOAuth after: $justCompletedOAuth")
         Log.d("STRAVA_DEBUG", "[resetOAuthFlags] expectingConnectionAfterOAuth after: $expectingConnectionAfterOAuth")
@@ -1022,7 +1025,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
             try {
                 val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
                 val response = apiService.getActivitiesFromDb("Bearer $jwtToken", startDate, endDate)
-                
+
                 if (response.isSuccessful) {
                     val activities = response.body() ?: emptyList()
 
@@ -1055,13 +1058,44 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         }
     }
 
+    // Get unified activities (Strava + App workouts) for specific date range
+    suspend fun getUnifiedActivities(startDate: String, endDate: String): List<StravaActivity> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                val response =
+                    apiService.getUnifiedActivities("Bearer $jwtToken", startDate, endDate)
+
+                if (response.isSuccessful) {
+                    val activities = response.body() ?: emptyList()
+
+                    // Update a unified activities StateFlow if needed, but for now return the list
+                    Log.d(
+                        "StravaViewModel",
+                        "Got ${activities.size} unified activities for $startDate to $endDate"
+                    )
+                    activities
+                } else {
+                    Log.e(
+                        "StravaViewModel",
+                        "Failed to get unified activities: ${response.errorBody()?.string()}"
+                    )
+                    emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Error getting unified activities", e)
+                emptyList()
+            }
+        }
+    }
+
     // Get GPX file URL for specific activity
     suspend fun getActivityGpxUrl(activityId: Long): String? {
         return withContext(Dispatchers.IO) {
             try {
                 val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
                 val response = apiService.getActivityGpx("Bearer $jwtToken", activityId)
-                
+
                 if (response.isSuccessful) {
                     val result = response.body()
                     if (result?.get("status") == "success") {
@@ -1123,7 +1157,7 @@ class StravaViewModel(private val context: Context) : ViewModel() {
 
                 val response = apiService.getActivityStreamsFromDB("Bearer $jwtToken", activityId)
                 Log.d("StravaViewModel", "Streams from DB response code: ${response.code()}")
-                
+
                 if (response.isSuccessful) {
                     response.body() ?: emptyMap()
                 } else {
@@ -1166,6 +1200,93 @@ class StravaViewModel(private val context: Context) : ViewModel() {
             } catch (e: Exception) {
                 Log.e("StravaViewModel", "Error getting power curve for activity $activityId", e)
                 null
+            }
+        }
+    }
+
+    // Get max BPM for the user
+    suspend fun getMaxBpm(): Map<String, Any> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                Log.d("StravaViewModel", "Requesting max BPM for user")
+
+                val response = apiService.getMaxBpm("Bearer $jwtToken")
+                Log.d("StravaViewModel", "Max BPM response code: ${response.code()}")
+
+                if (response.isSuccessful) {
+                    val maxBpmData = response.body() ?: emptyMap()
+                    Log.d("StravaViewModel", "Max BPM data received: $maxBpmData")
+                    maxBpmData
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e(
+                        "StravaViewModel",
+                        "Failed to get max BPM: HTTP ${response.code()} - $errorBody"
+                    )
+                    emptyMap()
+                }
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Error getting max BPM", e)
+                emptyMap()
+            }
+        }
+    }
+
+    // Delete Strava activity
+    suspend fun deleteStravaActivity(activityId: Long): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                Log.d("StravaViewModel", "Deleting Strava activity $activityId")
+
+                val response = mainApiService.deleteStravaActivity("Bearer $jwtToken", activityId)
+                Log.d("StravaViewModel", "Delete Strava activity response code: ${response.code()}")
+
+                if (response.isSuccessful) {
+                    val result = response.body()
+                    Log.d("StravaViewModel", "Strava activity $activityId deleted successfully: $result")
+                    true
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e(
+                        "StravaViewModel",
+                        "Failed to delete Strava activity: HTTP ${response.code()} - $errorBody"
+                    )
+                    false
+                }
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Error deleting Strava activity $activityId", e)
+                false
+            }
+        }
+    }
+
+    // Delete app workout
+    suspend fun deleteAppWorkout(workoutId: Int): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                Log.d("StravaViewModel", "Deleting app workout $workoutId")
+
+                val response = mainApiService.deleteAppWorkout("Bearer $jwtToken", workoutId)
+                Log.d("StravaViewModel", "Delete app workout response code: ${response.code()}")
+
+                if (response.isSuccessful) {
+                    val result = response.body()
+                    Log.d("StravaViewModel", "App workout $workoutId deleted successfully: $result")
+                    true
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e(
+                        "StravaViewModel",
+                        "Failed to delete app workout: HTTP ${response.code()} - $errorBody"
+                    )
+                    false
+                }
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Error deleting app workout $workoutId", e)
+                false
             }
         }
     }

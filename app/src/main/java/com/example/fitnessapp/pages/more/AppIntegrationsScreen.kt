@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -70,22 +72,316 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private const val TAG = "AppIntegrationsScreen"
 
+// Status indicator components
+@Composable
+private fun StatusBadge(
+    isConnected: Boolean,
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    val successColor = Color(0xFF10B981)
+    val errorColor = MaterialTheme.colorScheme.error
+
+    Row(
+        modifier = modifier
+            .background(
+                color = if (isConnected) successColor.copy(alpha = 0.1f) else errorColor.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(
+                    color = if (isConnected) successColor else errorColor,
+                    shape = CircleShape
+                )
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = if (isConnected) successColor else errorColor,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+private fun LastSyncIndicator(
+    lastSyncTime: String?,
+    modifier: Modifier = Modifier
+) {
+    if (lastSyncTime != null) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_check_circle),
+                contentDescription = "Last sync",
+                modifier = Modifier.size(14.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "Last sync: $lastSyncTime",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun DataSummaryCard(
+    title: String,
+    value: String,
+    subtitle: String? = null,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFF6B7280),
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFF1F2937),
+                fontWeight = FontWeight.Bold
+            )
+            if (subtitle != null) {
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF9CA3AF)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LoadingStateCard(
+    title: String,
+    message: String,
+    progress: Float? = null,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(32.dp),
+                color = MaterialTheme.colorScheme.primary,
+                strokeWidth = 3.dp
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            if (progress != null) {
+                androidx.compose.material3.LinearProgressIndicator(
+                    progress = progress,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectionHeader(
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontWeight = FontWeight.Medium,
+        modifier = modifier.padding(vertical = 8.dp)
+    )
+}
+
+@Composable
+private fun IntegrationHeader(
+    title: String,
+    icon: Int,
+    isConnected: Boolean,
+    connectionText: String,
+    iconTint: androidx.compose.ui.graphics.Color = Color.Unspecified,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = "$title integration icon - ${if (isConnected) "Connected" else "Disconnected"}",
+                modifier = Modifier.size(32.dp),
+                tint = iconTint
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        // Status badge
+        StatusBadge(
+            isConnected = isConnected,
+            text = connectionText
+        )
+    }
+}
+
+@Composable
+private fun ErrorStateCard(
+    title: String,
+    message: String,
+    troubleshootingTips: List<String>? = null,
+    onRetry: (() -> Unit)? = null,
+    onDismiss: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_help),
+                contentDescription = "Error",
+                modifier = Modifier.size(32.dp),
+                tint = MaterialTheme.colorScheme.error
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.error,
+                fontWeight = FontWeight.Bold,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+
+            if (troubleshootingTips != null && troubleshootingTips.isNotEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "Troubleshooting tips:",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        fontWeight = FontWeight.Medium
+                    )
+                    troubleshootingTips.forEach { tip ->
+                        Text(
+                            text = "• $tip",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f)
+                        )
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = if (onRetry != null && onDismiss != null) Arrangement.spacedBy(8.dp) else Arrangement.Center
+            ) {
+                if (onRetry != null) {
+                    Button(
+                        onClick = onRetry,
+                        modifier = if (onDismiss != null) Modifier.weight(1f) else Modifier,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Retry", color = Color.White)
+                    }
+                }
+                if (onDismiss != null) {
+                    OutlinedButton(
+                        onClick = onDismiss,
+                        modifier = if (onRetry != null) Modifier.weight(1f) else Modifier,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Dismiss")
+                    }
+                }
+            }
+        }
+    }
+}
+
 private val HC_PERMS = setOf(
-    HealthPermission.getReadPermission(StepsRecord::class),
-    HealthPermission.getWritePermission(StepsRecord::class),
-    HealthPermission.getReadPermission(DistanceRecord::class),
-    HealthPermission.getWritePermission(DistanceRecord::class),
-    HealthPermission.getReadPermission(ExerciseSessionRecord::class),
-    HealthPermission.getWritePermission(ExerciseSessionRecord::class),
-    HealthPermission.getReadPermission(HeartRateRecord::class),
-    HealthPermission.getWritePermission(HeartRateRecord::class),
-    HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
-    HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class),
     HealthPermission.getReadPermission(SleepSessionRecord::class),
-    HealthPermission.getWritePermission(SleepSessionRecord::class)
+    HealthPermission.getWritePermission(SleepSessionRecord::class),
+    HealthPermission.getReadPermission(StepsRecord::class),
+    HealthPermission.getWritePermission(StepsRecord::class)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,6 +403,10 @@ fun AppIntegrationsScreen(
     var isConnecting by remember { mutableStateOf(false) }
     var ftpEstimate by remember { mutableStateOf<Float?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    // Dynamic last sync times
+    var stravaLastSync by remember { mutableStateOf<String?>(null) }
+    var healthConnectLastSync by remember { mutableStateOf<String?>(null) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = PermissionController.createRequestPermissionResultContract()
@@ -166,12 +466,32 @@ fun AppIntegrationsScreen(
         }
     }
 
-    // Check initial connection status
+    // Check initial connection status and fetch last sync times
     LaunchedEffect(Unit) {
         stravaViewModel.checkConnectionStatus()
         val token = authViewModel.getToken()
         if (!token.isNullOrEmpty()) {
             fetchFtpEstimate(token)
+        }
+
+        // Fetch Health Connect last sync
+        try {
+            val lastSyncResponse = healthConnectViewModel.getLastSync(
+                apiService = apiService,
+                getJwtToken = { authViewModel.getToken() }
+            )
+            if (lastSyncResponse?.lastSync != null) {
+                healthConnectLastSync = SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault())
+                    .format(java.util.Date.from(java.time.Instant.parse(lastSyncResponse.lastSync)))
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching Health Connect last sync", e)
+        }
+
+        // For Strava, we'll use a placeholder since there's no direct lastSyncDate method
+        // In a real implementation, you might want to add this to StravaViewModel
+        if (stravaState is StravaState.Connected) {
+            stravaLastSync = "Recently synced"
         }
     }
 
@@ -228,13 +548,16 @@ fun AppIntegrationsScreen(
     }
 
     fun connectToStrava() {
+        Log.d(TAG, "Attempting to connect to Strava")
         isConnecting = true
         scope.launch {
             try {
+                Log.d(TAG, "Fetching auth URL from ViewModel")
                 val authUrl = stravaViewModel.connect()
+                Log.d(TAG, "Opening auth URL: $authUrl")
                 openUrl(authUrl)
             } catch (e: Exception) {
-                Log.e(TAG, "Error starting OAuth", e)
+                Log.e(TAG, "Error starting OAuth: ${e.message}", e)
                 isConnecting = false
                 errorMessage = "Failed to start OAuth: ${e.message}"
             }
@@ -344,34 +667,28 @@ fun AppIntegrationsScreen(
                     modifier = Modifier.padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Header
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_strava),
-                            contentDescription = "Strava",
-                            modifier = Modifier.size(32.dp),
-                            tint = Color.Unspecified
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Strava Integration",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    // Header with status
+                    IntegrationHeader(
+                        title = "Strava Integration",
+                        icon = R.drawable.ic_strava,
+                        isConnected = stravaState is StravaState.Connected,
+                        connectionText = when {
+                            stravaState is StravaState.Connected -> "Connected"
+                            isConnecting -> "Connecting"
+                            else -> "Disconnected"
+                        }
+                    )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     when {
                         stravaState is StravaState.Connected -> {
-                            // Connected State (simplified)
+                            // Connected State with enhanced info
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
+                                // Connection status with user info
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -389,6 +706,12 @@ fun AppIntegrationsScreen(
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
+
+                                // Last sync indicator
+                                LastSyncIndicator(
+                                    lastSyncTime = stravaLastSync,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
 
                                 // Action Buttons (simplified)
                                 Row(
@@ -419,70 +742,66 @@ fun AppIntegrationsScreen(
                                     }
                                 }
 
-                                // Performance Metrics (simplified)
+                                // Performance Metrics with enhanced cards
                                 if (ftpEstimate != null) {
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .background(
-                                                Color(0xFFF8FAFC),
-                                                RoundedCornerShape(8.dp)
-                                            )
-                                            .padding(12.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
-                                        Text(
-                                            text = "FTP",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = Color(0xFF1F2937)
+                                        DataSummaryCard(
+                                            title = "FTP",
+                                            value = "${ftpEstimate!!.toInt()} W",
+                                            subtitle = "Functional Threshold Power",
+                                            modifier = Modifier.weight(1f)
                                         )
-                                        Text(
-                                            text = "${ftpEstimate!!.toInt()} W",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = Color(0xFF6366F1),
-                                            fontWeight = FontWeight.Bold
+                                        DataSummaryCard(
+                                            title = "Status",
+                                            value = "Active",
+                                            subtitle = "Data syncing",
+                                            modifier = Modifier.weight(1f)
                                         )
                                     }
                                 }
                             }
                         }
                         isConnecting -> {
-                            // Connecting State (simplified)
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(32.dp),
-                                    color = Color(0xFF6366F1),
-                                    strokeWidth = 3.dp
-                                )
-                                Text(
-                                    text = "Connecting to Strava...",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF6366F1)
-                                )
-                            }
+                            // Enhanced Connecting State
+                            LoadingStateCard(
+                                title = "Connecting to Strava",
+                                message = "Please complete the authorization in your browser and return to the app",
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                         else -> {
                             // Not Connected State (simplified)
-                            Button(
-                                onClick = { connectToStrava() },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF6366F1)
-                                ),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_strava),
-                                    contentDescription = "Strava Logo",
-                                    modifier = Modifier.size(20.dp)
+                            if (authState.value is AuthState.Authenticated) {
+                                Button(
+                                    onClick = { connectToStrava() },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF6366F1)
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_strava),
+                                        contentDescription = "Strava Logo",
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Connect to Strava")
+                                }
+                            } else {
+                                Text(
+                                    text = "Please log in to your account to connect to Strava.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color(0xFFEF4444),
+                                    fontWeight = FontWeight.Medium,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Connect to Strava")
                             }
                         }
                     }
@@ -500,34 +819,31 @@ fun AppIntegrationsScreen(
                     modifier = Modifier.padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Header
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_health_connect),
-                            contentDescription = "Health Connect",
-                            modifier = Modifier.size(32.dp),
-                            tint = Color(0xFF4CAF50)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Health Connect Integration",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    // Header with status
+                    IntegrationHeader(
+                        title = "Health Connect Integration",
+                        icon = R.drawable.ic_health_connect,
+                        isConnected = healthConnectState is HealthConnectState.Connected,
+                        connectionText = when (healthConnectState) {
+                            is HealthConnectState.Connected -> "Connected"
+                            is HealthConnectState.Connecting -> "Connecting"
+                            is HealthConnectState.Syncing -> "Syncing"
+                            is HealthConnectState.PermissionRequired -> "Permissions"
+                            else -> "Disconnected"
+                        },
+                        iconTint = Color(0xFF4CAF50)
+                    )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     when (healthConnectState) {
                         is HealthConnectState.Connected -> {
-                            // Connected State
+                            // Connected State with enhanced info
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
+                                // Connection status
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -546,45 +862,73 @@ fun AppIntegrationsScreen(
                                     )
                                 }
 
-                                // Buton pentru sincronizare manuală
-                                Button(
-                                    onClick = { 
-                                        scope.launch {
-                                            healthConnectViewModel.syncActivitiesToBackend(
-                                                apiService = apiService,
-                                                getJwtToken = { authViewModel.getToken() }
-                                            )
-                                        }
-                                    },
+                                // Last sync indicator
+                                LastSyncIndicator(
+                                    lastSyncTime = healthConnectLastSync,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+
+                                // Data summary cards
+                                Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF6366F1)
-                                    ),
-                                    shape = RoundedCornerShape(8.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Text("Sync Activities to Backend", color = Color.White)
+                                    DataSummaryCard(
+                                        title = "Sleep Data",
+                                        value = "Active",
+                                        subtitle = "Syncing enabled",
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    DataSummaryCard(
+                                        title = "Permissions",
+                                        value = "Granted",
+                                        subtitle = "Read & Write",
+                                        modifier = Modifier.weight(1f)
+                                    )
                                 }
 
-                                // Buton pentru sincronizare completă
-                                Button(
-                                    onClick = {
-                                        scope.launch {
-                                            healthConnectViewModel.syncAllActivitiesToBackend(
-                                                apiService = apiService,
-                                                getJwtToken = { authViewModel.getToken() }
-                                            )
-                                        }
-                                    },
+                                // Sync Actions Section
+                                SectionHeader("Sync Actions")
+                                Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF10B981)
-                                    ),
-                                    shape = RoundedCornerShape(8.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Text("Full Sync (All Activities)", color = Color.White)
+                                    Button(
+                                        onClick = { 
+                                            scope.launch {
+                                                healthConnectViewModel.syncActivitiesToBackend(
+                                                    apiService = apiService,
+                                                    getJwtToken = { authViewModel.getToken() }
+                                                )
+                                            }
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.primary
+                                        ),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("Sync Sleep", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                                    }
+                                    Button(
+                                        onClick = {
+                                            scope.launch {
+                                                healthConnectViewModel.syncAllActivitiesToBackend(
+                                                    apiService = apiService,
+                                                    getJwtToken = { authViewModel.getToken() }
+                                                )
+                                            }
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFF10B981)
+                                        ),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("Full Sync", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                                    }
                                 }
 
-                                // Buton pentru sincronizare automată
                                 OutlinedButton(
                                     onClick = { 
                                         scope.launch {
@@ -597,57 +941,54 @@ fun AppIntegrationsScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(8.dp)
                                 ) {
-                                    Text("Enable Auto Sync")
+                                    Text("Enable Auto Sync for Sleep")
                                 }
 
-                                Button(
-                                    onClick = { healthConnectViewModel.verifyConnection() },
+                                androidx.compose.material3.Divider(
+                                    modifier = Modifier.padding(vertical = 12.dp),
+                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                )
+
+                                // Data Management Section
+                                SectionHeader("Data Management")
+                                Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF10B981)
-                                    ),
-                                    shape = RoundedCornerShape(8.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Text("Verify Connection", color = Color.White)
+                                    OutlinedButton(
+                                        onClick = { 
+                                            scope.launch {
+                                                val activities = healthConnectViewModel.getHealthConnectActivities(
+                                                    apiService = apiService,
+                                                    getJwtToken = { authViewModel.getToken() },
+                                                    page = 1,
+                                                    perPage = 10
+                                                )
+                                                Log.d("HealthConnect", "Activities: $activities")
+                                            }
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("View Sessions", style = MaterialTheme.typography.bodySmall)
+                                    }
+                                    OutlinedButton(
+                                        onClick = { 
+                                            scope.launch {
+                                                val stats = healthConnectViewModel.getHealthConnectStats(
+                                                    apiService = apiService,
+                                                    getJwtToken = { authViewModel.getToken() }
+                                                )
+                                                Log.d("HealthConnect", "Stats: $stats")
+                                            }
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("View Stats", style = MaterialTheme.typography.bodySmall)
+                                    }
                                 }
 
-                                // Buton pentru a vedea activitățile
-                                OutlinedButton(
-                                    onClick = { 
-                                        scope.launch {
-                                            val activities = healthConnectViewModel.getHealthConnectActivities(
-                                                apiService = apiService,
-                                                getJwtToken = { authViewModel.getToken() },
-                                                page = 1,
-                                                perPage = 10
-                                            )
-                                            Log.d("HealthConnect", "Activities: $activities")
-                                        }
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Text("View Activities")
-                                }
-
-                                // Buton pentru a vedea statisticile
-                                OutlinedButton(
-                                    onClick = { 
-                                        scope.launch {
-                                            val stats = healthConnectViewModel.getHealthConnectStats(
-                                                apiService = apiService,
-                                                getJwtToken = { authViewModel.getToken() }
-                                            )
-                                            Log.d("HealthConnect", "Stats: $stats")
-                                        }
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Text("View Stats")
-                                }
-
-                                // Buton pentru a vedea ultima sincronizare
                                 OutlinedButton(
                                     onClick = { 
                                         scope.launch {
@@ -664,18 +1005,46 @@ fun AppIntegrationsScreen(
                                     Text("Check Last Sync")
                                 }
 
-                                OutlinedButton(
-                                    onClick = { healthConnectViewModel.disconnect() },
+                                androidx.compose.material3.Divider(
+                                    modifier = Modifier.padding(vertical = 12.dp),
+                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                )
+
+                                // Connection Management Section
+                                SectionHeader("Connection")
+                                Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.outlinedButtonColors(
-                                        contentColor = MaterialTheme.colorScheme.error
-                                    ),
-                                    shape = RoundedCornerShape(8.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Text("Disconnect")
+                                    Button(
+                                        onClick = { healthConnectViewModel.verifyConnection() },
+                                        modifier = Modifier.weight(1f),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFF10B981)
+                                        ),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("Verify", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                                    }
+                                    OutlinedButton(
+                                        onClick = { healthConnectViewModel.disconnect() },
+                                        modifier = Modifier.weight(1f),
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            contentColor = MaterialTheme.colorScheme.error
+                                        ),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("Disconnect", style = MaterialTheme.typography.bodySmall)
+                                    }
                                 }
 
-                                // Buton pentru debugging Health Connect
+                                androidx.compose.material3.Divider(
+                                    modifier = Modifier.padding(vertical = 12.dp),
+                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                )
+
+                                // Debug Tools Section
+                                SectionHeader("Debug Tools")
                                 Button(
                                     onClick = {
                                         scope.launch {
@@ -684,7 +1053,7 @@ fun AppIntegrationsScreen(
                                     },
                                     modifier = Modifier.fillMaxWidth(),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFFEF4444)
+                                        containerColor = MaterialTheme.colorScheme.error
                                     ),
                                     shape = RoundedCornerShape(8.dp)
                                 ) {
@@ -694,41 +1063,21 @@ fun AppIntegrationsScreen(
                         }
 
                         is HealthConnectState.Syncing -> {
-                            // Syncing State
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(32.dp),
-                                    color = Color(0xFF6366F1),
-                                    strokeWidth = 3.dp
-                                )
-                                Text(
-                                    text = "Syncing activities to backend...",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF6366F1)
-                                )
-                            }
+                            // Enhanced Syncing State
+                            LoadingStateCard(
+                                title = "Syncing Sleep Data",
+                                message = "Uploading your sleep sessions to the backend. This may take a few moments...",
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
 
                         is HealthConnectState.Connecting -> {
-                            // Connecting State
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(32.dp),
-                                    color = Color(0xFF6366F1),
-                                    strokeWidth = 3.dp
-                                )
-                                Text(
-                                    text = "Connecting to Health Connect...",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF6366F1)
-                                )
-                            }
+                            // Enhanced Connecting State
+                            LoadingStateCard(
+                                title = "Connecting to Health Connect",
+                                message = "Establishing connection with Health Connect services...",
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
 
                         is HealthConnectState.PermissionRequired -> {
@@ -774,7 +1123,7 @@ fun AppIntegrationsScreen(
                                     )
 
                                     Text(
-                                        text = "3. Grant permissions for Steps, Distance, Calories, Exercise, and Heart Rate",
+                                        text = "3. Grant permissions for Sleep",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -841,29 +1190,21 @@ fun AppIntegrationsScreen(
                         }
 
                         is HealthConnectState.Error -> {
-                            // Error State
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Text(
-                                    text = (healthConnectState as HealthConnectState.Error).message,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFFDC2626)
-                                )
-                                Button(
-                                    onClick = {
-                                        permissionLauncher.launch(HC_PERMS)
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF6366F1)
-                                    ),
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Text("Retry Connection")
-                                }
-                            }
+                            // Enhanced Error State
+                            ErrorStateCard(
+                                title = "Health Connect Connection Failed",
+                                message = (healthConnectState as HealthConnectState.Error).message,
+                                troubleshootingTips = listOf(
+                                    "Make sure Health Connect is installed and updated",
+                                    "Check if you have granted the necessary permissions",
+                                    "Try restarting the Health Connect app",
+                                    "Ensure your device supports Health Connect"
+                                ),
+                                onRetry = {
+                                    permissionLauncher.launch(HC_PERMS)
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
 
                         else -> {
@@ -906,24 +1247,28 @@ fun AppIntegrationsScreen(
                 }
             }
 
-            // Error Message (simplified)
+            // Enhanced Error Message
             if (errorMessage != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Color(0xFFF8FAFC),
-                            RoundedCornerShape(8.dp)
-                        )
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = errorMessage!!,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFFDC2626)
-                    )
-                }
+                ErrorStateCard(
+                    title = "Connection Error",
+                    message = errorMessage!!,
+                    troubleshootingTips = listOf(
+                        "Check your internet connection",
+                        "Make sure the service is available",
+                        "Try again in a few moments"
+                    ),
+                    onRetry = {
+                        errorMessage = null
+                        // Retry the last failed operation
+                        if (stravaState !is StravaState.Connected) {
+                            connectToStrava()
+                        }
+                    },
+                    onDismiss = {
+                        errorMessage = null
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }

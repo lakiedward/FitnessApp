@@ -73,6 +73,11 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.animation:animation")
+
+    // Shimmer effect for loading placeholders
+    implementation("com.valentinilk.shimmer:compose-shimmer:1.2.0")
 
     // Google Maps & Location
     implementation("com.google.android.gms:play-services-maps:18.2.0")

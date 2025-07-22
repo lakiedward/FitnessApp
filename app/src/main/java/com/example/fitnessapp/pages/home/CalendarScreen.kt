@@ -52,6 +52,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Edit
@@ -60,6 +61,7 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Pool
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.SportsHandball
+import androidx.compose.material.icons.filled.Sports
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
@@ -113,12 +115,93 @@ import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModelFactory
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+
+// Modele pentru răspunsul /strava/comprehensive-analysis
+data class ComprehensiveAnalysisResponse(
+    val cycling_fthr: FthrData? = null,
+    val running_fthr: FthrData? = null,
+    val swimming_fthr: FthrData? = null,
+    val other_fthr: FthrData? = null,
+    val hrtss_calculation: HrtssData? = null,
+    val ftp_estimation: FtpData? = null,
+    val running_pace_predictions: List<RunningPacePrediction>? = null,
+    val swimming_best_times: List<SwimmingBestTime>? = null,
+    val summary: SummaryData? = null
+)
+
+data class FthrData(
+    val estimated_fthr: Int? = null,
+    val source: String? = null,
+    val activities_used: Int? = null,
+    val max_hr_observed: Int? = null,
+    val updated_at: String? = null,
+    val error: String? = null  // Pentru erori per secțiune
+)
+
+data class HrtssData(
+    val status: String? = null,
+    val updated: Int? = null,
+    val error: String? = null
+)
+
+data class FtpData(
+    val date: String? = null,
+    val estimated_ftp: Int? = null,
+    val confidence: Double? = null,
+    val source_activities: List<Long>? = null,
+    val method: String? = null,
+    val notes: String? = null,
+    val confidence_metrics: Map<String, Any>? = null,
+    val fthr_value: Int? = null,
+    val fthr_source: String? = null,
+    val fthr_age_days: Int? = null,
+    val weekly_ftp: List<WeeklyFtp>? = null,
+    val error: String? = null
+)
+
+data class WeeklyFtp(
+    val week: Int? = null,
+    val week_end: String? = null,
+    val ftp_20min_est: Int? = null,
+    val ftp_hr_est: Int? = null,
+    val tss_week: Int? = null,
+    val ftp_tss_est: Int? = null,
+    val ftp_final: Int? = null,
+    val ftp_final_wkg: Double? = null,
+    val categorie: String? = null,
+    val stare_saptamana: String? = null
+)
+
+data class RunningPacePrediction(
+    val distance_km: Double? = null,
+    val time: String? = null,
+    val pace_min_per_km: Double? = null,
+    val avg_hr: Double? = null,
+    val adjusted_for_hr: Double? = null,
+    val error: String? = null
+)
+
+data class SwimmingBestTime(
+    val distance_m: Int? = null,
+    val time: String? = null,
+    val error: String? = null
+)
+
+data class SummaryData(
+    val total_operations: Int? = null,
+    val successful_operations: Int? = null,
+    val failed_operations: Int? = null,
+    val completion_rate: String? = null,
+    val timestamp: String? = null,
+    val error: String? = null
+)
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -133,21 +216,22 @@ fun InfiniteCalendarPage(
         viewModel(factory = StravaViewModelFactory(LocalContext.current))
     val stravaActivities by stravaViewModel.stravaActivities.collectAsState()
 
-    // Maintain state for database activities
+    // Unified activities state (from new endpoint)
     var isInitialLoading by remember { mutableStateOf(true) }
-    var databaseActivities by remember { mutableStateOf<List<StravaActivity>>(emptyList()) }
+    var unifiedActivities by remember { mutableStateOf<List<StravaActivity>>(emptyList()) }
     val coroutineScope = rememberCoroutineScope()
 
     // Sync live state
     var isSyncingLive by remember { mutableStateOf(false) }
-    var syncPopupVisible by remember { mutableStateOf(false) }
     var syncCurrentActivity by remember { mutableStateOf<String?>(null) }
     var syncActivitiesCount by remember { mutableStateOf(0) }
     var syncProgress by remember { mutableStateOf(0f) }
     var syncError by remember { mutableStateOf<String?>(null) }
 
+    // Snackbar host state for non-blocking notifications
+    val snackbarHostState = remember { SnackbarHostState() }
+
     Log.d("CalendarScreen", "Strava Activities: $stravaActivities")
-    Log.d("CalendarScreen", "Database Activities: $databaseActivities")
 
     val today = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, 0)
@@ -161,16 +245,15 @@ fun InfiniteCalendarPage(
     var showMapDialog by remember { mutableStateOf(false) }
     var selectedActivityId by remember { mutableStateOf<Long?>(null) }
 
-    // Function to calculate date range based on visible items and fetch activities
+    // Function to calculate date range and fetch unified activities from backend
     fun loadActivitiesForDateRange(isInitialLoad: Boolean, onFinished: () -> Unit = {}) {
         coroutineScope.launch {
             try {
                 val startCalendar: Calendar
                 val endCalendar: Calendar
-                val bufferDays = if (isInitialLoad) 7 else 30 // Smaller initial load
+                val bufferDays = if (isInitialLoad) 7 else 30
 
                 if (isInitialLoad) {
-                    // For the initial load, just load a week around today
                     startCalendar = Calendar.getInstance().apply {
                         time = today.time
                         add(Calendar.DAY_OF_MONTH, -bufferDays)
@@ -180,7 +263,6 @@ fun InfiniteCalendarPage(
                         add(Calendar.DAY_OF_MONTH, bufferDays)
                     }
                 } else {
-                    // For subsequent loads, use the listState to determine the visible range
                     val firstVisibleIndex = listState.firstVisibleItemIndex
                     val visibleItemCount = listState.layoutInfo.visibleItemsInfo.size
 
@@ -205,22 +287,14 @@ fun InfiniteCalendarPage(
 
                 Log.d(
                     "CalendarScreen",
-                    "Loading activities from $startDate to $endDate (isInitial: $isInitialLoad)"
+                    "Loading unified activities from $startDate to $endDate (isInitial: $isInitialLoad)"
                 )
 
-                // Only fetch if we don't already have activities for this range
-                if (isInitialLoad || databaseActivities.isEmpty()) {
-                    val activities = stravaViewModel.getActivitiesFromDatabase(startDate, endDate)
-                    databaseActivities = activities
-                    Log.d("CalendarScreen", "Loaded ${activities.size} activities from database")
-                } else {
-                    Log.d(
-                        "CalendarScreen",
-                        "Skipping load - already have ${databaseActivities.size} activities"
-                    )
-                }
+                val activities = stravaViewModel.getUnifiedActivities(startDate, endDate)
+                unifiedActivities = activities
+                Log.d("CalendarScreen", "Loaded ${activities.size} unified activities")
             } catch (e: Exception) {
-                Log.e("CalendarScreen", "Error loading activities for date range", e)
+                Log.e("CalendarScreen", "Error loading unified activities", e)
             } finally {
                 onFinished()
             }
@@ -233,17 +307,25 @@ fun InfiniteCalendarPage(
         if (isSyncingLive) return
 
         isSyncingLive = true
-        syncPopupVisible = true
         syncCurrentActivity = null
         syncActivitiesCount = 0
         syncProgress = 0f
         syncError = null
 
-        coroutineScope.launch {
+        GlobalScope.launch {
             try {
+                // Show initial sync start notification
+                snackbarHostState.showSnackbar(
+                    message = "Sincronizare Strava începută...",
+                    duration = SnackbarDuration.Short
+                )
+
                 val jwtToken = authViewModel.getToken()
                 if (jwtToken.isNullOrEmpty()) {
-                    syncError = "Token de autentificare lipsă"
+                    snackbarHostState.showSnackbar(
+                        "Token de autentificare lipsă", 
+                        duration = SnackbarDuration.Long
+                    )
                     return@launch
                 }
 
@@ -261,10 +343,10 @@ fun InfiniteCalendarPage(
                 while (!isSyncCompleted && currentRetry < maxRetries) {
                     if (currentRetry > 0) {
                         Log.d("CalendarScreen", "Reconnection attempt $currentRetry/$maxRetries")
-                        withContext(Dispatchers.Main) {
-                            syncCurrentActivity =
-                                "Reconectare... (încercarea $currentRetry/$maxRetries)"
-                        }
+                        snackbarHostState.showSnackbar(
+                            "Reconectare... (încercarea $currentRetry/$maxRetries)",
+                            duration = SnackbarDuration.Short
+                        )
                         delay(2000)
                     }
 
@@ -332,16 +414,10 @@ fun InfiniteCalendarPage(
                                         // Handle completion status
                                         if (eventData.has("status") && eventData.get("status").asString == "done") {
                                             Log.d("CalendarScreen", "Sync completed successfully!")
-                                            withContext(Dispatchers.Main) {
-                                                syncCurrentActivity = "Sincronizare completă!"
-                                                syncProgress = 1.0f
-                                                syncActivitiesCount =
-                                                    totalActivitiesSynced + activitiesCount
-
-                                                // Hide popup after delay
-                                                delay(2000)
-                                                syncPopupVisible = false
-                                            }
+                                            snackbarHostState.showSnackbar(
+                                                "Sincronizare completă! ${totalActivitiesSynced + activitiesCount} activități",
+                                                duration = SnackbarDuration.Long
+                                            )
 
                                             // Reload activities after successful sync
                                             if (totalActivitiesSynced + activitiesCount > 0) {
@@ -363,10 +439,10 @@ fun InfiniteCalendarPage(
                                                 "CalendarScreen",
                                                 "SSE error received: $errorMessage"
                                             )
-                                            withContext(Dispatchers.Main) {
-                                                syncError = errorMessage
-                                                syncCurrentActivity = "Eroare: $errorMessage"
-                                            }
+                                            snackbarHostState.showSnackbar(
+                                                "Eroare: $errorMessage",
+                                                duration = SnackbarDuration.Long
+                                            )
                                             throw Exception(errorMessage)
                                         }
 
@@ -374,30 +450,19 @@ fun InfiniteCalendarPage(
                                         if (eventData.has("name") && eventData.has("start_date")) {
                                             activitiesCount++
                                             val activityName = eventData.get("name").asString
-                                            val startDate = eventData.get("start_date").asString
+                                            totalActivitiesSynced = activitiesCount // Update total count
 
                                             Log.d(
                                                 "CalendarScreen",
-                                                "Activity synced: $activityName ($startDate)"
+                                                "Activity synced: $activityName"
                                             )
 
-                                            withContext(Dispatchers.Main) {
-                                                syncCurrentActivity = activityName
-                                                syncActivitiesCount =
-                                                    totalActivitiesSynced + activitiesCount
-
-                                                // Update progress based on activities synced
-                                                syncProgress = when {
-                                                    activitiesCount <= 5 -> 0.2f + (activitiesCount * 0.1f) // 0.2 to 0.7 for first 5
-                                                    activitiesCount <= 15 -> 0.7f + ((activitiesCount - 5) * 0.02f) // 0.7 to 0.9 for next 10
-                                                    else -> 0.9f + (0.05f / maxOf(
-                                                        1,
-                                                        activitiesCount - 15
-                                                    )) // 0.9+ for remaining
-                                                }.coerceAtMost(0.95f)
-                                            }
-
-                                            delay(150) // Small delay to show each activity
+                                            // Show snackbar notification for each synchronized activity
+                                            snackbarHostState.showSnackbar(
+                                                "Activitate sincronizată: $activityName",
+                                                duration = SnackbarDuration.Short
+                                            )
+                                            delay(150) // Small delay between notifications
                                         }
 
                                     } catch (e: Exception) {
@@ -420,10 +485,10 @@ fun InfiniteCalendarPage(
                                 totalActivitiesSynced += activitiesCount
                                 currentRetry++
 
-                                withContext(Dispatchers.Main) {
-                                    syncCurrentActivity = "Conexiunea s-a întrerupt. Reconectare..."
-                                    syncProgress = 0.3f + (currentRetry * 0.1f)
-                                }
+                                snackbarHostState.showSnackbar(
+                                    "Conexiunea s-a întrerupt. Reconectare...",
+                                    duration = SnackbarDuration.Short
+                                )
                             } else {
                                 // Connection completed successfully
                                 Log.d("CalendarScreen", "SSE connection completed successfully")
@@ -446,9 +511,10 @@ fun InfiniteCalendarPage(
 
                             if (isConnectionError && currentRetry < maxRetries - 1) {
                                 currentRetry++
-                                withContext(Dispatchers.Main) {
-                                    syncCurrentActivity = "Problemă de conexiune. Reconectare..."
-                                }
+                                snackbarHostState.showSnackbar(
+                                    "Problemă de conexiune. Reconectare...",
+                                    duration = SnackbarDuration.Short
+                                )
                                 Log.w("CalendarScreen", "Connection error detected, will retry")
                             } else {
                                 // For non-connection errors or max retries reached, stop
@@ -469,22 +535,75 @@ fun InfiniteCalendarPage(
                     val message =
                         "Sincronizarea s-a întrerupt după $maxRetries încercări. $totalActivitiesSynced activități sincronizate."
                     Log.w("CalendarScreen", message)
-                    withContext(Dispatchers.Main) {
-                        syncError = message
-                        syncCurrentActivity = message
+                    snackbarHostState.showSnackbar(
+                        message,
+                        duration = SnackbarDuration.Long
+                    )
+                } else {
+                    // Dacă sync complet, rulează analiza comprehensivă
+                    snackbarHostState.showSnackbar(
+                        "Analiză comprehensivă începută...",
+                        duration = SnackbarDuration.Short
+                    )
+
+                    // Apel la /strava/comprehensive-analysis
+                    val analysisResponse = withContext(Dispatchers.IO) {
+                        val url = URL("${ApiConfig.BASE_URL}strava/comprehensive-analysis")
+                        val connection = url.openConnection() as HttpURLConnection
+                        connection.requestMethod = "GET"
+                        connection.setRequestProperty("Authorization", "Bearer $jwtToken")
+                        connection.setRequestProperty("Accept", "application/json")
+                        connection.connectTimeout = 30000
+                        connection.readTimeout = 60000  // 60s, deoarece poate dura
+
+                        if (connection.responseCode == 200) {
+                            val responseBody = connection.inputStream.bufferedReader().use { it.readText() }
+                            Log.d("CalendarScreen", "Analysis response: $responseBody")
+                            gson.fromJson(responseBody, ComprehensiveAnalysisResponse::class.java)
+                        } else {
+                            val errorBody = connection.errorStream?.bufferedReader()?.use { it.readText() }
+                            Log.e("CalendarScreen", "Analysis failed: ${connection.responseCode} - $errorBody")
+                            null
+                        }
+                    }
+
+                    // Gestionează răspunsul și arată notificări
+                    if (analysisResponse != null) {
+                        // Exemplu: Notificări per secțiune (poți extinde cu toate)
+                        analysisResponse.cycling_fthr?.let { fthr ->
+                            if (fthr.error != null) {
+                                snackbarHostState.showSnackbar("Eroare FTHR ciclism: ${fthr.error}", duration = SnackbarDuration.Long)
+                            } else {
+                                snackbarHostState.showSnackbar("FTHR ciclism: ${fthr.estimated_fthr} bpm (activități: ${fthr.activities_used})", duration = SnackbarDuration.Short)
+                            }
+                        }
+
+                        analysisResponse.ftp_estimation?.let { ftp ->
+                            if (ftp.error != null) {
+                                snackbarHostState.showSnackbar("Eroare FTP: ${ftp.error}", duration = SnackbarDuration.Long)
+                            } else {
+                                snackbarHostState.showSnackbar("FTP estimat: ${ftp.estimated_ftp}W (încredere: ${(ftp.confidence ?: 0.0) * 100}%)", duration = SnackbarDuration.Short)
+                            }
+                        }
+
+                        // Sumar final
+                        analysisResponse.summary?.let { summary ->
+                            snackbarHostState.showSnackbar(
+                                "Analiză completă: ${summary.successful_operations}/${summary.total_operations} operații reușite",
+                                duration = SnackbarDuration.Long
+                            )
+                        }
+                    } else {
+                        snackbarHostState.showSnackbar("Eroare la analiza comprehensivă", duration = SnackbarDuration.Long)
                     }
                 }
 
             } catch (e: Exception) {
                 Log.e("CalendarScreen", "Error during sync live", e)
-                withContext(Dispatchers.Main) {
-                    syncError = e.message ?: "Eroare necunoscută"
-                    syncCurrentActivity = "Eroare: $syncError"
-
-                    // Hide popup after error delay
-                    delay(3000)
-                    syncPopupVisible = false
-                }
+                snackbarHostState.showSnackbar(
+                    "Eroare generală: ${e.message}",
+                    duration = SnackbarDuration.Long
+                )
             } finally {
                 isSyncingLive = false
                 Log.d("CalendarScreen", "Sync live process completed")
@@ -494,22 +613,18 @@ fun InfiniteCalendarPage(
 
     // Load initial activities when the component is first created
     LaunchedEffect(Unit) {
-        loadActivitiesForDateRange(
-            isInitialLoad = true,
-            onFinished = { isInitialLoading = false }
-        )
+        loadActivitiesForDateRange(isInitialLoad = true) { isInitialLoading = false }
     }
 
     // Load more activities when scroll position changes significantly
     LaunchedEffect(listState.firstVisibleItemIndex) {
         if (!isInitialLoading) {
-            // Add throttling - only load if we've scrolled significantly
             val currentIndex = listState.firstVisibleItemIndex
             val center = Int.MAX_VALUE / 2
             val distanceFromCenter = kotlin.math.abs(currentIndex - center)
 
-            // Only load more if we're far from what we've already loaded
-            if (distanceFromCenter > 50) { // Only load if scrolled more than 50 items
+            if (distanceFromCenter > 7) {
+                delay(500)
                 Log.d(
                     "CalendarScreen",
                     "Scroll triggered load at index $currentIndex (distance: $distanceFromCenter)"
@@ -524,6 +639,7 @@ fun InfiniteCalendarPage(
             bottomBar = {
                 ModernBottomNavigation(navController = navController)
             },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             containerColor = Color.Transparent
         ) { paddingValues ->
             Box(
@@ -587,20 +703,19 @@ fun InfiniteCalendarPage(
                                             (index - Int.MAX_VALUE / 2).toInt()
                                         )
                                     }
-                                    val trainingForDay = trainingPlans.find {
-                                        it.date == SimpleDateFormat(
-                                            "yyyy-MM-dd",
-                                            Locale.getDefault()
-                                        ).format(calendar.time)
-                                    }
-
-                                    // Combined search: first from live activities, then from database activities
                                     val dayDateString = SimpleDateFormat(
                                         "yyyy-MM-dd",
                                         Locale.getDefault()
                                     ).format(calendar.time)
 
-                                    val stravaForDay = stravaActivities.find { activity ->
+                                    // Get all trainings for the day
+                                    val trainingsForDay = trainingPlans.filter {
+                                        it.date == dayDateString
+                                    }
+
+                                    // Get all Strava activities for the day
+                                    val stravaActivitiesForDay =
+                                        unifiedActivities.filter { activity ->
                                         val activityDate = try {
                                             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                                                 .format(
@@ -612,23 +727,6 @@ fun InfiniteCalendarPage(
                                                         ?: activity.startDate
                                                 )
                                         } catch (e: Exception) {
-                                            // Fallback: try to extract date directly if it's already in the right format
-                                            activity.startDate.take(10)
-                                        }
-                                        activityDate == dayDateString
-                                    } ?: databaseActivities.find { activity ->
-                                        val activityDate = try {
-                                            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                                                .format(
-                                                    SimpleDateFormat(
-                                                        "yyyy-MM-dd'T'HH:mm:ss'Z'",
-                                                        Locale.getDefault()
-                                                    )
-                                                        .parse(activity.startDate)
-                                                        ?: activity.startDate
-                                                )
-                                        } catch (e: Exception) {
-                                            // Fallback: try to extract date directly if it's already in the right format
                                             activity.startDate.take(10)
                                         }
                                         activityDate == dayDateString
@@ -637,24 +735,44 @@ fun InfiniteCalendarPage(
                                     ModernCalendarDayItem(
                                         day = calendar.time,
                                         isToday = isSameDay(calendar.time, today.time),
-                                        training = trainingForDay,
-                                        stravaActivity = stravaForDay,
+                                        trainings = trainingsForDay,
+                                        stravaActivities = stravaActivitiesForDay,
                                         navController = navController,
                                         stravaViewModel = stravaViewModel,
-                                        onDateClick = {
-                                            if (trainingForDay != null) {
-                                                selectedTrainingPlan = trainingForDay
-                                                showDatePicker = true
-                                            }
+                                        onDateClick = { training ->
+                                            selectedTrainingPlan = training
+                                            showDatePicker = true
                                         },
-                                        onTrainingClick = {
-                                            if (trainingForDay != null) {
-                                                navController.navigate("loading_training/${trainingForDay.id}")
-                                            }
+                                        onTrainingClick = { training ->
+                                            navController.navigate("loading_training/${training.id}")
                                         },
                                         onMapClick = { activityId ->
                                             selectedActivityId = activityId
                                             showMapDialog = true
+                                        },
+                                        onDeleteStravaActivity = { activityId ->
+                                            coroutineScope.launch {
+                                                val success = stravaViewModel.deleteStravaActivity(activityId)
+                                                if (success) {
+                                                    Log.d("CalendarScreen", "Strava activity $activityId deleted successfully")
+                                                    // Refresh activities after deletion
+                                                    loadActivitiesForDateRange(false)
+                                                } else {
+                                                    Log.e("CalendarScreen", "Failed to delete Strava activity $activityId")
+                                                }
+                                            }
+                                        },
+                                        onDeleteAppWorkout = { workoutId ->
+                                            coroutineScope.launch {
+                                                val success = stravaViewModel.deleteAppWorkout(workoutId)
+                                                if (success) {
+                                                    Log.d("CalendarScreen", "App workout $workoutId deleted successfully")
+                                                    // Refresh activities after deletion
+                                                    loadActivitiesForDateRange(false)
+                                                } else {
+                                                    Log.e("CalendarScreen", "Failed to delete app workout $workoutId")
+                                                }
+                                            }
                                         }
                                     )
                                 }
@@ -665,182 +783,6 @@ fun InfiniteCalendarPage(
             }
         }
 
-        // Sync Live Popup Overlay
-        if (syncPopupVisible) {
-            Popup(
-                alignment = Alignment.TopCenter,
-                offset = IntOffset(0, 100),
-                properties = PopupProperties(focusable = false, dismissOnBackPress = false)
-            ) {
-                Card(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .widthIn(min = 320.dp, max = 400.dp)
-                    ) {
-                        // Header with title and close button
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = if (syncError != null) "Eroare sincronizare" else "Sincronizare Strava",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = if (syncError != null) Color(0xFFEF4444) else Color(
-                                    0xFF1F2937
-                                )
-                            )
-
-                            IconButton(
-                                onClick = {
-                                    syncPopupVisible = false
-                                    // Don't cancel the sync, just hide the popup
-                                },
-                                modifier = Modifier.size(24.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "Minimize",
-                                    tint = Color(0xFF6B7280),
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Progress indicator and status
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            if (syncError != null) {
-                                Icon(
-                                    painter = painterResource(id = android.R.drawable.ic_dialog_alert),
-                                    contentDescription = "Error",
-                                    tint = Color(0xFFEF4444),
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            } else {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    strokeWidth = 2.dp,
-                                    color = Color(0xFF6366F1),
-                                    progress = { if (syncProgress > 0) syncProgress else 0f }
-                                )
-                            }
-
-                            Column(
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                // Current activity or status
-                                if (syncCurrentActivity != null) {
-                                    Text(
-                                        text = syncCurrentActivity!!,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = if (syncError != null) Color(0xFFEF4444) else Color(
-                                            0xFF1F2937
-                                        ),
-                                        fontWeight = FontWeight.Medium,
-                                        maxLines = 2,
-                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                    )
-                                }
-
-                                // Progress details
-                                if (syncActivitiesCount > 0 && syncError == null) {
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        text = "$syncActivitiesCount activități sincronizate",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF6366F1),
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
-
-                                // Progress percentage
-                                if (syncProgress > 0 && syncError == null) {
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        text = "${(syncProgress * 100).toInt()}% complet",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF6B7280)
-                                    )
-                                }
-                            }
-                        }
-
-                        // Progress bar (visual indicator)
-                        if (syncError == null && syncProgress > 0) {
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(4.dp)
-                                    .background(
-                                        Color(0xFFE5E7EB),
-                                        RoundedCornerShape(2.dp)
-                                    )
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth(syncProgress.coerceIn(0f, 1f))
-                                        .fillMaxHeight()
-                                        .background(
-                                            Color(0xFF6366F1),
-                                            RoundedCornerShape(2.dp)
-                                        )
-                                )
-                            }
-                        }
-
-                        // Status message for completed sync
-                        if (syncProgress >= 1.0f && syncError == null) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_check_circle),
-                                    contentDescription = "Success",
-                                    tint = Color(0xFF10B981),
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "Sincronizare completă cu succes!",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF10B981),
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                        }
-
-                        // Help text
-                        if (isSyncingLive && syncError == null) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Poți continua să navighezi prin aplicație în timp ce sincronizarea rulează în fundal.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color(0xFF6B7280),
-                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                            )
-                        }
-                    }
-                }
-            }
-        }
     }
 
     if (showDatePicker && selectedTrainingPlan != null) {
@@ -1096,15 +1038,17 @@ private fun CalendarHeader(
 private fun ModernCalendarDayItem(
     day: java.util.Date,
     isToday: Boolean,
-    training: TrainingPlan?,
-    stravaActivity: StravaActivity?,
+    trainings: List<TrainingPlan>,
+    stravaActivities: List<StravaActivity>,
     navController: NavController,
     stravaViewModel: StravaViewModel,
-    onDateClick: () -> Unit,
-    onTrainingClick: () -> Unit,
-    onMapClick: (Long) -> Unit
+    onDateClick: (TrainingPlan) -> Unit,
+    onTrainingClick: (TrainingPlan) -> Unit,
+    onMapClick: (Long) -> Unit,
+    onDeleteStravaActivity: (Long) -> Unit,
+    onDeleteAppWorkout: (Int) -> Unit
 ) {
-    Log.d("CalendarChart", "steps = ${training?.steps}")
+    Log.d("CalendarChart", "trainings = $trainings")
 
     val calendar = Calendar.getInstance().apply { time = day }
     val dayOfWeekFormat = SimpleDateFormat("EEE", Locale.getDefault())
@@ -1118,7 +1062,7 @@ private fun ModernCalendarDayItem(
             containerColor = if (isToday) Color(0xFFF0FFF) else Color.White
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = if (training != null) 6.dp else 2.dp
+            defaultElevation = if (trainings.isNotEmpty()) 6.dp else 2.dp
         ),
         border = if (isToday) BorderStroke(2.dp, Color(0xFF6366F1)) else null
     ) {
@@ -1128,13 +1072,6 @@ private fun ModernCalendarDayItem(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .then(
-                        if (training != null) {
-                            Modifier.clickable { onDateClick() }
-                        } else {
-                            Modifier
-                        }
-                    )
                     .padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -1164,15 +1101,6 @@ private fun ModernCalendarDayItem(
                     )
                 }
 
-                if (training != null) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "Edit date",
-                        tint = Color(0xFF6366F1),
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
                 if (isToday) {
                     Card(
                         colors = CardDefaults.cardColors(containerColor = Color(0xFF6366F1)),
@@ -1191,216 +1119,7 @@ private fun ModernCalendarDayItem(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Training Content - clickable for navigation
-            if (training != null) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onTrainingClick() },
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.FitnessCenter,
-                                contentDescription = null,
-                                tint = Color(0xFF6366F1),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = training.workout_name ?: "Training Session",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF1F2937)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = training.description,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF6B7280),
-                            maxLines = 2
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Non-interactive training chart preview
-                        training.steps?.let { steps ->
-                            Column {
-                                Text(
-                                    text = "Workout Preview",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF6B7280),
-                                    fontWeight = FontWeight.Medium
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                SimpleTrainingChart(
-                                    steps = steps,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(60.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            } else if (stravaActivity != null) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            // Navigate to Strava activity detail screen
-                            navController.navigate("strava_activity_detail/${stravaActivity.id?.toLong() ?: 0}")
-                        },
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            when (stravaActivity.type) {
-                                "Run" -> Icon(
-                                    imageVector = Icons.Filled.DirectionsRun,
-                                    contentDescription = null,
-                                    tint = Color(0xFF6366F1),
-                                    modifier = Modifier.size(20.dp)
-                                )
-
-                                "Ride" -> Icon(
-                                    imageVector = Icons.Filled.DirectionsBike,
-                                    contentDescription = null,
-                                    tint = Color(0xFF6366F1),
-                                    modifier = Modifier.size(20.dp)
-                                )
-
-                                "Swim" -> Icon(
-                                    imageVector = Icons.Filled.Pool,
-                                    contentDescription = null,
-                                    tint = Color(0xFF6366F1),
-                                    modifier = Modifier.size(20.dp)
-                                )
-
-                                "Walk" -> Icon(
-                                    imageVector = Icons.Filled.SelfImprovement,
-                                    contentDescription = null,
-                                    tint = Color(0xFF6366F1),
-                                    modifier = Modifier.size(20.dp)
-                                )
-
-                                else -> Icon(
-                                    imageVector = Icons.Filled.SportsHandball,
-                                    contentDescription = null,
-                                    tint = Color(0xFF6366F1),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            Text(
-                                text = stravaActivity.name,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF1F2937),
-                                modifier = Modifier.weight(1f)
-                            )
-
-                            // Map view icon
-                            Icon(
-                                imageVector = Icons.Filled.Map,
-                                contentDescription = "View Map",
-                                tint = Color(0xFF6366F1),
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .clickable {
-                                        onMapClick(stravaActivity.id?.toLong() ?: 0)
-                                    }
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = "Logged on Strava",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF6B7280),
-                            maxLines = 2
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Display Strava activity details with proper distance formatting
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            // Distance (convert from meters to km) 
-                            val distanceKm = stravaActivity.distance?.div(1000.0) ?: 0.0
-                            Column {
-                                Text(
-                                    text = String.format("%.1f km", distanceKm),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color(0xFF1F2937),
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "Distance",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF6B7280)
-                                )
-                            }
-
-                            // Duration (convert from seconds to hr:min:sec format)
-                            val totalSeconds = stravaActivity.movingTime ?: 0
-                            val hours = totalSeconds / 3600
-                            val minutes = (totalSeconds % 3600) / 60
-                            val seconds = totalSeconds % 60
-
-                            Column {
-                                Text(
-                                    text = if (hours > 0) {
-                                        String.format("%d:%02d:%02d", hours, minutes, seconds)
-                                    } else {
-                                        String.format("%d:%02d", minutes, seconds)
-                                    },
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color(0xFF1F2937),
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "Moving time",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF6B7280)
-                                )
-                            }
-                        }
-
-                        // Modern minimalist route preview with enhanced design
-                        RoutePreview(
-                            activityId = stravaActivity.id?.toLong() ?: 0,
-                            stravaViewModel = stravaViewModel,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(140.dp) // Slightly taller for better proportions
-                                .padding(vertical = 12.dp) // More spacing
-                        )
-                    }
-                }
-            } else {
+            if (trainings.isEmpty() && stravaActivities.isEmpty()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -1418,9 +1137,309 @@ private fun ModernCalendarDayItem(
                         fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                     )
                 }
+            } else {
+                // Display all trainings
+                trainings.forEach { training ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onTrainingClick(training) }
+                            .padding(bottom = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Filled.FitnessCenter,
+                                        contentDescription = null,
+                                        tint = Color(0xFF6366F1),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = training.workout_name ?: "Training Session",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color(0xFF1F2937)
+                                    )
+                                }
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "Edit date",
+                                    tint = Color(0xFF6366F1),
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .clickable { onDateClick(training) }
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = training.description,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFF6B7280),
+                                maxLines = 2
+                            )
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Non-interactive training chart preview
+                            training.steps?.let { steps ->
+                                Column {
+                                    Text(
+                                        text = "Workout Preview",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFF6B7280),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    SimpleTrainingChart(
+                                        steps = steps,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(60.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Display all Strava activities
+                stravaActivities.forEach { stravaActivity ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                // Navigate to Strava activity (unified) detail screen
+                                navController.navigate("strava_activity_detail/${stravaActivity.id?.toLong() ?: 0}")
+                            }
+                            .padding(bottom = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                // Icon based on type, extra case for WeightTraining
+                                when (stravaActivity.type) {
+                                    "Run" -> Icon(
+                                        imageVector = Icons.Filled.DirectionsRun,
+                                        contentDescription = null,
+                                        tint = Color(0xFF6366F1),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+
+                                    "Ride" -> Icon(
+                                        imageVector = Icons.Filled.DirectionsBike,
+                                        contentDescription = null,
+                                        tint = Color(0xFF6366F1),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+
+                                    "Swim" -> Icon(
+                                        imageVector = Icons.Filled.Pool,
+                                        contentDescription = null,
+                                        tint = Color(0xFF6366F1),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+
+                                    "Walk" -> Icon(
+                                        imageVector = Icons.Filled.SelfImprovement,
+                                        contentDescription = null,
+                                        tint = Color(0xFF6366F1),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+
+                                    "WeightTraining" -> Icon(
+                                        imageVector = Icons.Filled.FitnessCenter,
+                                        contentDescription = null,
+                                        tint = Color(0xFF6366F1),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+
+                                    else -> Icon(
+                                        imageVector = Icons.Filled.SportsHandball,
+                                        contentDescription = null,
+                                        tint = Color(0xFF6366F1),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Text(
+                                    text = stravaActivity.name,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF1F2937),
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                // Source badge
+                                Text(
+                                    text = if (stravaActivity.manual == true) "📱 App" else "🟠 Strava",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (stravaActivity.manual == true) Color(0xFF10B981) else Color(
+                                        0xFFFFA500
+                                    ),
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+
+                                // Map icon only for non-manual (Strava) activities
+                                if (stravaActivity.manual != true) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Map,
+                                        contentDescription = "View Map",
+                                        tint = Color(0xFF6366F1),
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .clickable {
+                                                onMapClick(stravaActivity.id?.toLong() ?: 0)
+                                            }
+                                    )
+                                }
+
+                                // Delete icon for all activities
+                                Icon(
+                                    imageVector = Icons.Filled.Delete,
+                                    contentDescription = "Delete Activity",
+                                    tint = Color.Red,
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .clickable {
+                                            // Handle delete based on activity type
+                                            if (stravaActivity.manual == true) {
+                                                // Delete app workout using workout ID
+                                                onDeleteAppWorkout(stravaActivity.id?.toInt() ?: 0)
+                                            } else {
+                                                // Delete Strava activity using Strava ID  
+                                                onDeleteStravaActivity(stravaActivity.id?.toLong() ?: 0)
+                                            }
+                                        }
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Logged on ${if (stravaActivity.manual == true) "App" else "Strava"}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFF6B7280),
+                                maxLines = 2
+                            )
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Relevant metrics based on activity type
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                // Duration always
+                                Column {
+                                    Text(
+                                        text = formatDuration(stravaActivity.movingTime ?: 0),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = Color(0xFF1F2937),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "Moving time",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFF6B7280)
+                                    )
+                                }
+
+                                // Distance if exists and relevant (not WeightTraining)
+                                if (stravaActivity.distance != null && stravaActivity.type != "WeightTraining") {
+                                    Column {
+                                        Text(
+                                            text = formatDistance(stravaActivity.distance),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = Color(0xFF1F2937),
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Text(
+                                            text = "Distance",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color(0xFF6B7280)
+                                        )
+                                    }
+                                }
+
+                                // Power or HR depending on type
+                                when (stravaActivity.type) {
+                                    "Ride" -> { /* Average power not available in current model */
+                                    }
+
+                                    "Run", "Swim", "WeightTraining" -> {
+                                        if (stravaActivity.averageHeartrate != null) {
+                                            Column {
+                                                Text(
+                                                    text = "${stravaActivity.averageHeartrate} bpm",
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    color = Color(0xFF1F2937),
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                                Text(
+                                                    text = "Avg HR",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = Color(0xFF6B7280)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Route preview only for non-manual with distance (and distance > 0)
+                            if (stravaActivity.manual != true && stravaActivity.distance != null && stravaActivity.distance > 0) {
+                                RoutePreview(
+                                    activityId = stravaActivity.id?.toLong() ?: 0,
+                                    stravaViewModel = stravaViewModel,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(140.dp)
+                                        .padding(vertical = 12.dp)
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
+}
+
+// ... existing code ...
+@Composable
+private fun formatDuration(seconds: Int): String {
+    val hours = seconds / 3600
+    val minutes = (seconds % 3600) / 60
+    return if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
+}
+// ... existing code ...
+
+@Composable
+fun formatDistance(meters: Float?): String {
+    if (meters == null) return "N/A"
+    return if (meters >= 1000) String.format("%.1f km", meters / 1000f) else "${meters.toInt()} m"
 }
 
 @Composable

@@ -10,6 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -177,6 +178,18 @@ fun AppNavigation(
     stravaViewModel: StravaViewModel,
     healthConnectViewModel: HealthConnectViewModel
 ) {
+    // Observe auth state for logout handling
+    val authState by authViewModel.authState.observeAsState()
+
+    // Navigate to login when user is logged out, using LaunchedEffect to avoid constant recomposition
+    LaunchedEffect(authState) {
+        if (authState is com.example.fitnessapp.viewmodel.AuthState.Unauthenticated) {
+            navController.navigate("login_screen") {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
+
     NavHost(navController = navController, startDestination = "login_screen") {
         composable("login_screen") {
             LoginScreen(navController, authViewModel)
@@ -231,7 +244,7 @@ fun AppNavigation(
             AddEmailScreen(navController, authViewModel)
         }
         composable("home_screen"){
-            HomeScreen(navController, authViewModel, stravaViewModel)
+            HomeScreen(navController, authViewModel, stravaViewModel, healthConnectViewModel)
         }
         composable("calendar_screen"){
             InfiniteCalendarPage(navController, authViewModel)
@@ -243,7 +256,7 @@ fun AppNavigation(
             WorkoutScreen(navController)
         }
         composable("more") {
-            MoreScreen(navController)
+            MoreScreen(navController, authViewModel)
         }
         composable("change_sport_metrics") {
             ChangeSportMetricsScreen(navController, authViewModel)

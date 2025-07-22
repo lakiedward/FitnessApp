@@ -22,7 +22,14 @@ import java.util.*
 class BleTrainerService(private val context: Context) {
     private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private val bleScanner = bluetoothAdapter?.bluetoothLeScanner
-    private var bluetoothGatt: BluetoothGatt? = null
+
+    // Support for multiple concurrent connections
+    private val connectedGatts = mutableMapOf<String, BluetoothGatt>()
+    private val dataFlows = mutableMapOf<String, kotlinx.coroutines.flow.MutableSharedFlow<RealTimeData>>()
+
+    // Variables for cumulative cadence calculation (per device)
+    private val lastRevolutions = mutableMapOf<String, Int>()
+    private val lastEventTime = mutableMapOf<String, Int>()
 
     companion object {
         private const val TAG = "BleTrainerService"
@@ -135,23 +142,42 @@ class BleTrainerService(private val context: Context) {
             return@callbackFlow
         }
 
+        val deviceId = device.address
+        val dataFlow = kotlinx.coroutines.flow.MutableSharedFlow<RealTimeData>(replay = 1)
+        dataFlows[deviceId] = dataFlow
+
+        var isServicesDiscovered = false
+
         val gattCallback = object : BluetoothGattCallback() {
             override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
                 when (newState) {
                     BluetoothProfile.STATE_CONNECTED -> {
-                        Log.d(TAG, "Connected to ${device.name}")
+                        Log.d(TAG, "GATT Connected to ${device.name}")
+                        connectedGatts[deviceId] = gatt
                         gatt.discoverServices()
                     }
                     BluetoothProfile.STATE_DISCONNECTED -> {
-                        Log.d(TAG, "Disconnected from ${device.name}")
+                        Log.d(TAG, "GATT Disconnected from ${device.name}")
+                        connectedGatts.remove(deviceId)
+                        dataFlows.remove(deviceId)
                         close()
                     }
+                }
+
+                // Loghează și alte statusuri pentru debugging
+                if (status != BluetoothGatt.GATT_SUCCESS) {
+                    Log.e(TAG, "GATT connection failed with status: $status")
+                    close()
                 }
             }
 
             override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     Log.d(TAG, "Services discovered for ${device.name}")
+                    isServicesDiscovered = true
+
+                    // Trimite un RealTimeData inițial pentru a semnala conexiunea
+                    trySend(RealTimeData(timestamp = System.currentTimeMillis()))
 
                     // Abonează-te la notificările de putere
                     val powerService = gatt.getService(CYCLING_POWER_SERVICE_UUID)
@@ -174,16 +200,18 @@ class BleTrainerService(private val context: Context) {
                     // Abonează-te la serviciul fitness machine
                     val fitnessService = gatt.getService(FITNESS_MACHINE_SERVICE_UUID)
                     fitnessService?.let { service ->
-                        // Aici poți adăuga caracteristicile specifice pentru fitness machines
                         Log.d(TAG, "Fitness Machine service found")
                     }
+                } else {
+                    Log.e(TAG, "Service discovery failed with status: $status")
+                    close()
                 }
             }
 
             override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
                 when (characteristic.uuid) {
                     CYCLING_POWER_MEASUREMENT_UUID -> {
-                        val powerData = parsePowerMeasurement(characteristic.value)
+                        val powerData = parsePowerMeasurement(characteristic.value, deviceId)
                         trySend(powerData)
                     }
                     HEART_RATE_MEASUREMENT_UUID -> {
@@ -195,12 +223,18 @@ class BleTrainerService(private val context: Context) {
         }
 
         Log.d(TAG, "Connecting to ${device.name} (${device.address})")
-        bluetoothGatt = device.connectGatt(context, false, gattCallback)
+        val gatt = device.connectGatt(context, false, gattCallback)
+        connectedGatts[deviceId] = gatt
 
         awaitClose { 
             Log.d(TAG, "Closing connection to ${device.name}")
-            bluetoothGatt?.disconnect()
-            bluetoothGatt?.close()
+            gatt.disconnect()
+            gatt.close()
+            connectedGatts.remove(deviceId)
+            dataFlows.remove(deviceId)
+            // Clean up cadence tracking data
+            lastRevolutions.remove(deviceId)
+            lastEventTime.remove(deviceId)
         }
     }
 
@@ -221,20 +255,54 @@ class BleTrainerService(private val context: Context) {
     /**
      * Parsează datele de putere conform standardului Bluetooth Cycling Power
      */
-    private fun parsePowerMeasurement(data: ByteArray): RealTimeData {
+    private fun parsePowerMeasurement(data: ByteArray, deviceId: String): RealTimeData {
         if (data.size < 4) return RealTimeData()
 
         try {
-            // Flags (2 bytes) + Instantaneous Power (2 bytes)
-            val power = ((data[3].toInt() and 0xFF) shl 8) or (data[2].toInt() and 0xFF)
+            // Parsează flags (primii 2 bytes, little-endian)
+            val flags = (data[1].toInt() and 0xFF shl 8) or (data[0].toInt() and 0xFF)
 
-            // Cadence poate fi prezentă în funcție de flags
+            // Parsează power (bytes 2-3, signed int16)
+            val power = (data[3].toInt() shl 8) or (data[2].toInt() and 0xFF)
+                .let { if (it > 32767) it - 65536 else it } // Signed
+
+            // Verifică dacă Pedal Revolution Data este prezent (bit 4 în flags)
             var cadence = 0
-            if (data.size > 6) {
-                cadence = data[6].toInt() and 0xFF
+            var offset = 4 // După flags + power
+
+            val isCadencePresent = (flags and 0x10) != 0 // Bit 4 (0x10 = 16)
+            if (isCadencePresent && data.size >= offset + 4) {
+                // Revoluții cumulative (uint16, bytes offset:offset+1)
+                val revolutions = (data[offset + 1].toInt() and 0xFF shl 8) or (data[offset].toInt() and 0xFF)
+
+                // Ultimul event time (uint16, bytes offset+2:offset+3, în 1/1024 secunde)
+                val eventTime = (data[offset + 3].toInt() and 0xFF shl 8) or (data[offset + 2].toInt() and 0xFF)
+
+                // Calculează RPM doar dacă avem date anterioare valide
+                val lastRev = lastRevolutions[deviceId] ?: 0
+                val lastTime = lastEventTime[deviceId] ?: 0
+
+                if (lastRev > 0 && lastTime > 0 && revolutions > lastRev && eventTime != lastTime) {
+                    val revDiff = revolutions - lastRev
+                    val timeDiff = if (eventTime >= lastTime) {
+                        eventTime - lastTime
+                    } else {
+                        // Handle rollover (uint16 max 65535)
+                        65536 + eventTime - lastTime
+                    }.toDouble() / 1024.0 // Convert to seconds
+
+                    cadence = if (timeDiff > 0) ((revDiff * 60) / timeDiff).toInt() else 0
+                }
+
+                // Actualizează valorile anterioare
+                lastRevolutions[deviceId] = revolutions
+                lastEventTime[deviceId] = eventTime
+            } else {
+                // Dacă nu e prezent, setează 0
+                cadence = 0
             }
 
-            Log.d(TAG, "Power: ${power}W, Cadence: ${cadence}rpm")
+            Log.d(TAG, "Power: ${power}W, Cadence: ${cadence}rpm (flags: 0x${flags.toString(16)})")
 
             return RealTimeData(
                 power = power,
@@ -293,8 +361,9 @@ class BleTrainerService(private val context: Context) {
      * Setează puterea țintă pe un smart trainer (dacă suportă)
      */
     @SuppressLint("MissingPermission")
-    fun setTargetPower(powerWatts: Int): Boolean {
-        val fitnessService = bluetoothGatt?.getService(FITNESS_MACHINE_SERVICE_UUID)
+    fun setTargetPower(deviceId: String, powerWatts: Int): Boolean {
+        val gatt = connectedGatts[deviceId] ?: return false
+        val fitnessService = gatt.getService(FITNESS_MACHINE_SERVICE_UUID)
         val controlPoint = fitnessService?.getCharacteristic(FITNESS_MACHINE_CONTROL_POINT_UUID)
 
         return if (controlPoint != null) {
@@ -306,20 +375,44 @@ class BleTrainerService(private val context: Context) {
             )
 
             controlPoint.value = command
-            bluetoothGatt?.writeCharacteristic(controlPoint) ?: false
+            gatt.writeCharacteristic(controlPoint)
         } else {
-            Log.w(TAG, "Fitness Machine Control Point not available")
+            Log.w(TAG, "Fitness Machine Control Point not available for device $deviceId")
             false
         }
     }
 
     /**
-     * Deconectează de la dispozitivul curent
+     * Deconectează de la un dispozitiv specific
      */
     @SuppressLint("MissingPermission")
-    fun disconnect() {
-        bluetoothGatt?.disconnect()
-        bluetoothGatt?.close()
-        bluetoothGatt = null
+    fun disconnect(deviceId: String) {
+        connectedGatts[deviceId]?.let { gatt ->
+            gatt.disconnect()
+            gatt.close()
+            connectedGatts.remove(deviceId)
+            dataFlows.remove(deviceId)
+            // Clean up cadence tracking data
+            lastRevolutions.remove(deviceId)
+            lastEventTime.remove(deviceId)
+            Log.d(TAG, "Disconnected from device: $deviceId")
+        }
+    }
+
+    /**
+     * Deconectează de la toate dispozitivele
+     */
+    @SuppressLint("MissingPermission")
+    fun disconnectAll() {
+        connectedGatts.values.forEach { gatt ->
+            gatt.disconnect()
+            gatt.close()
+        }
+        connectedGatts.clear()
+        dataFlows.clear()
+        // Clean up all cadence tracking data
+        lastRevolutions.clear()
+        lastEventTime.clear()
+        Log.d(TAG, "Disconnected from all devices")
     }
 }

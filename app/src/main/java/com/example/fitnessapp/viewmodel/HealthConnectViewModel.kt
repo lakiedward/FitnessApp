@@ -15,6 +15,7 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import com.example.fitnessapp.api.ApiService
@@ -124,6 +125,9 @@ class HealthConnectViewModel private constructor(
     private val _healthConnectState = MutableStateFlow<HealthConnectState>(HealthConnectState.NotConnected)
     val healthConnectState = _healthConnectState.asStateFlow()
 
+    private val _totalSteps = MutableStateFlow<Long?>(null)
+    val totalSteps = _totalSteps.asStateFlow()
+
     private val healthConnectClient by lazy { HealthConnectClient.getOrCreate(applicationContext) }
 
     private val HC_PERMS = setOf(
@@ -137,6 +141,8 @@ class HealthConnectViewModel private constructor(
         HealthPermission.getWritePermission(HeartRateRecord::class),
         HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
         HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+        HealthPermission.getWritePermission(TotalCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(SleepSessionRecord::class),
         HealthPermission.getWritePermission(SleepSessionRecord::class)
     )
@@ -1038,6 +1044,9 @@ class HealthConnectViewModel private constructor(
                     .putBoolean("is_connected", true)
                     .putBoolean("user_granted_permissions", true)
                     .apply()
+
+                // Fetch daily steps after successful connection
+                fetchDailySteps()
             } else {
                 Log.w("HealthConnect", "Permissions granted callback but verification failed.")
                 _healthConnectState.value =
@@ -1056,6 +1065,28 @@ class HealthConnectViewModel private constructor(
             // Attempt to open Health Connect settings automatically to prompt the user again
             // This helps in cases where the system dialog is dismissed instantly or no dialog is shown.
             openHealthConnectSettings()
+        }
+    }
+
+    fun fetchDailySteps() {
+        viewModelScope.launch {
+            try {
+                val now = Instant.now()
+                val start = now.minus(1, ChronoUnit.DAYS)
+                val stepsRecords = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = StepsRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(start, now)
+                    )
+                ).records
+
+                val totalSteps = stepsRecords.sumOf { it.count }
+                _totalSteps.value = totalSteps
+            } catch (e: Exception) {
+                // Handle error, e.g., set to null or log
+                Log.e("HealthConnect", "Error fetching daily steps", e)
+                _totalSteps.value = null
+            }
         }
     }
 
@@ -2402,6 +2433,33 @@ class HealthConnectViewModel private constructor(
             }
         } catch (e: Exception) {
             Log.e("HealthConnect", "Error getting today's sleep data", e)
+            0.0
+        }
+    }
+
+    suspend fun getTodaysTotalCaloriesBurned(): Double {
+        return try {
+            // Get total calories burned for today (last 24 hours)
+            val endTime = Instant.now()
+            val startTime = endTime.minus(24, ChronoUnit.HOURS)
+
+            val totalCaloriesRecords = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    recordType = TotalCaloriesBurnedRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            ).records
+
+            if (totalCaloriesRecords.isNotEmpty()) {
+                val totalCalories = totalCaloriesRecords.sumOf { it.energy.inCalories }
+                Log.d("HealthConnect", "Found total calories burned today: $totalCalories")
+                totalCalories
+            } else {
+                Log.d("HealthConnect", "No total calories data found for today")
+                0.0
+            }
+        } catch (e: Exception) {
+            Log.e("HealthConnect", "Error getting today's total calories burned", e)
             0.0
         }
     }

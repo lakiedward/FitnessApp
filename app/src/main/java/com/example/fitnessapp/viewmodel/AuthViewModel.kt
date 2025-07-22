@@ -445,6 +445,13 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
         Log.d("AuthViewModel", "Token saved successfully: $token")
     }
 
+    // Logout function to clear token and set auth state to unauthenticated
+    fun logout() {
+        sharedPreferences.edit().remove("jwt_token").apply()
+        Log.d("AuthViewModel", "Token cleared - user logged out")
+        _authState.value = AuthState.Unauthenticated
+    }
+
 }
 
 

@@ -1,3 +1,71 @@
 <resources>
     <string name="app_name">FitnessApp</string>
+
+    <!-- Training Detail Screen -->
+    <string name="back_button">Back</string>
+    <string name="calculating_training_metrics">Calculating training metrics…</string>
+    <string name="error_prefix">Error: %1$s</string>
+    <string name="retry_button">Retry</string>
+    <string name="training_type">Training Type</string>
+    <string name="unknown_workout">Unknown</string>
+    <string name="workout_structure">Workout Structure</string>
+    <string name="description">Description</string>
+    <string name="cycling_ftp">Cycling FTP</string>
+    <string name="running_data">Running Data</string>
+    <string name="swimming_data">Swimming Data</string>
+    <string name="training_information">Training Information</string>
+    <string name="using_default_values">Using default values for calculations</string>
+    <string name="start_workout">Începe antrenamentul</string>
+
+    <!-- Metrics -->
+    <string name="tss_label">TSS</string>
+    <string name="duration_label">Duration</string>
+    <string name="calories_label">Calories</string>
+    <string name="ftp_label">FTP</string>
+    <string name="fthr_label">FTHR</string>
+    <string name="running_pace_label">Running Pace</string>
+    <string name="pace_100m_label">Pace 100m</string>
+    <string name="fthr_swimming_label">FTHR Swimming</string>
+
+    <!-- Units -->
+    <string name="watts_unit">watts</string>
+    <string name="bpm_unit">bpm</string>
+    <string name="no_data">No data</string>
+
+    <!-- Zone Distribution -->
+    <string name="zone_distribution">Zone Distribution</string>
+    <string name="zone_1">Z1</string>
+    <string name="zone_2">Z2</string>
+    <string name="zone_3">Z3</string>
+    <string name="zone_4">Z4</string>
+    <string name="zone_5">Z5</string>
+
+    <!-- Strava Integration -->
+    <string name="sync_to_strava">Sync this workout to Strava?</string>
+    <string name="sync_button">Sync</string>
+    <string name="strava_logo_description">Strava logo</string>
+
+    <!-- Empty States -->
+    <string name="no_training_data">No Training Data</string>
+    <string name="no_training_data_message">No metrics available for this workout. Please check your training plan or try refreshing.</string>
+    <string name="no_steps_data">No Workout Structure</string>
+    <string name="no_steps_data_message">Workout structure is not available for this training session.</string>
+
+    <!-- Accessibility -->
+    <string name="training_chart_description">Training workout structure chart showing intensity zones over time</string>
+    <string name="zone_distribution_description">Zone distribution showing time spent in each power or heart rate zone</string>
+    <string name="sync_strava_button_description">Sync workout to Strava</string>
+
+    <!-- Test Tags -->
+    <string name="test_tag_back_button">back_button</string>
+    <string name="test_tag_retry_button">retry_button</string>
+    <string name="test_tag_start_workout_button">start_workout_button</string>
+    <string name="test_tag_training_type_card">training_type_card</string>
+    <string name="test_tag_workout_structure_card">workout_structure_card</string>
+    <string name="test_tag_metrics_card">metrics_card</string>
+    <string name="test_tag_sport_specific_card">sport_specific_card</string>
+    <string name="test_tag_description_card">description_card</string>
+    <string name="test_tag_zone_distribution_card">zone_distribution_card</string>
+    <string name="test_tag_strava_sync_card">strava_sync_card</string>
+    <string name="test_tag_empty_state_card">empty_state_card</string>
 </resources>

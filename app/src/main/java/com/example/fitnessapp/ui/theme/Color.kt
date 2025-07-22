@@ -18,3 +18,45 @@ val Grey900 = Color(0xFF202124)
 val White = Color(0xFFFFFFFF)
 //green
 val Green500 = Color(0xFF4CAF50)
+
+// Workout Colors Object for centralized sport-specific theming
+object WorkoutColors {
+    // Cycling colors
+    val cyclingBg = Color(0xFFF0F9FF)
+    val cyclingText = Color(0xFF2563EB)
+
+    // Running colors
+    val runningBg = Color(0xFFF0FDF4)
+    val runningText = Color(0xFF059669)
+
+    // Swimming colors
+    val swimmingBg = Color(0xFFFFF7ED)
+    val swimmingText = Color(0xFFD97706)
+
+    // Default colors
+    val defaultBg = Color(0xFFF8FAFC)
+    val defaultText = Color(0xFF1F2937)
+
+    // Common colors
+    val primaryPurple = Color(0xFF6366F1)
+    val textSecondary = Color(0xFF6B7280)
+    val errorRed = Color(0xFFEF4444)
+
+    fun getBackgroundColor(workoutType: String?): Color {
+        return when (workoutType?.lowercase()) {
+            "cycling" -> cyclingBg
+            "running" -> runningBg
+            "swimming" -> swimmingBg
+            else -> defaultBg
+        }
+    }
+
+    fun getTextColor(workoutType: String?): Color {
+        return when (workoutType?.lowercase()) {
+            "cycling" -> cyclingText
+            "running" -> runningText
+            "swimming" -> swimmingText
+            else -> defaultText
+        }
+    }
+}

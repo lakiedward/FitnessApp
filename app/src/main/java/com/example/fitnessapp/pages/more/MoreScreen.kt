@@ -38,9 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.R
+import com.example.fitnessapp.viewmodel.AuthViewModel
 
 @Composable
-fun MoreScreen(navController: NavController) {
+fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = null) {
     val context = LocalContext.current
 
     Scaffold(
@@ -146,8 +147,11 @@ fun MoreScreen(navController: NavController) {
 
                     ModernSection(title = "Actions") {
                         ModernSectionItem("Log out") {
+                            authViewModel?.logout()
                             Toast.makeText(context, "Logged out", Toast.LENGTH_SHORT).show()
-                            // TODO: handle logout logic
+                            navController.navigate("login_screen") {
+                                popUpTo(0) { inclusive = true }
+                            }
                         }
                     }
 
@@ -206,5 +210,5 @@ fun ModernSectionItem(title: String, onClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun MoreScreenPreview() {
-    MoreScreen(navController = rememberNavController())
+    MoreScreen(navController = rememberNavController(), authViewModel = null)
 }

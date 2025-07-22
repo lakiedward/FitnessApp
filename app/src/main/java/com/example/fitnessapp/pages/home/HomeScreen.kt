@@ -43,6 +43,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -62,6 +63,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.mock.SharedPreferencesMock
 import com.example.fitnessapp.viewmodel.AuthViewModel
+import com.example.fitnessapp.viewmodel.HealthConnectViewModel
 import com.example.fitnessapp.viewmodel.HomeViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModel
 
@@ -89,7 +91,8 @@ fun formatSleepHours(decimalHours: Double): String {
 fun HomeScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
-    stravaViewModel: StravaViewModel
+    stravaViewModel: StravaViewModel,
+    healthConnectViewModel: HealthConnectViewModel
 ) {
     val today = getTodayDate()
     val trainingPlans by authViewModel.trainingPlan.observeAsState(emptyList())
@@ -104,12 +107,17 @@ fun HomeScreen(
         authViewModel.getUserTrainingData()
         stravaViewModel.syncCheck()
         homeViewModel.fetchSleepData(context)
+        homeViewModel.fetchCalorieData(context)
+        healthConnectViewModel.fetchDailySteps()
     }
 
     val ftpEstimate by homeViewModel.ftpEstimate.observeAsState()
     val isLoading by homeViewModel.isLoading.observeAsState()
     val error by homeViewModel.error.observeAsState()
     val sleepHours by homeViewModel.sleepHours.observeAsState(0.0)
+    val caloriesBurned by homeViewModel.caloriesBurned.observeAsState(0.0)
+    val calorieAllowance by homeViewModel.calorieAllowance.observeAsState(0.0)
+    val steps by healthConnectViewModel.totalSteps.collectAsState()
 
     Scaffold(
         bottomBar = {
@@ -150,7 +158,7 @@ fun HomeScreen(
                 }
 
                 item {
-                    MetricsSection(ftpEstimate, userTrainingData, isLoading, sleepHours)
+                    MetricsSection(ftpEstimate, userTrainingData, isLoading, sleepHours, steps, caloriesBurned, calorieAllowance)
                 }
 
                 if (error != null) {
@@ -348,7 +356,7 @@ private fun QuickActionCard(
 }
 
 @Composable
-private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading: Boolean?, sleepHours: Double) {
+private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading: Boolean?, sleepHours: Double, steps: Long?, caloriesBurned: Double, calorieAllowance: Double) {
     Column {
         Text(
             text = "Your Metrics",
@@ -364,17 +372,17 @@ private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading:
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 MetricCard(
-                    title = "Heart Rate",
-                    value = "72",
-                    unit = "bpm",
-                    icon = Icons.Filled.Favorite,
-                    modifier = Modifier.weight(1f)
-                )
-                MetricCard(
                     title = "Sleep",
                     value = if (sleepHours > 0) formatSleepHours(sleepHours) else "--",
                     unit = "",
                     icon = Icons.Filled.Bedtime,
+                    modifier = Modifier.weight(1f)
+                )
+                MetricCard(
+                    title = "Steps",
+                    value = steps?.toString() ?: "No data",
+                    unit = "steps",
+                    icon = Icons.Filled.DirectionsWalk,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -384,17 +392,39 @@ private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading:
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 MetricCard(
-                    title = "Calories",
-                    value = "2,450",
+                    title = "Calories Burned",
+                    value = if (caloriesBurned > 0) caloriesBurned.toInt().toString() else "No data",
                     unit = "kcal",
                     icon = Icons.Filled.LocalFireDepartment,
                     modifier = Modifier.weight(1f)
                 )
                 MetricCard(
-                    title = "Steps",
-                    value = "12,847",
-                    unit = "steps",
-                    icon = Icons.Filled.DirectionsWalk,
+                    title = "Daily Allowance",
+                    value = if (calorieAllowance > 0) calorieAllowance.toInt().toString() else "2,000",
+                    unit = "kcal",
+                    icon = Icons.Filled.Favorite,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                MetricCard(
+                    title = "Heart Rate",
+                    value = "72",
+                    unit = "bpm",
+                    icon = Icons.Filled.Favorite,
+                    modifier = Modifier.weight(1f)
+                )
+                MetricCard(
+                    title = "Remaining",
+                    value = if (calorieAllowance > 0 && caloriesBurned > 0) {
+                        (calorieAllowance - caloriesBurned).toInt().toString()
+                    } else "2,000",
+                    unit = "kcal",
+                    icon = Icons.Filled.FitnessCenter,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -578,7 +608,8 @@ fun HomeScreenPreview() {
         HomeScreen(
             navController = rememberNavController(),
             authViewModel = AuthViewModel(SharedPreferencesMock()),
-            stravaViewModel = StravaViewModel(LocalContext.current)
+            stravaViewModel = StravaViewModel(LocalContext.current),
+            healthConnectViewModel = HealthConnectViewModel.getInstance(LocalContext.current)
         )
     }
 }
