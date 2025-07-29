@@ -39,6 +39,8 @@ fun WorkoutExecutionScreen(
     training: TrainingPlan,
     navController: NavController
 ) {
+    Log.d("WorkoutExecution", "[DEBUG_LOG] WorkoutExecutionScreen started with trainingId: $trainingId, training.id: ${training.id}, training.workout_name: ${training.workout_name}")
+
     val context = LocalContext.current
     val trainerViewModel: TrainerViewModel = viewModel(
         factory = TrainerViewModelFactory(context)
@@ -169,6 +171,7 @@ fun WorkoutExecutionScreen(
                     if (isTrainerConnected && connectionState == ConnectionState.CONNECTED) {
                         Button(
                             onClick = { 
+                                Log.d("WorkoutExecution", "[DEBUG_LOG] Starting workout from button click - training.id: ${training.id}")
                                 val sharedPreferences = context.getSharedPreferences("fitness_app_prefs", android.content.Context.MODE_PRIVATE)
                                 val token = sharedPreferences.getString("jwt_token", null)
                                 trainerViewModel.startWorkout(training, token)
@@ -219,6 +222,7 @@ fun WorkoutExecutionScreen(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     session = currentSession!!,
                     onStart = { 
+                        Log.d("WorkoutExecution", "[DEBUG_LOG] Starting workout from controls - training.id: ${training.id}")
                         val sharedPreferences = context.getSharedPreferences("fitness_app_prefs", android.content.Context.MODE_PRIVATE)
                         val token = sharedPreferences.getString("jwt_token", null)
                         trainerViewModel.startWorkout(training, token)

@@ -1,0 +1,24 @@
+{
+  "project_name": "FitSense",
+  "components": {
+    "backend": {
+      "path": "/home/laki-edward/PycharmProjects/Fitness_app/",
+      "technology": "FastAPI",
+      "main_file": "app/main.py"
+    },
+    "android_ui": {
+      "path": "/home/laki-edward/StudioProjects/FitnessApp/",
+      "technology": "Kotlin/Android",
+      "main_file": "app/src/main/java/com/example/fitnessapp/MainActivity.kt"
+    },
+    "web_ui": {
+      "path": "/home/laki-edward/IdeaProjects/fitsense/",
+      "technology": "Angular",
+      "main_file": "src/main.ts"
+    }
+  },
+  "api_service": {
+    "backend_url": "http://localhost:8000/api",
+    "api_definition": "/home/laki-edward/StudioProjects/FitnessApp/app/src/main/java/com/example/fitnessapp/api/ApiService.kt"
+  }
+}

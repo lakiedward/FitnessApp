@@ -4,13 +4,17 @@ package com.example.fitnessapp.api
 import com.example.fitnessapp.model.CyclingFtpResponse
 import com.example.fitnessapp.model.DetaliiUserCycling
 import com.example.fitnessapp.model.DeleteActivityResponse
+import com.example.fitnessapp.model.EnhancedWorkoutRequest
+import com.example.fitnessapp.model.EnhancedWorkoutResponse
 import com.example.fitnessapp.model.HealthConnectActivity
 import com.example.fitnessapp.model.HealthConnectStats
 import com.example.fitnessapp.model.HealthConnectSyncRequest
 import com.example.fitnessapp.model.HealthConnectSyncResponse
 import com.example.fitnessapp.model.LastSyncResponse
 import com.example.fitnessapp.model.ManualSyncRequest
+import com.example.fitnessapp.model.OverreachingStatus
 import com.example.fitnessapp.model.PacePredictions
+import com.example.fitnessapp.model.PlanAdjustmentResponse
 import com.example.fitnessapp.model.RacesModelResponse
 import com.example.fitnessapp.model.RunningFtpResponse
 import com.example.fitnessapp.model.SavedWorkout
@@ -22,6 +26,7 @@ import com.example.fitnessapp.model.SwimmingPaceResponse
 import com.example.fitnessapp.model.TrainingDateUpdate
 import com.example.fitnessapp.model.TrainingPlan
 import com.example.fitnessapp.model.TrainingPlanGenerate
+import com.example.fitnessapp.model.TrainingStats
 import com.example.fitnessapp.model.User
 import com.example.fitnessapp.model.UserDetalis
 import com.example.fitnessapp.model.UserRaces
@@ -208,4 +213,30 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body workout: SavedWorkout
     ): Response<SavedWorkoutResponse>
+
+    // Enhanced Workout Execution Endpoints
+    @POST("workout-execution/workouts/save")
+    suspend fun saveEnhancedWorkout(
+        @Header("Authorization") token: String,
+        @Body workout: EnhancedWorkoutRequest
+    ): Response<EnhancedWorkoutResponse>
+
+    // Overreaching Detection
+    @GET("workout-execution/workouts/overreaching_status")
+    suspend fun getOverreachingStatus(
+        @Header("Authorization") token: String
+    ): Response<OverreachingStatus>
+
+    // Plan Adjustment
+    @POST("workout-execution/workouts/adjust-plan-for-overreaching")
+    suspend fun adjustPlanForOverreaching(
+        @Header("Authorization") token: String
+    ): Response<PlanAdjustmentResponse>
+
+    // Training Statistics
+    @GET("workout-execution/workouts/planned-vs-actual-stats")
+    suspend fun getTrainingStats(
+        @Header("Authorization") token: String,
+        @Query("days") days: Int = 30
+    ): Response<TrainingStats>
 }

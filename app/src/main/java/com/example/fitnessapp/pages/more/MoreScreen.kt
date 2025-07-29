@@ -125,6 +125,9 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
                     ModernSection(title = "Account") {
                         ModernSectionItem("My Account") {}
                         ModernSectionItem("Settings") {}
+                        ModernSectionItem("Training Dashboard") {
+                            navController.navigate("training_dashboard")
+                        }
                         ModernSectionItem("App Integrations") {
                             navController.navigate("app_integrations")
                         }

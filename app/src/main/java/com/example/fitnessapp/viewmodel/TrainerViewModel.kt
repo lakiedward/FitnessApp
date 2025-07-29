@@ -261,6 +261,8 @@ class TrainerViewModel(private val context: Context) : ViewModel() {
     }
 
     fun startWorkout(trainingPlan: TrainingPlan, userToken: String? = null) {
+        Log.d(TAG, "[DEBUG_LOG] Starting workout with trainingPlan ID: ${trainingPlan.id}, name: ${trainingPlan.workout_name}")
+
         // Obține FTP-ul înainte de a începe antrenamentul
         userToken?.let { token ->
             fetchUserFtp(token)
@@ -406,42 +408,39 @@ class TrainerViewModel(private val context: Context) : ViewModel() {
                     )
                 }
 
-                // Creează obiectul SavedWorkout
-                val savedWorkout = SavedWorkout(
-                    trainingPlanId = session.trainingPlan.id,
+                // Creează obiectul EnhancedWorkoutRequest
+                Log.d(TAG, "[DEBUG_LOG] Creating EnhancedWorkoutRequest with plannedWorkoutId: ${session.trainingPlan.id}")
+                val enhancedWorkoutRequest = EnhancedWorkoutRequest(
+                    plannedWorkoutId = session.trainingPlan.id,  // Folosește planned_workout_id
+                    isPlanned = true,  // Marchează că e un workout planificat
                     workoutName = session.trainingPlan.workout_name,
                     startTime = sdf.format(Date(session.startTime)),
                     endTime = sdf.format(Date(endTime)),
                     duration = session.elapsedTime,
-                    totalPower = currentRealTimeData.power,
-                    averagePower = currentRealTimeData.power, // Simplificat - ar trebui calculat ca medie
-                    maxPower = currentRealTimeData.power, // Simplificat - ar trebui tracked max-ul
+                    averagePower = currentRealTimeData.power,
+                    maxPower = currentRealTimeData.power,
                     averageHeartRate = if (currentRealTimeData.heartRate > 0) currentRealTimeData.heartRate else null,
-                    maxHeartRate = if (currentRealTimeData.heartRate > 0) currentRealTimeData.heartRate else null, // Simplificat
+                    maxHeartRate = if (currentRealTimeData.heartRate > 0) currentRealTimeData.heartRate else null,
                     distance = if (currentRealTimeData.distance > 0) currentRealTimeData.distance else null,
-                    caloriesBurned = null, // Poate fi calculat în viitor
-                    workoutSteps = workoutStepsData, // Schimbat din workoutData
-                    performanceMetrics = mapOf(
-                        "ftp_used" to userFtp,
-                        "current_power_zone" to (_currentPowerZone.value?.name ?: "UNKNOWN"),
-                        "target_power" to currentTargetPower,
-                        "erg_mode_used" to (_ergMode.value ?: false)
-                    ),
-                    notes = "Workout completat din aplicație",
-                    workoutType = "cycling", // Default pentru cycling
-                    completed = true
+                    caloriesBurned = null,
+                    workoutType = "cycling",
+                    completed = true,
+                    notes = "Workout completat din aplicație"
                 )
 
-                // Apelează API-ul pentru salvare
-                val response = apiService.saveWorkout("Bearer $token", savedWorkout)
+                // Apelează API-ul pentru salvare cu noul endpoint
+                Log.d(TAG, "[DEBUG_LOG] Sending workout to API with plannedWorkoutId: ${enhancedWorkoutRequest.plannedWorkoutId}")
+                Log.d(TAG, "[DEBUG_LOG] Full EnhancedWorkoutRequest object: $enhancedWorkoutRequest")
+                val response = apiService.saveEnhancedWorkout("Bearer $token", enhancedWorkoutRequest)
 
                 if (response.isSuccessful) {
                     val result = response.body()
-                    Log.d(TAG, "Workout saved successfully: ${result?.message} (ID: ${result?.workoutId})")
+                    Log.d(TAG, "[DEBUG_LOG] Enhanced workout saved successfully: ${result?.message} (ID: ${result?.workoutId})")
+                    Log.d(TAG, "[DEBUG_LOG] Response workout details: ${result?.workout}")
                     onMessage("Workout salvat cu succes!")
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Log.e(TAG, "Failed to save workout: ${response.code()} - $errorBody")
+                    Log.e(TAG, "[DEBUG_LOG] Failed to save enhanced workout: ${response.code()} - $errorBody")
                     onMessage("Eroare la salvarea workout-ului: ${response.code()}")
                 }
 

@@ -1,3 +1,12 @@
+/**
+ * @project FitSense
+ * @component Android UI
+ * 
+ * @related_components
+ * - Backend API: /home/laki-edward/PycharmProjects/Fitness_app/
+ * - Web UI: /home/laki-edward/IdeaProjects/fitsense/
+ */
+
 package com.example.fitnessapp
 
 import android.content.Context
@@ -323,6 +332,12 @@ fun AppNavigation(
             StravaActivityDetailScreen(
                 navController = navController,
                 activityId = activityId
+            )
+        }
+        composable("training_dashboard") {
+            com.example.fitnessapp.pages.workout.TrainingDashboardScreen(
+                navController = navController,
+                authViewModel = authViewModel
             )
         }
     }
