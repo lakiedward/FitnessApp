@@ -27,6 +27,8 @@ import com.example.fitnessapp.model.UserDetalis
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 
 
 class AddAge : ComponentActivity() {
@@ -249,6 +251,16 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AddAgeScreenPreview() {
+    val navController = rememberNavController()
+    val userState = remember { mutableStateOf(UserDetalis(varsta = 25, inaltime = 175f, greutate = 70f, gender = "Male", discipline = "Running")) }
+    FitnessAppTheme {
+        AddAgeScreen(navController = navController, userDetalis = userState)
     }
 }
 

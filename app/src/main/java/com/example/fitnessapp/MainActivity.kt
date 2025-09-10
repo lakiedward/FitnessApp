@@ -11,7 +11,7 @@ package com.example.fitnessapp
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+ 
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -66,6 +66,7 @@ import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.viewmodel.HealthConnectViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModel
 import kotlinx.coroutines.launch
+import com.example.fitnessapp.navigation.Routes
 
 class MainActivity : ComponentActivity() {
     private lateinit var authViewModel: AuthViewModel
@@ -100,8 +101,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Handle the intent that started this activity
-        handleIntent(intent)
+        // Handle Strava code if forwarded from callback activity
         handleStravaCode(intent)
 
         setContent {
@@ -123,32 +123,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleIntent(intent)
         handleStravaCode(intent)
     }
 
-    private fun handleIntent(intent: Intent?) {
-        if (intent?.action == Intent.ACTION_VIEW) {
-            val uri: Uri? = intent.data
-            if (uri?.scheme == "fitnessapp" && uri.host == "strava" && uri.path?.startsWith("/callback") == true) {
-                // Extract the authorization code from the URI
-                val code = uri.getQueryParameter("code")
-                if (code != null) {
-                    Log.d("MainActivity", "Received Strava authorization code: $code")
-                    // Handle the auth code
-                    lifecycleScope.launch {
-                        try {
-                            stravaViewModel.handleAuthCode(code)
-                        } catch (e: Exception) {
-                            Log.e("MainActivity", "Error handling Strava auth code", e)
-                        }
-                    }
-                } else {
-                    Log.e("MainActivity", "No authorization code found in callback URI")
-                }
-            }
-        }
-    }
+    // Other deep links can be handled here if needed (Strava handled by StravaCallbackActivity)
 
     private fun handleStravaCode(intent: Intent?) {
         val code = intent?.getStringExtra("strava_code")
@@ -199,99 +177,118 @@ fun AppNavigation(
         }
     }
 
-    NavHost(navController = navController, startDestination = "login_screen") {
-        composable("login_screen") {
+    NavHost(navController = navController, startDestination = Routes.SPLASH) {
+        composable(Routes.SPLASH) {
+            // Decide where to go based on stored token
+            LaunchedEffect(Unit) {
+                val token = authViewModel.getToken()
+                if (!token.isNullOrEmpty()) {
+                    authViewModel.restoreSessionIfPossible()
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                } else {
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
+        }
+        composable(Routes.LOGIN) {
             LoginScreen(navController, authViewModel)
         }
-        composable("gender_selection_screen") {
+        composable(Routes.GENDER_SELECTION) {
             GenderSelectionScreen(navController, userDetalis)
         }
-        composable("app_integrations") {
+        composable(Routes.APP_INTEGRATIONS) {
             AppIntegrationsScreen(
                 authViewModel = authViewModel,
                 stravaViewModel = stravaViewModel,
                 healthConnectViewModel = healthConnectViewModel,
-                apiService = RetrofitClient.retrofit.create(ApiService::class.java)
+                apiService = RetrofitClient.retrofit.create(ApiService::class.java),
+                onOpenStravaSync = { navController.navigate(Routes.STRAVA_SYNC_LOADING) },
+                onNavigateBack = { navController.navigateUp() }
             )
         }
-        composable("add_age_screen") {
+        composable(Routes.ADD_AGE) {
             AddAgeScreen(navController, userDetalis)
         }
-        composable("strava_auth_screen") {
+        composable(Routes.STRAVA_AUTH) {
             StravaAuthScreen(
-                onContinue = { navController.navigate("choose_discipline") },
+                onContinue = { navController.navigate(Routes.CHOOSE_DISCIPLINE) },
                 authViewModel = authViewModel,
                 stravaViewModel = stravaViewModel,
                 navController = navController
             )
         }
-        composable("choose_sports") {
+        composable(Routes.CHOOSE_SPORTS) {
             ChooseSportsScreen(navController, authViewModel, choosedSports, userDetalis)
         }
-        composable("setup_status_loading_screen") {
+        composable(Routes.SETUP_STATUS_LOADING) {
             SetupStatusLoadingScreen(navController, authViewModel)
         }
-        composable("choose_discipline") {
+        composable(Routes.CHOOSE_DISCIPLINE) {
             ChooseDisciplineScreen(navController, authViewModel, userDetalis)
         }
-        composable("discipline_loading_screen") {
+        composable(Routes.DISCIPLINE_LOADING) {
             DisciplineLoadingScreen(navController, authViewModel, userDetalis.value)
         }
-        composable("add_ftp_screen") {
+        composable(Routes.ADD_FTP) {
             AddFtpScreen(navController, authViewModel)
         }
-        composable("add_running_pace_screen") {
+        composable(Routes.ADD_RUNNING_PACE) {
             AddRunningPaceScreen(navController, authViewModel)
         }
-        composable("add_swim_pace_screen") {
+        composable(Routes.ADD_SWIM_PACE) {
             AddSwimPaceScreen(navController, authViewModel)
         }
-        composable("plan_length_screen") {
+        composable(Routes.PLAN_LENGTH) {
             PlanLengthScreen(navController, authViewModel, choosedSports)
         }
-        composable("enter_add_email") {
+        composable(Routes.ENTER_EMAIL) {
             AddEmailScreen(navController, authViewModel)
         }
-        composable("home_screen"){
+        composable(Routes.HOME){
             HomeScreen(navController, authViewModel, stravaViewModel, healthConnectViewModel)
         }
-        composable("calendar_screen"){
+        composable(Routes.CALENDAR){
             InfiniteCalendarPage(navController, authViewModel)
         }
-        composable("season_screen") {
+        composable(Routes.SEASON) {
             SeasonScreen(navController, authViewModel)
         }
-        composable("workout_screen") {
+        composable(Routes.WORKOUT) {
             WorkoutScreen(navController)
         }
-        composable("more") {
+        composable(Routes.MORE) {
             MoreScreen(navController, authViewModel)
         }
-        composable("change_sport_metrics") {
+        composable(Routes.CHANGE_SPORT_METRICS) {
             ChangeSportMetricsScreen(navController, authViewModel)
         }
-        composable("training_zones") {
+        composable(Routes.TRAINING_ZONES) {
             TrainingZonesScreen(navController, authViewModel)
         }
-        composable("loading_screen") {
+        composable(Routes.LOADING) {
             LoadingScreen(navController, authViewModel)
         }
-        composable("strava_activities") {
+        composable(Routes.STRAVA_ACTIVITIES) {
             StravaActivitiesScreen(
                 stravaViewModel = stravaViewModel,
                 authViewModel = authViewModel,
                 onNavigateBack = { navController.navigateUp() }
             )
         }
-        composable("strava_sync_loading") {
+        composable(Routes.STRAVA_SYNC_LOADING) {
             StravaSyncLoadingScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onSyncComplete = { navController.navigateUp() },
+                onViewActivities = { navController.navigate(Routes.STRAVA_ACTIVITIES) },
                 stravaViewModel = stravaViewModel,
                 authViewModel = authViewModel
             )
         }
-        composable("training_detail/{trainingId}") { backStackEntry ->
+        composable(Routes.TRAINING_DETAIL) { backStackEntry ->
             val trainingId = backStackEntry.arguments?.getString("trainingId")?.toIntOrNull()
             val trainingPlans by authViewModel.trainingPlan.observeAsState(emptyList())
             val training = trainingPlans.find { it.id == trainingId }
@@ -303,7 +300,7 @@ fun AppNavigation(
                 )
             }
         }
-        composable("loading_training/{trainingId}") { backStackEntry ->
+        composable(Routes.LOADING_TRAINING) { backStackEntry ->
             val trainingId = backStackEntry.arguments?.getString("trainingId")?.toIntOrNull()
             val trainingPlans by authViewModel.trainingPlan.observeAsState(emptyList())
             val training = trainingPlans.find { it.id == trainingId }
@@ -315,7 +312,7 @@ fun AppNavigation(
                 )
             }
         }
-        composable("workout_execution/{trainingId}") { backStackEntry ->
+        composable(Routes.WORKOUT_EXECUTION) { backStackEntry ->
             val trainingId = backStackEntry.arguments?.getString("trainingId")?.toIntOrNull()
             val trainingPlans by authViewModel.trainingPlan.observeAsState(emptyList())
             val training = trainingPlans.find { it.id == trainingId }
@@ -327,14 +324,14 @@ fun AppNavigation(
                 )
             }
         }
-        composable("strava_activity_detail/{activityId}") { backStackEntry ->
+        composable(Routes.STRAVA_ACTIVITY_DETAIL) { backStackEntry ->
             val activityId = backStackEntry.arguments?.getString("activityId")?.toLongOrNull() ?: 0L
             StravaActivityDetailScreen(
                 navController = navController,
                 activityId = activityId
             )
         }
-        composable("training_dashboard") {
+        composable(Routes.TRAINING_DASHBOARD) {
             com.example.fitnessapp.pages.workout.TrainingDashboardScreen(
                 navController = navController,
                 authViewModel = authViewModel

@@ -14,6 +14,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.fitnessapp.viewmodel.AuthViewModel
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.mock.SharedPreferencesMock
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,5 +44,15 @@ fun TrainingDashboardScreen(
             Text("Training Dashboard Content")
             // Add more dashboard content here
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TrainingDashboardScreenPreview() {
+    val navController = rememberNavController()
+    val authViewModel = AuthViewModel(SharedPreferencesMock())
+    FitnessAppTheme {
+        TrainingDashboardScreen(navController = navController, authViewModel = authViewModel)
     }
 }

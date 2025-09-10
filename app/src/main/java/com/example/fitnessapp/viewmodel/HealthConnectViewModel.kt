@@ -2451,15 +2451,46 @@ class HealthConnectViewModel private constructor(
             ).records
 
             if (totalCaloriesRecords.isNotEmpty()) {
-                val totalCalories = totalCaloriesRecords.sumOf { it.energy.inCalories }
-                Log.d("HealthConnect", "Found total calories burned today: $totalCalories")
-                totalCalories
+                // Use kilocalories for UI (kcal). The previous implementation summed raw calories,
+                // which displayed 1000x larger values when labeled as kcal.
+                val totalKcal = totalCaloriesRecords.sumOf { it.energy.inKilocalories }
+                Log.d("HealthConnect", "Found total calories burned today (kcal): $totalKcal")
+                totalKcal
             } else {
                 Log.d("HealthConnect", "No total calories data found for today")
                 0.0
             }
         } catch (e: Exception) {
             Log.e("HealthConnect", "Error getting today's total calories burned", e)
+            0.0
+        }
+    }
+
+    /**
+     * Get today's active calories (exercise only), in kilocalories (kcal).
+     */
+    suspend fun getTodaysActiveCaloriesBurned(): Double {
+        return try {
+            val endTime = Instant.now()
+            val startTime = endTime.minus(24, ChronoUnit.HOURS)
+
+            val activeRecords = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    recordType = ActiveCaloriesBurnedRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            ).records
+
+            if (activeRecords.isNotEmpty()) {
+                val activeKcal = activeRecords.sumOf { it.energy.inKilocalories }
+                Log.d("HealthConnect", "Found active calories today (kcal): $activeKcal")
+                activeKcal
+            } else {
+                Log.d("HealthConnect", "No active calories data found for today")
+                0.0
+            }
+        } catch (e: Exception) {
+            Log.e("HealthConnect", "Error getting today's active calories", e)
             0.0
         }
     }

@@ -14,6 +14,10 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessapp.viewmodel.StravaViewModel
 import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.viewmodel.AuthState
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.fitnessapp.mock.SharedPreferencesMock
+import androidx.compose.ui.platform.LocalContext
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,4 +143,19 @@ private fun formatDuration(seconds: Int): String {
     val secs = seconds % 60
     return if (hours > 0) "%dh %02dm".format(hours, minutes)
     else "%dm %02ds".format(minutes, secs)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StravaActivitiesScreenPreview() {
+    val context = LocalContext.current
+    val authViewModel = AuthViewModel(SharedPreferencesMock())
+    val stravaViewModel = com.example.fitnessapp.viewmodel.StravaViewModel.getInstance(context)
+    FitnessAppTheme {
+        StravaActivitiesScreen(
+            stravaViewModel = stravaViewModel,
+            authViewModel = authViewModel,
+            onNavigateBack = {}
+        )
+    }
 }

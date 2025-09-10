@@ -20,6 +20,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
@@ -125,5 +127,14 @@ fun ForgotPasswordScreen(navController: NavHostController) {
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ForgotPasswordScreenPreview() {
+    val navController = rememberNavController()
+    FitnessAppTheme {
+        ForgotPasswordScreen(navController)
     }
 }

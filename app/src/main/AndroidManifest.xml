@@ -49,7 +49,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FitnessApp"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:usesCleartextTraffic="true"
+        android:usesCleartextTraffic="${usesCleartext}"
         tools:targetApi="31">
 
         <!-- Adaugă cheia API aici -->

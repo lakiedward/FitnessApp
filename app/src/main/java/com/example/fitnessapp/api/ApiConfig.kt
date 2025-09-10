@@ -1,6 +1,9 @@
 package com.example.fitnessapp.api
 
+import com.example.fitnessapp.BuildConfig
+
+@Deprecated("Use BuildConfig.BASE_URL directly")
 object ApiConfig {
-    const val BASE_URL = "https://fitnessapp-production-60ee.up.railway.app/"
-// Replace with your server's IP/URL
+    // Backward compatibility: delegate to BuildConfig
+    val BASE_URL: String = BuildConfig.BASE_URL
 }

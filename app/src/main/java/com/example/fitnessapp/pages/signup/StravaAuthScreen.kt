@@ -25,7 +25,7 @@ import com.example.fitnessapp.R
 import com.example.fitnessapp.model.UserDetalis
 import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModel
-import com.example.fitnessapp.viewmodel.StravaViewModelFactory
+ 
 import com.example.fitnessapp.viewmodel.HomeViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import android.content.Intent
@@ -33,13 +33,8 @@ import android.net.Uri
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import android.util.Log
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.Dispatchers
-import java.net.HttpURLConnection
-import java.net.URL
-import com.google.gson.Gson
-import com.google.gson.JsonObject
+ 
+ 
 import com.example.fitnessapp.mock.SharedPreferencesMock
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,52 +78,10 @@ fun StravaAuthScreen(
     val isLoading by homeViewModel.isLoading.observeAsState()
     val error by homeViewModel.error.observeAsState()
     val stravaFtpEstimate by stravaViewModel.ftpEstimate.collectAsState()
+    val stravaFthrEstimate by stravaViewModel.fthrEstimate.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
-    // Function to fetch FTHR estimate
-    fun fetchFthrEstimate(token: String) {
-        coroutineScope.launch {
-            try {
-                val fthrUrl = "${com.example.fitnessapp.api.ApiConfig.BASE_URL}strava/estimate-cycling-fthr"
-                Log.d("StravaAuthScreen", "FTHR estimate URL: $fthrUrl")
-                
-                val response = withContext(Dispatchers.IO) {
-                    val url = URL(fthrUrl)
-                    val connection = url.openConnection() as HttpURLConnection
-                    connection.requestMethod = "GET"
-                    connection.setRequestProperty("Authorization", "Bearer $token")
-                    connection.setRequestProperty("Content-Type", "application/json")
-                    connection.connectTimeout = 60000
-                    connection.readTimeout = 60000
-                    
-                    Log.d("StravaAuthScreen", "Making FTHR estimate request...")
-                    Log.d("StravaAuthScreen", "FTHR response code: ${connection.responseCode}")
-                    
-                    if (connection.responseCode == 200) {
-                        val responseBody = connection.inputStream.bufferedReader().use { it.readText() }
-                        Log.d("StravaAuthScreen", "FTHR estimate response: $responseBody")
-                        
-                        val fthrData = Gson().fromJson(responseBody, JsonObject::class.java)
-                        val estimatedFthr = fthrData.get("estimated_fthr")?.asInt
-                        
-                        Log.d("StravaAuthScreen", "FTHR estimate parsed: ${estimatedFthr} bpm")
-                        estimatedFthr
-                    } else {
-                        val errorBody = connection.errorStream?.bufferedReader()?.use { it.readText() }
-                        Log.e("StravaAuthScreen", "FTHR estimate failed: ${connection.responseCode} - $errorBody")
-                        null
-                    }
-                }
-                
-                if (response != null) {
-                    fthrEstimate = response
-                    Log.d("StravaAuthScreen", "FTHR estimate set to: ${fthrEstimate} bpm")
-                }
-            } catch (e: Exception) {
-                Log.e("StravaAuthScreen", "Error fetching FTHR estimate", e)
-            }
-        }
-    }
+    // FTHR estimation handled by StravaViewModel
 
     // Function to open URLs
     fun openUrl(url: String) {
@@ -155,8 +108,8 @@ fun StravaAuthScreen(
         stravaViewModel.checkConnectionStatus()
         val token = authViewModel.getToken()
         if (!token.isNullOrEmpty()) {
-            Log.d("StravaAuthScreen", "Fetching FTHR estimate on screen load")
-            fetchFthrEstimate(token)
+            Log.d("StravaAuthScreen", "Fetching FTHR estimate on screen load via ViewModel")
+            stravaViewModel.estimateCyclingFthr()
         }
     }
 
@@ -223,6 +176,14 @@ fun StravaAuthScreen(
         if (stravaFtpEstimate != null) {
             ftpEstimate = stravaFtpEstimate!!.estimatedFTP
             Log.d("StravaAuthScreen", "FTP estimate received from StravaViewModel: ${ftpEstimate}W")
+        }
+    }
+
+    // Handle FTHR estimate results from ViewModel
+    LaunchedEffect(stravaFthrEstimate) {
+        if (stravaFthrEstimate != null) {
+            fthrEstimate = stravaFthrEstimate
+            Log.d("StravaAuthScreen", "FTHR estimate received from ViewModel: ${fthrEstimate} bpm")
         }
     }
 

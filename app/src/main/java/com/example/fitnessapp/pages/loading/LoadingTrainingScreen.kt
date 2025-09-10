@@ -21,6 +21,10 @@ import com.example.fitnessapp.model.TrainingPlan
 import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.viewmodel.TrainingDetailViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.mock.SharedPreferencesMock
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 @Composable
 fun LoadingTrainingScreen(
@@ -41,8 +45,29 @@ fun LoadingTrainingScreen(
         } catch (e: Exception) {
             // Error will be handled by the viewModel
         }
-    }
+}
 
+@Preview(showBackground = true)
+@Composable
+fun LoadingTrainingScreenPreview() {
+    val navController = rememberNavController()
+    val authViewModel = AuthViewModel(SharedPreferencesMock())
+    val sampleTraining = TrainingPlan(
+        id = 1,
+        user_id = 1,
+        date = "2024-01-01",
+        workout_name = "Sample Workout",
+        duration = "00:45:00",
+        intensity = "Medium",
+        description = "A sample training session",
+        workout_type = "Cycling",
+        zwo_path = null,
+        stepsJson = null
+    )
+    FitnessAppTheme {
+        LoadingTrainingScreen(training = sampleTraining, navController = navController, authViewModel = authViewModel)
+    }
+}
     // Navigate to TrainingDetailScreen when FTP is loaded or if there's an error
     LaunchedEffect(ftpEstimate, error, isLoading) {
         if (isLoading == false && (ftpEstimate != null || error != null)) {

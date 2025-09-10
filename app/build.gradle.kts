@@ -18,20 +18,49 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders["usesCleartext"] = "true"
     }
 
 
+    // Load local properties for environment URLs
+    val localProps = java.util.Properties()
+    val localPropsFile = rootProject.file("local.properties")
+    if (localPropsFile.exists()) {
+        localPropsFile.inputStream().use { localProps.load(it) }
+    }
+    val devBaseUrl = (localProps.getProperty("DEV_BASE_URL") ?: "http://192.168.60.108:8000/").trim()
+    val prodBaseUrl = (localProps.getProperty("PROD_BASE_URL") ?: "https://fitnessapp-production-60ee.up.railway.app/").trim()
+
     buildTypes {
+        debug {
+            isMinifyEnabled = false
+            // Allow cleartext in debug only
+            manifestPlaceholders["usesCleartext"] = "true"
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Disallow cleartext in release
+            manifestPlaceholders["usesCleartext"] = "false"
         }
+    }
 
-
-
+    // Separate flavors for environment configuration
+    flavorDimensions += "env"
+    productFlavors {
+        create("dev") {
+            dimension = "env"
+            buildConfigField("String", "BASE_URL", "\"$devBaseUrl\"")
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+        }
+        create("prod") {
+            dimension = "env"
+            buildConfigField("String", "BASE_URL", "\"$prodBaseUrl\"")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

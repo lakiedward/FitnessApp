@@ -5,6 +5,9 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+// Work around Windows file-locking on build outputs by changing module build dir
+buildDir = file("build_out")
+
 android {
     namespace 'com.example.fitnessapp'
     compileSdk 36
@@ -20,12 +23,34 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        // Provide placeholder used by AndroidManifest.xml: android:usesCleartextTraffic="${usesCleartext}"
+        manifestPlaceholders = [
+                usesCleartext: "true"
+        ]
+
+        // Default BASE_URL (overridden per buildType below)
+        buildConfigField "String", "BASE_URL", '"https://fitnessapp-production-60ee.up.railway.app/"'
     }
 
     buildTypes {
+        debug {
+            // Allow cleartext in debug builds (for local/dev endpoints)
+            minifyEnabled false
+            manifestPlaceholders = [
+                    usesCleartext: "true"
+            ]
+            // Dev server URL for debug
+            buildConfigField "String", "BASE_URL", '"https://fitnessapp-production-60ee.up.railway.app/"'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // Disallow cleartext in release builds
+            manifestPlaceholders = [
+                    usesCleartext: "false"
+            ]
+            // Production URL for release
+            buildConfigField "String", "BASE_URL", '"https://fitnessapp-production-60ee.up.railway.app/"'
         }
     }
     compileOptions {
@@ -42,6 +67,8 @@ android {
     buildFeatures {
         compose true
         viewBinding true
+        // Ensure BuildConfig is generated for application module
+        buildConfig true
     }
     composeOptions {
         kotlinCompilerExtensionVersion '1.5.8'

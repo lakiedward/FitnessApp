@@ -18,6 +18,10 @@ import androidx.navigation.NavHostController
 import com.example.fitnessapp.viewmodel.AuthState
 import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.model.UserDetalis
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.mock.SharedPreferencesMock
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 @Composable
 fun DisciplineLoadingScreen(
@@ -147,4 +151,15 @@ fun DisciplineLoadingScreen(
             }
         }
     }
-} 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DisciplineLoadingScreenPreview() {
+    val navController = rememberNavController()
+    val authViewModel = AuthViewModel(SharedPreferencesMock())
+    val user = UserDetalis(varsta = 25, inaltime = 175f, greutate = 70f, gender = "Male", discipline = "Running")
+    FitnessAppTheme {
+        DisciplineLoadingScreen(navController = navController, authViewModel = authViewModel, userDetalis = user)
+    }
+}

@@ -79,6 +79,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.R
 import com.example.fitnessapp.components.ActivityChartsComponent
 import com.example.fitnessapp.components.ActivityStatsSection
@@ -187,6 +189,12 @@ fun SectionHeader(
             letterSpacing = 0.1.em
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StravaActivityDetailScreenPreview() {
+    StravaActivityDetailScreen(navController = rememberNavController(), activityId = 123456L)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

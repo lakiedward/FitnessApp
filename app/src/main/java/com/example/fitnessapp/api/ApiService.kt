@@ -46,26 +46,26 @@ import retrofit2.http.Query
 interface ApiService {
 
     @POST("users/create_user")
-    fun createUser(
+    suspend fun createUser(
         @Body user: User
-    ): Call<Map<String, String>>
+    ): Response<Map<String, String>>
 
     @POST("users/token")
-    fun login(
+    suspend fun login(
         @Body user: User
-    ): Call<Map<String, String>>
+    ): Response<Map<String, String>>
 
     @POST("training/add_user_details")
-    fun addUserDetails(
+    suspend fun addUserDetails(
         @Header("Authorization") token: String,
         @Body details: UserDetalis
-    ): Call<Map<String, String>>
+    ): Response<Map<String, String>>
 
     @POST("availability/add_week_availability")
-    fun addWeekAvailability(
+    suspend fun addWeekAvailability(
         @Header("Authorization") token: String,
         @Body availabilityList: List<UserWeekAvailability>
-    ): Call<Map<String, String>>
+    ): Response<Map<String, String>>
 
     @POST("training/ftp/manual")
     suspend fun addOrUpdateCyclingData(
@@ -74,15 +74,15 @@ interface ApiService {
     ): Response<Map<String, String>>
 
     @GET("training/user_training_data")
-    fun getUserTrainingData(
+    suspend fun getUserTrainingData(
         @Header("Authorization") token: String
-    ): Call<UserTrainigData>
+    ): Response<UserTrainigData>
 
     @POST("race/add_race")
-    fun addRace(
+    suspend fun addRace(
         @Header("Authorization") token: String,
         @Body races: UserRaces
-    ): Call<Map<String, String>>
+    ): Response<Map<String, String>>
 
     @POST("api/generate_cycling_plan")
     fun generateCyclingPlan(
@@ -97,23 +97,23 @@ interface ApiService {
     ): Response<Void>
 
     @POST("sports/select")
-    fun selectUserSports(
+    suspend fun selectUserSports(
         @Header("Authorization") token: String,
         @Body request: SportsSelectionRequest
-    ): Call<Void>
+    ): Response<Void>
 
     @POST("plan/generate_based_on_sport")
-    fun generateTrainingPlanBySport(
+    suspend fun generateTrainingPlanBySport(
         @Header("Authorization") token: String,
         @Body body: Map<String, String> // conține doar "race_date"
-    ): Call<Map<String, String>>
+    ): Response<Map<String, String>>
 
     @GET("training/get_training_plan")
-    fun getTrainingPlan(@Header("Authorization") token: String): Call<List<TrainingPlan>>
+    suspend fun getTrainingPlan(@Header("Authorization") token: String): Response<List<TrainingPlan>>
 
 
     @GET("race/get_races")
-    fun getRaces(@Header("Authorization") token: String): Call<RacesModelResponse>
+    suspend fun getRaces(@Header("Authorization") token: String): Response<RacesModelResponse>
 
     // New endpoints for setup status and manual data entry
     @GET("sports/setup-status")

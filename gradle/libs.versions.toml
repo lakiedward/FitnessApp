@@ -2,7 +2,7 @@
 
 [versions]
 playServicesAuth = "20.7.0"
-agp = "8.11.1"
+agp = "8.13.0"
 converterGson = "2.9.0"
 kotlin = "1.9.22"
 coreKtx = "1.15.0"

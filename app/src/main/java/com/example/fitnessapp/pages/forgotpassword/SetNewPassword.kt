@@ -20,6 +20,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.R
 //import androidx.navigation.NavHostController
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
@@ -181,5 +183,14 @@ fun SetNewPasswordScreen(navController: NavHostController) {
 
         }
 
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SetNewPasswordScreenPreview() {
+    val navController = rememberNavController()
+    FitnessAppTheme {
+        SetNewPasswordScreen(navController)
     }
 }

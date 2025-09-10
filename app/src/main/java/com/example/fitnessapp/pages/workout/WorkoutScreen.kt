@@ -20,6 +20,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.*
 import kotlinx.coroutines.launch
 import java.util.*
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 @Composable
 fun WorkoutScreen(
@@ -127,4 +129,12 @@ fun WorkoutScreen(
             }
         }
     }
-} 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WorkoutScreenPreview() {
+    FitnessAppTheme {
+        WorkoutScreen()
+    }
+}

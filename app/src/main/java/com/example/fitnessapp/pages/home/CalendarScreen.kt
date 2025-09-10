@@ -23,6 +23,16 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.delay
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -122,6 +132,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 // Modele pentru răspunsul /strava/comprehensive-analysis
 data class ComprehensiveAnalysisResponse(
@@ -219,6 +230,7 @@ fun InfiniteCalendarPage(
     // Unified activities state (from new endpoint)
     var isInitialLoading by remember { mutableStateOf(true) }
     var unifiedActivities by remember { mutableStateOf<List<StravaActivity>>(emptyList()) }
+    var isActivitiesLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     // Sync live state
@@ -247,8 +259,10 @@ fun InfiniteCalendarPage(
 
     // Function to calculate date range and fetch unified activities from backend
     fun loadActivitiesForDateRange(isInitialLoad: Boolean, onFinished: () -> Unit = {}) {
+        if (isActivitiesLoading) return
         coroutineScope.launch {
             try {
+                isActivitiesLoading = true
                 val startCalendar: Calendar
                 val endCalendar: Calendar
                 val bufferDays = if (isInitialLoad) 7 else 30
@@ -290,12 +304,53 @@ fun InfiniteCalendarPage(
                     "Loading unified activities from $startDate to $endDate (isInitial: $isInitialLoad)"
                 )
 
-                val activities = stravaViewModel.getUnifiedActivities(startDate, endDate)
-                unifiedActivities = activities
-                Log.d("CalendarScreen", "Loaded ${activities.size} unified activities")
+                // Bound the fetch to avoid long hangs due to backend timeouts
+                val timeoutMs = if (isInitialLoad) 22_000L else 12_000L
+                var activities = try {
+                    withTimeout(timeoutMs) {
+                        stravaViewModel.getUnifiedActivities(startDate, endDate)
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    Log.w("CalendarScreen", "Unified activities load timed out for $startDate..$endDate; trying DB fallback")
+                    if (isInitialLoad) {
+                        snackbarHostState.showSnackbar(
+                            message = "Loading activities timed out. Trying fallback...",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                    // Fallback to DB-only list (faster, may omit app workouts)
+                    val dbFallback = withTimeoutOrNull(12_000) {
+                        stravaViewModel.getActivitiesFromDatabase(startDate, endDate)
+                    } ?: emptyList()
+                    if (dbFallback.isNotEmpty()) {
+                        Log.d("CalendarScreen", "Loaded ${dbFallback.size} activities via DB fallback")
+                    }
+                    dbFallback
+                } catch (e: CancellationException) {
+                    // Ignore UX noise when composition cancels ongoing work (e.g., fast scroll)
+                    Log.d("CalendarScreen", "Unified activities load cancelled")
+                    return@launch
+                }
+                // If unified endpoint responded but returned empty, try a quick DB fallback to show history
+                if (activities.isEmpty()) {
+                    val quickDb = withTimeoutOrNull(8_000) {
+                        stravaViewModel.getActivitiesFromDatabase(startDate, endDate)
+                    } ?: emptyList()
+                    if (quickDb.isNotEmpty()) {
+                        Log.d("CalendarScreen", "Unified empty; using ${quickDb.size} DB activities")
+                        activities = quickDb
+                    }
+                }
+                if (activities.isNotEmpty()) {
+                    unifiedActivities = activities
+                    Log.d("CalendarScreen", "Loaded ${activities.size} unified activities")
+                } else {
+                    Log.d("CalendarScreen", "Activities result empty; keeping previous list of ${unifiedActivities.size}")
+                }
             } catch (e: Exception) {
                 Log.e("CalendarScreen", "Error loading unified activities", e)
             } finally {
+                isActivitiesLoading = false
                 onFinished()
             }
         }
@@ -616,22 +671,21 @@ fun InfiniteCalendarPage(
         loadActivitiesForDateRange(isInitialLoad = true) { isInitialLoading = false }
     }
 
-    // Load more activities when scroll position changes significantly
-    LaunchedEffect(listState.firstVisibleItemIndex) {
-        if (!isInitialLoading) {
-            val currentIndex = listState.firstVisibleItemIndex
-            val center = Int.MAX_VALUE / 2
-            val distanceFromCenter = kotlin.math.abs(currentIndex - center)
-
-            if (distanceFromCenter > 7) {
-                delay(500)
-                Log.d(
-                    "CalendarScreen",
-                    "Scroll triggered load at index $currentIndex (distance: $distanceFromCenter)"
-                )
+    // Load more activities on scroll with debounce to avoid request spam/cancellations
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .map { index: Int ->
+                val center = Int.MAX_VALUE / 2
+                val distance = kotlin.math.abs(index - center)
+                Pair(index, distance)
+            }
+            .distinctUntilChanged()
+            .debounce(600)
+            .filter { pair: Pair<Int, Int> -> !isInitialLoading && pair.second > 7 }
+            .collectLatest { pair: Pair<Int, Int> ->
+                Log.d("CalendarScreen", "Scroll triggered load at index ${pair.first} (distance: ${pair.second})")
                 loadActivitiesForDateRange(isInitialLoad = false)
             }
-        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -716,21 +770,20 @@ fun InfiniteCalendarPage(
                                     // Get all Strava activities for the day
                                     val stravaActivitiesForDay =
                                         unifiedActivities.filter { activity ->
-                                        val activityDate = try {
-                                            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                                                .format(
-                                                    SimpleDateFormat(
-                                                        "yyyy-MM-dd'T'HH:mm:ss'Z'",
-                                                        Locale.getDefault()
-                                                    )
-                                                        .parse(activity.startDate)
-                                                        ?: activity.startDate
+                                            val activityDate = try {
+                                                val utc = SimpleDateFormat(
+                                                    "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                                    Locale.getDefault()
+                                                ).apply { timeZone = TimeZone.getTimeZone("UTC") }
+                                                val parsed = utc.parse(activity.startDate)
+                                                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
+                                                    parsed ?: activity.startDate
                                                 )
-                                        } catch (e: Exception) {
-                                            activity.startDate.take(10)
+                                            } catch (e: Exception) {
+                                                activity.startDate.take(10)
+                                            }
+                                            activityDate == dayDateString
                                         }
-                                        activityDate == dayDateString
-                                    }
 
                                     ModernCalendarDayItem(
                                         day = calendar.time,

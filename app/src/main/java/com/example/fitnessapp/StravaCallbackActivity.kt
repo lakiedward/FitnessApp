@@ -4,10 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
+ 
 import androidx.lifecycle.asLiveData
 import com.example.fitnessapp.viewmodel.StravaViewModel
-import com.example.fitnessapp.viewmodel.StravaViewModelFactory
+ 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

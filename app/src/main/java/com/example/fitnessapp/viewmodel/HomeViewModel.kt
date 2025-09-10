@@ -73,11 +73,25 @@ class HomeViewModel : ViewModel() {
             try {
                 val healthConnectViewModel = HealthConnectViewModel.getInstance(context)
                 if (healthConnectViewModel.healthConnectState.value is HealthConnectState.Connected) {
-                    val caloriesBurned = healthConnectViewModel.getTodaysTotalCaloriesBurned()
-                    _caloriesBurned.value = caloriesBurned
-                    
-                    // Calculate calorie allowance
-                    val allowance = calculateCalorieAllowance(caloriesBurned)
+                    // Separate totals to avoid double counting BMR in allowance logic
+                    val activeCalories = healthConnectViewModel.getTodaysActiveCaloriesBurned()
+                    val totalCalories = healthConnectViewModel.getTodaysTotalCaloriesBurned()
+
+                    // Fallback: if active calories are unavailable, estimate exercise kcal
+                    val exerciseKcal = if (activeCalories > 0) {
+                        activeCalories
+                    } else if (totalCalories > 0) {
+                        // Heuristic fallback: subtract a generic basal estimate (1800 kcal)
+                        // to approximate exercise calories when data source doesn't provide them.
+                        // This avoids showing 2000 forever and gives a reasonable remaining.
+                        kotlin.math.max(totalCalories - 1800.0, 0.0)
+                    } else 0.0
+
+                    // Show exercise calories (measured or estimated)
+                    _caloriesBurned.value = exerciseKcal
+
+                    // Daily allowance: base + fraction of exercise calories
+                    val allowance = calculateCalorieAllowance(exerciseKcal)
                     _calorieAllowance.value = allowance
                 }
             } catch (e: Exception) {
@@ -87,7 +101,7 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    private fun calculateCalorieAllowance(caloriesBurned: Double): Double {
+    private fun calculateCalorieAllowance(activeCalories: Double): Double {
         // Base daily calorie needs (BMR + activity)
         // This is a simplified calculation - in a real app, you'd use user's age, weight, height, activity level
         val baseCalories = 2000.0 // Average adult daily calorie needs
@@ -95,10 +109,10 @@ class HomeViewModel : ViewModel() {
         // If we have calories burned data, adjust the allowance
         // The idea is: base calories + calories burned = total allowance
         // This encourages users to eat more when they're more active
-        return if (caloriesBurned > 0) {
+        return if (activeCalories > 0) {
             // Only add a portion of burned calories to avoid overeating
             // Typically, you want to eat back about 50-70% of exercise calories
-            val exerciseCalories = caloriesBurned * 0.6 // 60% of burned calories
+            val exerciseCalories = activeCalories * 0.6 // 60% of exercise calories
             baseCalories + exerciseCalories
         } else {
             baseCalories

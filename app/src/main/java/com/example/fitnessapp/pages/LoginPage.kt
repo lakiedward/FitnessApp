@@ -1,5 +1,9 @@
 package com.example.fitnessapp.pages
 
+import android.util.Patterns
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,11 +14,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -22,13 +35,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,16 +55,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.viewmodel.AuthState
 import com.example.fitnessapp.R
 import com.example.fitnessapp.viewmodel.AuthViewModel
+import com.example.fitnessapp.mock.SharedPreferencesMock
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
+import com.example.fitnessapp.ui.theme.GradientEnd
+import com.example.fitnessapp.ui.theme.GradientStart
+import com.example.fitnessapp.ui.theme.GradientCenter
+import com.example.fitnessapp.ui.theme.PrimaryPurple
+import com.example.fitnessapp.ui.theme.ErrorRed
+import com.example.fitnessapp.ui.theme.ErrorBackground
+import com.example.fitnessapp.ui.theme.SocialButtonBackground
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +89,11 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
     var password by remember { mutableStateOf("") }
     var showLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+    var passwordVisible by remember { mutableStateOf(false) }
     val authState = authViewModel.authState.observeAsState()
+    val haptic = LocalHapticFeedback.current
 
     // Handle authentication state
     LaunchedEffect(authState.value) {
@@ -78,6 +113,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             is AuthState.Error -> {
                 showLoading = false
                 errorMessage = currentAuthState.message
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
             }
             else -> {
                 showLoading = false
@@ -94,9 +130,9 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF6366F1),
-                            Color(0xFF8B5CF6),
-                            Color(0xFFA855F7)
+                            GradientStart,
+                            GradientCenter,
+                            GradientEnd
                         )
                     )
                 )
@@ -106,7 +142,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 24.dp, vertical = 32.dp),
-                shape = RoundedCornerShape(24.dp),
+                shape = MaterialTheme.shapes.large,
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
@@ -128,7 +164,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     // Loading indicator
                     CircularProgressIndicator(
                         modifier = Modifier.size(48.dp),
-                        color = Color(0xFF6366F1),
+                        color = PrimaryPurple,
                         strokeWidth = 4.dp
                     )
 
@@ -138,7 +174,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     Text(
                         text = "Logging in...",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = Color(0xFF6366F1),
+                        color = PrimaryPurple,
                         fontWeight = FontWeight.Bold
                     )
 
@@ -161,41 +197,52 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF6366F1),
-                            Color(0xFF8B5CF6),
-                            Color(0xFFA855F7)
+                            GradientStart,
+                            GradientCenter,
+                            GradientEnd
                         )
                     )
                 )
+                .imePadding()
         ) {
             // Header
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Welcome Back",
-                    style = MaterialTheme.typography.headlineSmall,
+                    text = "Welcome back",
+                    style = MaterialTheme.typography.headlineLarge,
                     color = Color.White,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Sign in to continue",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White.copy(alpha = 0.9f),
+                    textAlign = TextAlign.Center
                 )
             }
 
             // Content
             Card(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp),
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                    .fillMaxWidth()
+                    .widthIn(max = 360.dp)
+                    .padding(horizontal = 24.dp)
+                    .align(Alignment.CenterHorizontally),
+                shape = MaterialTheme.shapes.large,
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
+                        .fillMaxWidth()
+                        .padding(24.dp)
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // Logo
@@ -211,13 +258,13 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     if (errorMessage != null) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2))
+                            colors = CardDefaults.cardColors(containerColor = ErrorBackground)
                         ) {
                             Text(
                                 text = errorMessage!!,
                                 modifier = Modifier.padding(16.dp),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFFDC2626),
+                                color = ErrorRed,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -227,73 +274,136 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     // Email Input
                     OutlinedTextField(
                         value = email,
-                        onValueChange = { 
+                        onValueChange = {
                             email = it
+                            emailError = null
                             errorMessage = null
                         },
                         label = { Text("Email") },
+                        leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null) },
+                        isError = emailError != null,
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color(0xFF6366F1),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(onNext = { /* move to password */ }),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryPurple,
                             unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                            focusedLabelColor = Color(0xFF6366F1),
+                            focusedLabelColor = PrimaryPurple,
                             unfocusedLabelColor = Color.Gray
                         )
                     )
+                    if (emailError != null) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = emailError!!,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = ErrorRed,
+                            modifier = Modifier.align(Alignment.Start)
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Password Input
                     OutlinedTextField(
                         value = password,
-                        onValueChange = { 
+                        onValueChange = {
                             password = it
+                            passwordError = null
                             errorMessage = null
                         },
                         label = { Text("Password") },
+                        leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
+                        trailingIcon = {
+                            val icon = if (passwordVisible) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility
+                            val cd = if (passwordVisible) "Hide password" else "Show password"
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(icon, contentDescription = cd)
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color(0xFF6366F1),
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        isError = passwordError != null,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(onDone = {
+                            // Validate and submit
+                            if (email.isBlank()) emailError = "Enter your email"
+                            if (password.isBlank()) passwordError = "Enter your password"
+                            if (emailError == null && passwordError == null) {
+                                authViewModel.login(email, password)
+                            }
+                        }),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryPurple,
                             unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                            focusedLabelColor = Color(0xFF6366F1),
+                            focusedLabelColor = PrimaryPurple,
                             unfocusedLabelColor = Color.Gray
                         )
                     )
+                    if (passwordError != null) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = passwordError!!,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = ErrorRed,
+                            modifier = Modifier.align(Alignment.Start)
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // Login Button
                     Button(
                         onClick = {
-                            if (email.isNotBlank() && password.isNotBlank()) {
+                            // basic validation
+                            emailError = when {
+                                email.isBlank() -> "Enter your email"
+                                !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Invalid email"
+                                else -> null
+                            }
+                            passwordError = when {
+                                password.isBlank() -> "Enter your password"
+                                password.length < 6 -> "At least 6 characters"
+                                else -> null
+                            }
+                            if (emailError == null && passwordError == null) {
                                 authViewModel.login(email, password)
-                            } else {
-                                errorMessage = "Please enter both email and password"
                             }
                         },
-                        enabled = email.isNotBlank() && password.isNotBlank(),
+                        enabled = !showLoading && email.isNotBlank() && password.isNotBlank(),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF6366F1),
+                            containerColor = PrimaryPurple,
                             contentColor = Color.White,
                             disabledContainerColor = Color.Gray.copy(alpha = 0.6f)
                         ),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = MaterialTheme.shapes.medium
                     ) {
-                        Text(
-                            "Log in", 
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Medium
-                        )
+                        if (showLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(22.dp),
+                                color = Color.White,
+                                strokeWidth = 2.5.dp
+                            )
+                        } else {
+                            Text(
+                                "Continue",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -304,7 +414,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     }) {
                         Text(
                             text = "Forgot password?",
-                            color = Color(0xFF6366F1),
+                            color = PrimaryPurple,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -323,7 +433,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         )
 
                         Text(
-                            text = "OR",
+                            text = "or",
                             modifier = Modifier.padding(horizontal = 16.dp),
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.Gray
@@ -345,8 +455,8 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     ) {
                         Card(
                             modifier = Modifier.size(56.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC))
+                            shape = MaterialTheme.shapes.medium,
+                            colors = CardDefaults.cardColors(containerColor = SocialButtonBackground)
                         ) {
                             IconButton(
                                 onClick = { /* Facebook Login */ },
@@ -364,8 +474,8 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         
                         Card(
                             modifier = Modifier.size(56.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC))
+                            shape = MaterialTheme.shapes.medium,
+                            colors = CardDefaults.cardColors(containerColor = SocialButtonBackground)
                         ) {
                             IconButton(
                                 onClick = { /* Google Login */ },
@@ -383,8 +493,8 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         
                         Card(
                             modifier = Modifier.size(56.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC))
+                            shape = MaterialTheme.shapes.medium,
+                            colors = CardDefaults.cardColors(containerColor = SocialButtonBackground)
                         ) {
                             IconButton(
                                 onClick = { /* Apple Login */ },
@@ -399,7 +509,8 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         }
                     }
 
-                    Spacer(modifier = Modifier.weight(1f))
+                    // Keep content compact and let outer scroll handle overflow
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     // Sign Up
                     Row(
@@ -418,9 +529,9 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                             }
                         ) {
                             Text(
-                                "Sign up",
+                                "Create account",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF6366F1),
+                                color = PrimaryPurple,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -430,3 +541,13 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
         }
     }
 } 
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    val navController = rememberNavController()
+    val authViewModel = AuthViewModel(SharedPreferencesMock())
+    FitnessAppTheme {
+        LoginScreen(navController = navController, authViewModel = authViewModel)
+    }
+}

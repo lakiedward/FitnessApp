@@ -19,6 +19,17 @@ val White = Color(0xFFFFFFFF)
 //green
 val Green500 = Color(0xFF4CAF50)
 
+// Login Page Gradient Colors
+val GradientStart = Color(0xFF6366F1)
+val GradientCenter = Color(0xFF8B5CF6)
+val GradientEnd = Color(0xFFA855F7)
+
+// Button and Input Colors
+val PrimaryPurple = Color(0xFF6366F1)
+val ErrorRed = Color(0xFFDC2626)
+val ErrorBackground = Color(0xFFFEF2F2)
+val SocialButtonBackground = Color(0xFFF8FAFC)
+
 // Workout Colors Object for centralized sport-specific theming
 object WorkoutColors {
     // Cycling colors

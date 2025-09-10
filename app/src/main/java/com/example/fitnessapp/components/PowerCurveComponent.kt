@@ -83,6 +83,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.zIndex
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -117,8 +118,7 @@ fun PowerCurveComponent(
     var selectedMarker by remember { mutableStateOf<PowerCurveMarker?>(null) }
     var showFtpLine by remember { mutableStateOf(true) }
     var showComparisonLine by remember { mutableStateOf(false) }
-    var chartBoxOffset by remember { mutableStateOf(Offset.Zero) }
-    var chartBoxSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero) }
+    // Tooltip overlay removed; no need to track absolute chart position
 
     // Load power curve data
     LaunchedEffect(activityId) {
@@ -161,7 +161,7 @@ fun PowerCurveComponent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 4.dp),
+                        .padding(bottom = 6.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -169,9 +169,9 @@ fun PowerCurveComponent(
                         Switch(
                             checked = showFtpLine,
                             onCheckedChange = { showFtpLine = it },
-                            modifier = Modifier.size(36.dp, 20.dp)
+                            modifier = Modifier.size(44.dp, 24.dp)
                         )
-                        Spacer(Modifier.width(6.dp))
+                        Spacer(Modifier.width(8.dp))
                         powerCurveData?.referenceData?.userFtp?.let { ftp ->
                             Text(
                                 "FTP Line (${ftp.toInt()} W)",
@@ -184,9 +184,9 @@ fun PowerCurveComponent(
                         Switch(
                             checked = showComparisonLine,
                             onCheckedChange = { showComparisonLine = it },
-                            modifier = Modifier.size(36.dp, 20.dp)
+                            modifier = Modifier.size(44.dp, 24.dp)
                         )
-                        Spacer(Modifier.width(6.dp))
+                        Spacer(Modifier.width(8.dp))
                         Text(
                             "Previous Best",
                             color = Color(0xFF10B981),
@@ -195,20 +195,15 @@ fun PowerCurveComponent(
                     }
                 }
                 androidx.compose.material3.HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 2.dp),
+                    modifier = Modifier.padding(vertical = 6.dp),
                     thickness = 1.dp,
-                    color = Color(0xFFF3F4F6)
+                    color = Color(0xFFE5E7EB)
                 )
                 // Chart (fills the card, compact)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp)
-                        .onGloballyPositioned { layoutCoordinates ->
-                            val position = layoutCoordinates.localToWindow(Offset.Zero)
-                            chartBoxOffset = position
-                            chartBoxSize = layoutCoordinates.size.run { androidx.compose.ui.geometry.Size(width.toFloat(), height.toFloat()) }
-                        }
+                        .height(240.dp)
                 ) {
                     when {
                         isLoading -> LoadingState()
@@ -236,27 +231,17 @@ fun PowerCurveComponent(
                         )
                     }
                 }
+                // Inline selection details bar (replaces floating overlay to avoid overlap)
+                selectedMarker?.let { marker ->
+                    SelectionInfoBar(
+                        marker = marker,
+                        onClose = { selectedMarker = null }
+                    )
+                }
+
                 if (powerCurveData != null) {
                     PowerCurveStats(powerCurveData!!, fthr)
                 }
-            }
-        }
-        // Tooltip overlay rendered at the BoxWithConstraints level
-        selectedMarker?.let { marker ->
-            val chartX = chartBoxOffset.x
-            val chartY = chartBoxOffset.y
-            val chartWidth = chartBoxSize.width
-            val chartHeight = chartBoxSize.height
-            val tooltipWidth = with(density) { 220.dp.toPx() } // Approximate width of tooltip
-            val tooltipHeight = with(density) { 140.dp.toPx() } // Approximate height of tooltip
-            val x = (chartX + marker.xPosition - tooltipWidth / 2).coerceIn(0f, with(density) { maxWidth.toPx() } - tooltipWidth)
-            val y = (chartY - tooltipHeight - with(density) { 16.dp.toPx() }).coerceAtLeast(0f)
-            Box(
-                modifier = Modifier
-                    .absoluteOffset { IntOffset(x.roundToInt(), y.roundToInt()) }
-                    .zIndex(10f)
-            ) {
-                FloatingTooltipContent(marker = marker, onClose = { selectedMarker = null })
             }
         }
     }
@@ -293,7 +278,7 @@ private fun PowerCurveChart(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(180.dp)
+            .height(220.dp)
             .clip(RoundedCornerShape(14.dp))
     ) {
         Canvas(
@@ -353,18 +338,83 @@ private fun PowerCurveChart(
                 showComparisonLine = showComparisonLine
             )
         }
-        selectedMarker?.let { marker ->
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn(animationSpec = tween(200)),
-                exit = fadeOut(animationSpec = tween(200)),
-                modifier = Modifier
-                    .offset(x = (marker.xPosition - 100).dp.coerceAtLeast(0.dp), y = 20.dp)
-                    .alpha(markerAlpha)
-            ) {
-                FloatingTooltipContent(marker = marker, onClose = { onMarkerSelected(null) })
+        // No floating tooltip; selection is shown below chart as an info bar
+    }
+}
+
+@Composable
+private fun SelectionInfoBar(
+    marker: PowerCurveMarker,
+    onClose: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF3F4F6)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                MetricChip(label = marker.interval, color = Color(0xFF374151))
+                Spacer(Modifier.width(8.dp))
+                MetricChip(label = marker.power, color = Color(0xFFFF6B35))
+                marker.hr?.let {
+                    Spacer(Modifier.width(8.dp))
+                    MetricChip(label = it, color = Color(0xFFEF4444))
+                }
+                marker.zone?.let {
+                    Spacer(Modifier.width(8.dp))
+                    MetricPill(label = it, bg = getZoneColorFromLabel(it))
+                }
             }
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = "Clear selection",
+                tint = Color(0xFF64748B),
+                modifier = Modifier
+                    .size(20.dp)
+                    .clickable { onClose() }
+            )
         }
+    }
+}
+
+@Composable
+private fun MetricChip(label: String, color: Color) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(color.copy(alpha = 0.08f))
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        Text(text = label, color = color, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold)
+    }
+}
+
+@Composable
+private fun MetricPill(label: String, bg: Color) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(bg)
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        Text(
+            text = label,
+            color = Color.White,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            softWrap = false
+        )
     }
 }
 
@@ -551,107 +601,7 @@ private fun PowerMetricCard(
     }
 }
 
-@Composable
-private fun FloatingTooltipContent(marker: PowerCurveMarker, onClose: () -> Unit) {
-    // Position the tooltip above or below the selected point based on y-position (for now, always above)
-    Box {
-        // Arrow (triangle) pointing down to the selected point
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .offset(y = 24.dp)
-        ) {
-            Canvas(modifier = Modifier.size(24.dp, 12.dp)) {
-                drawPath(
-                    path = Path().apply {
-                        moveTo(size.width / 2, 0f)
-                        lineTo(size.width, size.height)
-                        lineTo(0f, size.height)
-                        close()
-                    },
-                    color = Color.White
-                )
-            }
-        }
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            ),
-            elevation = CardDefaults.cardElevation(12.dp),
-            modifier = Modifier
-                .widthIn(min = 180.dp, max = 260.dp)
-                .align(Alignment.TopCenter)
-                .shadow(12.dp, RoundedCornerShape(16.dp))
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Current Selection",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = Color(0xFF6366F1),
-                        fontWeight = FontWeight.Medium
-                    )
-                    Icon(
-                        imageVector = Icons.Filled.Close, // Use a close icon
-                        contentDescription = "Close",
-                        tint = Color(0xFF6366F1),
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clip(RoundedCornerShape(50))
-                            .background(Color(0xFFE0E7FF))
-                            .padding(2.dp)
-                            .clickable { onClose() }
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = marker.interval,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color(0xFF374151),
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = marker.power,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color(0xFFFF6B35), // Brand orange for power
-                    fontWeight = FontWeight.ExtraBold
-                )
-                marker.hr?.let { hr ->
-                    Text(
-                        text = hr,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color(0xFFEF4444),
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                marker.zone?.let { zone ->
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(getZoneColorFromLabel(zone), RoundedCornerShape(8.dp))
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = zone,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
+// FloatingTooltipContent removed in favor of inline SelectionInfoBar to avoid overlap
 
 @Composable
 private fun PowerCurveStats(powerCurveData: PowerCurveResponse, fthr: Int? = null) {
@@ -792,13 +742,14 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
             )
 
             drawContext.canvas.nativeCanvas.drawText(
-                "${powerValue.toInt()}W",
-                maxOf(24f/2 + chartPadding, chartPadding - 40f), 
-                y + 5f,
+                "${powerValue.toInt()} W",
+                chartPadding - 8f,
+                y + 6f,
                 android.graphics.Paint().apply {
-                    color = textColor.hashCode()
-                    textSize = 24f
+                    color = textColor.toArgb()
+                    textSize = 20f
                     textAlign = android.graphics.Paint.Align.RIGHT
+                    isAntiAlias = true
                 }
             )
         }
@@ -819,11 +770,12 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
                 drawContext.canvas.nativeCanvas.drawText(
                     timeLabels[i],
                     x,
-                    size.height - chartPadding + 30f,
+                    size.height - chartPadding + 18f,
                     android.graphics.Paint().apply {
-                        color = textColor.hashCode()
-                        textSize = 24f
+                        color = textColor.toArgb()
+                        textSize = 20f
                         textAlign = android.graphics.Paint.Align.CENTER
+                        isAntiAlias = true
                     }
                 )
             }
@@ -832,23 +784,25 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
         drawContext.canvas.nativeCanvas.drawText(
             "Power (W)",
             20f,
-            chartPadding - 20f,
+            chartPadding - 16f,
             android.graphics.Paint().apply {
-                color = textColor.hashCode()
-                textSize = 28f
+                color = textColor.toArgb()
+                textSize = 22f
                 isFakeBoldText = true
+                isAntiAlias = true
             }
         )
 
         drawContext.canvas.nativeCanvas.drawText(
             "Time",
             size.width / 2,
-            size.height - 10f,
+            size.height - 8f,
             android.graphics.Paint().apply {
-                color = textColor.hashCode()
-                textSize = 28f
+                color = textColor.toArgb()
+                textSize = 22f
                 textAlign = android.graphics.Paint.Align.CENTER
                 isFakeBoldText = true
+                isAntiAlias = true
             }
         )
 
@@ -867,13 +821,14 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
                     )
 
                     drawContext.canvas.nativeCanvas.drawText(
-                        "FTP: ${ftp.toInt()}W",
-                        size.width - chartPadding - 100f,
-                        y - 10f,
+                        "FTP ${ftp.toInt()}W",
+                        size.width - chartPadding - 8f,
+                        y - 8f,
                         android.graphics.Paint().apply {
-                            color = Color(0xFF6366F1).hashCode()
-                            textSize = 22f
+                            color = Color(0xFF6366F1).toArgb()
+                            textSize = 18f
                             textAlign = android.graphics.Paint.Align.RIGHT
+                            isAntiAlias = true
                         }
                     )
                 }
@@ -993,14 +948,15 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
                     val pointDelay = index.toFloat() / totalPoints
                     val pointAlpha = ((animatedProgress - pointDelay) * 2f).coerceIn(0f, 1f)
 
+                    // Smaller point markers to reduce clutter
                     drawCircle(
                         color = Color.White.copy(alpha = pointAlpha),
-                        radius = 6f,
+                        radius = 4.5f,
                         center = Offset(x, y)
                     )
                     drawCircle(
                         color = Color(0xFFFF6B35).copy(alpha = pointAlpha),
-                        radius = 4f,
+                        radius = 3f,
                         center = Offset(x, y)
                     )
                 }

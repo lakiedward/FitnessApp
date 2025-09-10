@@ -21,13 +21,14 @@ import com.example.fitnessapp.model.UserTrainigData
 import com.example.fitnessapp.model.UserWeekAvailability
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
-import com.example.fitnessapp.utils.TokenStore
 
 class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
 
-    private val apiService: ApiService = RetrofitClient.retrofit.create(ApiService::class.java)
 
+    private val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
 
@@ -51,6 +52,7 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
         }
     }
 
+    // Try to restore a previous session and preload user data
     fun restoreSessionIfPossible() {
         val token = getToken()
         if (!token.isNullOrEmpty()) {
@@ -62,32 +64,36 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
     fun signup(email: String, password: String) {
         val user = User(email, password)
         _authState.value = AuthState.Loading
-        viewModelScope.launch {
-            try {
-                val response: Response<Map<String, String>> = apiService.createUser(user)
+
+        apiService.createUser(user).enqueue(object : Callback<Map<String, String>> {
+            override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
                 if (response.isSuccessful) {
                     Log.d("AuthViewModel", "User created successfully. Logging in...")
+                    // Autentificare automată după înregistrare
                     login(email, password)
                 } else {
                     _authState.value = AuthState.Error("Signup failed: ${response.message()}")
                 }
-            } catch (e: Exception) {
-                _authState.value = AuthState.Error("Signup failed: ${e.message}")
             }
-        }
+
+            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
+                _authState.value = AuthState.Error("Signup failed: ${t.message}")
+            }
+        })
     }
+
 
     fun login(username: String, password: String) {
         val user = User(username, password)
         _authState.value = AuthState.Loading
-        viewModelScope.launch {
-            try {
-                val response: Response<Map<String, String>> = apiService.login(user)
+
+        apiService.login(user).enqueue(object : Callback<Map<String, String>> {
+            override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
                 if (response.isSuccessful) {
                     val token = response.body()?.get("access_token")
                     if (token != null) {
                         saveToken(token)
-                        initUserDataAfterAuth()
+                        initUserDataAfterAuth() // 🔁 Apelează aici
                         _authState.value = AuthState.Authenticated(token)
                     } else {
                         _authState.value = AuthState.Error("Login failed: Token missing")
@@ -95,10 +101,12 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
                 } else {
                     _authState.value = AuthState.Error("Login failed: ${response.message()}")
                 }
-            } catch (e: Exception) {
-                _authState.value = AuthState.Error("Login failed: ${e.message}")
             }
-        }
+
+            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
+                _authState.value = AuthState.Error("Login failed: ${t.message}")
+            }
+        })
     }
 
     fun saveUserSports(sports: SportsSelectionRequest) {
@@ -108,21 +116,32 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             _authState.value = AuthState.Error("Token is missing. Please log in again.")
             return
         }
-        viewModelScope.launch {
-            try {
-                val response = apiService.selectUserSports("Bearer $token", sports)
-                if (response.isSuccessful) {
-                    Log.d("AuthViewModel", "User sports updated successfully")
-                    _authState.value = AuthState.Authenticated(token)
-                } else {
-                    Log.e("AuthViewModel", "Failed to update user sports: ${response.message()}")
-                    _authState.value = AuthState.Error("Failed to update user sports: ${response.message()}")
+
+        apiService.selectUserSports("Bearer $token", sports)
+            .enqueue(object : Callback<Void> {
+                override fun onResponse(
+                    call: Call<Void>,
+                    response: Response<Void>
+                ) {
+                    if (response.isSuccessful) {
+                        Log.d("AuthViewModel", "User sports updated successfully")
+                        _authState.value = AuthState.Authenticated(token) // ✅ asta era esențial
+                    } else {
+                        Log.e(
+                            "AuthViewModel",
+                            "Failed to update user sports: ${response.message()}"
+                        )
+                        _authState.value =
+                            AuthState.Error("Failed to update user sports: ${response.message()}")
+                    }
                 }
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Failed to update user sports: ${e.message}")
-                _authState.value = AuthState.Error("Failed to update user sports: ${e.message}")
-            }
-        }
+
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    Log.e("AuthViewModel", "Failed to update user sports: ${t.message}")
+                    _authState.value =
+                        AuthState.Error("Failed to update user sports: ${t.message}")
+                }
+            })
     }
 
     fun updateTrainingPlanDate(planId: Int, trainingDateUpdate: TrainingDateUpdate) {
@@ -135,18 +154,25 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
 
         viewModelScope.launch {
             try {
-                val response = apiService.updateTrainingPlanDate(planId, "Bearer $token", trainingDateUpdate)
+                val response =
+                    apiService.updateTrainingPlanDate(planId, "Bearer $token", trainingDateUpdate)
                 if (response.isSuccessful) {
                     Log.d("AuthViewModel", "Training plan date updated successfully")
-                    delay(1000)
+                    // Refresh training plans after update
+                    delay(1000) // Wait a bit for the DB to update
                     getTrainingPlans()
                 } else {
-                    Log.e("AuthViewModel", "Failed to update training plan date: ${response.message()}")
-                    _authState.value = AuthState.Error("Failed to update training plan date: ${response.message()}")
+                    Log.e(
+                        "AuthViewModel",
+                        "Failed to update training plan date: ${response.message()}"
+                    )
+                    _authState.value =
+                        AuthState.Error("Failed to update training plan date: ${response.message()}")
                 }
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Error updating training plan date: ${e.message}")
-                _authState.value = AuthState.Error("Error updating training plan date: ${e.message}")
+                _authState.value =
+                    AuthState.Error("Error updating training plan date: ${e.message}")
             }
         }
     }
@@ -157,27 +183,39 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             _authState.value = AuthState.Error("Token is missing.")
             return
         }
-        viewModelScope.launch {
-            try {
-                val response = apiService.generateTrainingPlanBySport("Bearer $token", mapOf("race_date" to raceDate))
-                if (response.isSuccessful) {
-                    Log.d("AuthViewModel", "Training plan generated based on selected sports.")
-                    delay(3000)
-                    getTrainingPlans()
-                } else {
-                    Log.e("AuthViewModel", "Failed to generate training plan: ${response.message()}")
-                    _authState.value = AuthState.Error("Failed to generate training plan: ${response.message()}")
+
+        apiService.generateTrainingPlanBySport("Bearer $token", mapOf("race_date" to raceDate))
+            .enqueue(object : Callback<Map<String, String>> {
+                override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
+                    if (response.isSuccessful) {
+                        Log.d("AuthViewModel", "Training plan generated based on selected sports.")
+
+                        // ✅ Adaugă aici reîncărcarea planurilor după un scurt delay
+                        viewModelScope.launch {
+                            delay(3000) // Așteaptă puțin ca planul să fie salvat în DB
+                            getTrainingPlans()
+                        }
+
+                    } else {
+                        Log.e("AuthViewModel", "Failed to generate training plan: ${response.message()}")
+                        _authState.value =
+                            AuthState.Error("Failed to generate training plan: ${response.message()}")
+                    }
                 }
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Error generating training plan: ${e.message}")
-                _authState.value = AuthState.Error("Error generating training plan: ${e.message}")
-            }
-        }
+
+                override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
+                    Log.e("AuthViewModel", "Error generating training plan: ${t.message}")
+                    _authState.value =
+                        AuthState.Error("Error generating training plan: ${t.message}")
+                }
+            })
     }
+
 
     fun addUserDetails(varsta: Int, inaltime: Float, greutate: Float, gender: String, discipline: String) {
         val token = getToken()
         _authState.value = AuthState.Loading
+
         if (token == null) {
             Log.e("AuthViewModel", "Token is missing. Please log in again.")
             _authState.value = AuthState.Error("Token is missing. Please log in again.")
@@ -185,20 +223,23 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
         }
 
         val details = UserDetalis(varsta, inaltime, greutate, gender, discipline)
-        viewModelScope.launch {
-            try {
-                val response = apiService.addUserDetails("Bearer $token", details)
+        apiService.addUserDetails("Bearer $token", details).enqueue(object : Callback<Map<String, String>> {
+            override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
                 if (response.isSuccessful) {
                     Log.d("AuthViewModel", "User details updated successfully")
-                    _authState.value = AuthState.Authenticated(token)
+                    _authState.value = AuthState.Authenticated(token) // ✅ asta era esențial
                 } else {
                     Log.e("AuthViewModel", "Failed to update user details: ${response.message()}")
-                    _authState.value = AuthState.Error("Failed to update user details: ${response.message()}")
+                    _authState.value =
+                        AuthState.Error("Failed to update user details: ${response.message()}")
+
                 }
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Failed to update user details: ${e.message}")
             }
-        }
+
+            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
+                Log.e("AuthViewModel", "Failed to update user details: ${t.message}")
+            }
+        })
     }
 
     fun addWeekAvailability(
@@ -211,18 +252,19 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             onError?.invoke("Token is missing")
             return
         }
-        viewModelScope.launch {
-            try {
-                val response = apiService.addWeekAvailability("Bearer $token", availabilityList)
-                if (response.isSuccessful) {
-                    onSuccess?.invoke()
-                } else {
-                    onError?.invoke("Failed to save availability: ${response.message()}")
+        apiService.addWeekAvailability("Bearer $token", availabilityList)
+            .enqueue(object : Callback<Map<String, String>> {
+                override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
+                    if (response.isSuccessful) {
+                        onSuccess?.invoke()
+                    } else {
+                        onError?.invoke("Failed to save availability: ${response.message()}")
+                    }
                 }
-            } catch (e: Exception) {
-                onError?.invoke("Error saving availability: ${e.message}")
-            }
-        }
+                override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
+                    onError?.invoke("Error saving availability: ${t.message}")
+                }
+            })
     }
 
     fun addOrUpdateTrainingData(ftp: Int) {
@@ -232,6 +274,7 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             _authState.value = AuthState.Error("Token is missing. Please log in again.")
             return
         }
+
         val cyclingDetails = DetaliiUserCycling(ftp)
         viewModelScope.launch {
             try {
@@ -265,27 +308,53 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
         }
     }
 
-    fun addRace(race_date: String, race_name: String = "") {
+    fun addRace(race_date: String,  race_name: String = "") {
         val token = getToken()
         if (token == null) {
             Log.e("AuthViewModel", "Token is missing. Please log in again.")
             _authState.value = AuthState.Error("Token is missing. Please log in again.")
             return
         }
+
         val raceData = UserRaces(race_date, race_name)
-        viewModelScope.launch {
-            try {
-                val response = apiService.addRace("Bearer $token", raceData)
+        apiService.addRace("Bearer $token", raceData).enqueue(object : Callback<Map<String, String>> {
+            override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
                 if (response.isSuccessful) {
                     Log.d("AuthViewModel", "race details updated successfully")
                 } else {
                     Log.e("AuthViewModel", "Failed to update race details: ${response.message()}")
                 }
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Failed to update race details: ${e.message}")
             }
-        }
+
+            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
+                Log.e("AuthViewModel", "Failed to update race details: ${t.message}")
+            }
+        })
     }
+
+//    fun genearteCyclinngPlan(duration_weeks: String) {
+//        val token = getToken()
+//        if (token == null) {
+//            Log.e("AuthViewModel", "Token is missing. Please log in again.")
+//            _authState.value = AuthState.Error("Token is missing. Please log in again.")
+//            return
+//        }
+//
+//        val trainingPlanGenerate = TrainingPlanGenerate(duration_weeks)
+//        apiService.generateCyclingPlan("Bearer $token", trainingPlanGenerate).enqueue(object : Callback<Map<String, String>> {
+//            override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
+//                if (response.isSuccessful) {
+//                    Log.d("AuthViewModel", "Training Plan updated successfully")
+//                } else {
+//                    Log.e("AuthViewModel", "Failed to update Training Plan: ${response.message()}")
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
+//                Log.e("AuthViewModel", "Failed to update rTraining Plan: ${t.message}")
+//            }
+//        })
+//    }
 
     fun getTrainingPlans(retry: Boolean = true) {
         val token = getToken()
@@ -293,25 +362,33 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             _authState.value = AuthState.Error("Token is missing. Please log in again.")
             return
         }
-        viewModelScope.launch {
-            try {
-                val response = apiService.getTrainingPlan("Bearer $token")
+
+        apiService.getTrainingPlan("Bearer $token").enqueue(object : Callback<List<TrainingPlan>> {
+            override fun onResponse(call: Call<List<TrainingPlan>>, response: Response<List<TrainingPlan>>) {
                 if (response.isSuccessful) {
                     val data = response.body() ?: emptyList()
                     if (data.isEmpty() && retry) {
-                        delay(5000)
-                        getTrainingPlans(retry = false)
+                        // Încearcă din nou după 5 secunde
+                        viewModelScope.launch {
+                            delay(5000)
+                            getTrainingPlans(retry = false) // doar o singură reîncercare
+                        }
                     } else {
                         _trainingPlan.postValue(data)
                     }
                 } else {
-                    _authState.value = AuthState.Error("Failed to fetch training plans: ${response.message()}")
+                    _authState.value =
+                        AuthState.Error("Failed to fetch training plans: ${response.message()}")
                 }
-            } catch (e: Exception) {
-                _authState.value = AuthState.Error("Error fetching training plans: ${e.message}")
             }
-        }
+
+            override fun onFailure(call: Call<List<TrainingPlan>>, t: Throwable) {
+                _authState.value = AuthState.Error("Error fetching training plans: ${t.message}")
+            }
+        })
     }
+
+
 
     fun getRaces() {
         val token = getToken()
@@ -319,22 +396,25 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             _authState.value = AuthState.Error("Token is missing. Please log in again.")
             return
         }
-        viewModelScope.launch {
-            try {
-                val response: Response<RacesModelResponse> = apiService.getRaces("Bearer $token")
+
+        apiService.getRaces("Bearer $token").enqueue(object : Callback<RacesModelResponse> {
+            override fun onResponse(call: Call<RacesModelResponse>, response: Response<RacesModelResponse>) {
                 if (response.isSuccessful) {
                     val data = response.body()?.data ?: emptyList()
                     Log.d("AuthViewModel", "Training Plans fetched: $data")
-                    _races.postValue(data)
+                    _races.postValue(data) // Actualizează datele din LiveData
                 } else {
                     Log.e("AuthViewModel", "Failed to fetch training plans: ${response.message()}")
-                    _authState.value = AuthState.Error("Failed to fetch training plans: ${response.message()}")
+                    _authState.value =
+                        AuthState.Error("Failed to fetch training plans: ${response.message()}")
                 }
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Error fetching training plans: ${e.message}")
-                _authState.value = AuthState.Error("Error fetching training plans: ${e.message}")
             }
-        }
+
+            override fun onFailure(call: Call<RacesModelResponse>, t: Throwable) {
+                Log.e("AuthViewModel", "Error fetching training plans: ${t.message}")
+                _authState.value = AuthState.Error("Error fetching training plans: ${t.message}")
+            }
+        })
     }
 
     fun getUserTrainingData() {
@@ -343,18 +423,20 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             _authState.value = AuthState.Error("Token is missing. Please log in again.")
             return
         }
-        viewModelScope.launch {
-            try {
-                val response = apiService.getUserTrainingData("Bearer $token")
+
+        apiService.getUserTrainingData("Bearer $token").enqueue(object : Callback<UserTrainigData> {
+            override fun onResponse(call: Call<UserTrainigData>, response: Response<UserTrainigData>) {
                 if (response.isSuccessful) {
                     _userTrainingData.value = response.body()
                 } else {
                     Log.e("AuthViewModel", "Failed to fetch user training data: ${response.message()}")
                 }
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Error fetching user training data: ${e.message}")
             }
-        }
+
+            override fun onFailure(call: Call<UserTrainigData>, t: Throwable) {
+                Log.e("AuthViewModel", "Error fetching user training data: ${t.message}")
+            }
+        })
     }
 
     fun resetAuthState() {
@@ -363,27 +445,27 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
 
     fun getToken(): String? {
         val token = sharedPreferences.getString("jwt_token", null)
-        // Keep TokenStore in sync; do not log token contents
-        if (!token.isNullOrEmpty()) {
-            TokenStore.setToken(token)
-        }
+        Log.d("AuthViewModel", "Retrieved token: $token")
         return token
     }
 
     private fun saveToken(token: String) {
         sharedPreferences.edit().putString("jwt_token", token).apply()
-        TokenStore.setToken(token)
-        Log.d("AuthViewModel", "Token saved")
+        Log.d("AuthViewModel", "Token saved successfully: $token")
     }
 
+    // Logout function to clear token and set auth state to unauthenticated
     fun logout() {
         sharedPreferences.edit().remove("jwt_token").apply()
-        TokenStore.clear()
         Log.d("AuthViewModel", "Token cleared - user logged out")
         _authState.value = AuthState.Unauthenticated
     }
+
 }
 
+
+
+// Define AuthState to handle different states of authentication
 sealed class AuthState {
     object Idle : AuthState()
     object Unauthenticated : AuthState()
@@ -391,3 +473,4 @@ sealed class AuthState {
     data class Authenticated(val jwtToken: String) : AuthState()
     data class Error(val message: String) : AuthState()
 }
+

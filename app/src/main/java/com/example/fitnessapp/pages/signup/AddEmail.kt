@@ -24,6 +24,10 @@ import com.example.fitnessapp.viewmodel.AuthState
 import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.R
 import android.util.Patterns
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.mock.SharedPreferencesMock
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 // Email validation function
 private fun isValidEmail(email: String): Boolean {
@@ -367,6 +371,16 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AddEmailScreenPreview() {
+    val navController = rememberNavController()
+    val authViewModel = AuthViewModel(SharedPreferencesMock())
+    FitnessAppTheme {
+        AddEmailScreen(navController = navController, authViewModel = authViewModel)
     }
 }
 

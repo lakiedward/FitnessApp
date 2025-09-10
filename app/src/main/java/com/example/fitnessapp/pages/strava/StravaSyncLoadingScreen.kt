@@ -32,6 +32,11 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import java.net.URL
 import java.net.HttpURLConnection
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
+import com.example.fitnessapp.mock.SharedPreferencesMock
+import com.example.fitnessapp.utils.StravaPrefs
 
 // Function to estimate all FTHR types - defined outside Composable
 suspend fun estimateAllFthrTypes(jwtToken: String) {
@@ -113,9 +118,12 @@ suspend fun estimateAllFthrTypes(jwtToken: String) {
 fun StravaSyncLoadingScreen(
     onNavigateBack: () -> Unit,
     onSyncComplete: () -> Unit,
+    onViewActivities: () -> Unit,
     stravaViewModel: StravaViewModel,
     authViewModel: AuthViewModel
 ) {
+    val context = LocalContext.current
+    val cancelFlag = remember { java.util.concurrent.atomic.AtomicBoolean(false) }
     var syncProgress by remember { mutableFloatStateOf(0f) }
     var currentStep by remember { mutableStateOf("Pregătire sincronizare...") }
     var activitiesSynced by remember { mutableIntStateOf(0) }
@@ -174,11 +182,13 @@ fun StravaSyncLoadingScreen(
             val fullUrl = "${ApiConfig.BASE_URL}strava/sync-live"
             Log.d("StravaSyncLoading", "Full URL: $fullUrl")
             
-            // Variables for reconnection logic
+            // Variables for reconnection logic and progress modelling
             var totalActivitiesSynced = 0
             var maxRetries = 3
             var currentRetry = 0
             var isSyncCompleted = false
+            var expectedTotal: Int? = null // will be filled if server sends total/remaining
+            var lastUiUpdateMs = 0L
             val gson = Gson() // Define gson here so it's accessible in all blocks
             
             while (!isSyncCompleted && currentRetry < maxRetries) {
@@ -223,8 +233,15 @@ fun StravaSyncLoadingScreen(
                         
                         var line: String?
                         var activitiesCount = 0
-                        
+
                         while (reader.readLine().also { line = it } != null) {
+                            if (cancelFlag.get()) {
+                                withContext(Dispatchers.Main) {
+                                    syncError = "Anulat de utilizator"
+                                    currentStep = "Sincronizare anulată"
+                                }
+                                break
+                            }
                             Log.d("StravaSyncLoading", "SSE line: $line")
                             
                             val currentLine = line // Store in local variable for smart cast
@@ -260,29 +277,56 @@ fun StravaSyncLoadingScreen(
                                         throw Exception(errorMessage)
                                     }
                                     
+                                    // Detect total if provided
+                                    if (eventData.has("total")) {
+                                        expectedTotal = try { eventData.get("total").asInt } catch (_: Exception) { expectedTotal }
+                                        Log.d("StravaSyncLoading", "Expected total activities: $expectedTotal")
+                                    }
+                                    if (eventData.has("remaining") && expectedTotal == null) {
+                                        val remaining = runCatching { eventData.get("remaining").asInt }.getOrNull()
+                                        if (remaining != null) {
+                                            expectedTotal = (totalActivitiesSynced + activitiesCount) + remaining
+                                            Log.d("StravaSyncLoading", "Derived expected total: $expectedTotal from remaining=$remaining")
+                                        }
+                                    }
+
                                     // Check if it's an activity sync event
                                     if (eventData.has("name") && eventData.has("start_date")) {
                                         activitiesCount++
                                         val activityName = eventData.get("name").asString
                                         val startDate = eventData.get("start_date").asString
-                                        
+
                                         Log.d("StravaSyncLoading", "Activity synced: $activityName ($startDate)")
-                                        
-                                        withContext(Dispatchers.Main) {
-                                            currentActivityName = activityName
-                                            activitiesSynced = totalActivitiesSynced + activitiesCount
-                                            
-                                            // Update progress based on activities synced
-                                            if (activitiesCount <= 10) {
-                                                syncProgress = 0.3f + (activitiesCount * 0.06f) // 0.3 to 0.9 for first 10 activities
-                                            } else {
-                                                syncProgress = 0.9f + (0.1f / maxOf(1, activitiesCount - 10)) // 0.9 to 1.0 for remaining
-                                            }
-                                            
-                                            currentStep = "Sincronizare activitate ${totalActivitiesSynced + activitiesCount}..."
+
+                                        val now = System.currentTimeMillis()
+                                        val totalNow = totalActivitiesSynced + activitiesCount
+
+                                        // Compute progress
+                                        val progress = if (expectedTotal != null && expectedTotal!! > 0) {
+                                            val ratio = (totalNow.toFloat() / expectedTotal!!.toFloat()).coerceIn(0f, 1f)
+                                            0.1f + 0.8f * ratio // keep headroom for finalization steps
+                                        } else {
+                                            // Smoothly approach 0.9 as count grows (good for hundreds of activities)
+                                            val k = 60f // smoothing constant
+                                            val p = 1 - kotlin.math.exp(-totalNow.toFloat() / k)
+                                            (0.1f + 0.8f * p).coerceAtMost(0.95f)
                                         }
-                                        
-                                        delay(100) // Small delay to show progress
+
+                                        // Throttle UI updates (time-based OR by every 5 activities)
+                                        val shouldUpdateUi = (now - lastUiUpdateMs) >= 300 || (totalNow % 5 == 0)
+                                        if (shouldUpdateUi) {
+                                            lastUiUpdateMs = now
+                                            withContext(Dispatchers.Main) {
+                                                currentActivityName = activityName
+                                                activitiesSynced = totalNow
+                                                syncProgress = progress
+                                                currentStep = if (expectedTotal != null) {
+                                                    "Sincronizare activitate $totalNow din $expectedTotal"
+                                                } else {
+                                                    "Sincronizare activitate $totalNow"
+                                                }
+                                            }
+                                        }
                                     }
                                     
                                 } catch (e: Exception) {
@@ -307,7 +351,9 @@ fun StravaSyncLoadingScreen(
                         Log.e("StravaSyncLoading", "Error during SSE sync (attempt ${currentRetry + 1})", e)
                         
                         // If it's a connection error, try to reconnect
-                        if (e.message?.contains("Connection") == true || e.message?.contains("timeout") == true) {
+                        val msg = (e.message ?: "").lowercase()
+                        val isTransient = msg.contains("connection") || msg.contains("timeout") || msg.contains("protocol error") || msg.contains("bad_decrypt") || msg.contains("bad record mac") || msg.contains("ssl") || msg.contains("read error")
+                        if (isTransient) {
                             Log.w("StravaSyncLoading", "Connection error detected, will retry")
                             currentRetry++
                             
@@ -390,9 +436,12 @@ fun StravaSyncLoadingScreen(
             }
             
             delay(1000) // Small delay to show FTHR estimation step
-            
+
             // Also estimate running, swimming, and other FTHR (non-blocking, log errors)
             estimateAllFthrTypes(jwtToken)
+
+            // Persist last sync time for UI surfaces
+            StravaPrefs.setLastSyncNow(context)
 
             // Call /running/pace-prediction to generate running pace predictions
             try {
@@ -616,8 +665,16 @@ fun StravaSyncLoadingScreen(
                 )
             }
             
-            // Placeholder pentru simetrie
-            Spacer(modifier = Modifier.width(48.dp))
+            // Cancel action while syncing
+            TextButton(
+                onClick = {
+                    cancelFlag.set(true)
+                    onNavigateBack()
+                },
+                enabled = !isCompleted && syncError == null
+            ) {
+                Text("Cancel", color = Color.White)
+            }
         }
 
         // Content
@@ -646,6 +703,7 @@ fun StravaSyncLoadingScreen(
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
+                    /*
                     
                     Text(
                         text = "✗ Eroare sincronizare",
@@ -654,6 +712,13 @@ fun StravaSyncLoadingScreen(
                         fontWeight = FontWeight.Bold
                     )
                     
+                    */
+                    Text(
+                        text = "Eroare sincronizare",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = Color(0xFFEF4444),
+                        fontWeight = FontWeight.Bold
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
@@ -689,6 +754,31 @@ fun StravaSyncLoadingScreen(
                         color = Color.Gray
                     )
                     
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = onViewActivities,
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF6366F1),
+                                contentColor = Color.White
+                            ),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("View Activities")
+                        }
+                        OutlinedButton(
+                            onClick = onSyncComplete,
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Done")
+                        }
+                    }
+                    
                 } else {
                     // Loading State
                     CircularProgressIndicator(
@@ -714,6 +804,14 @@ fun StravaSyncLoadingScreen(
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.Gray,
                         textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LinearProgressIndicator(
+                        progress = syncProgress.coerceIn(0f, 1f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        color = Color(0xFF6366F1)
                     )
                     
                     if (currentActivityName != null) {
@@ -741,8 +839,8 @@ fun StravaSyncLoadingScreen(
                     
                     Spacer(modifier = Modifier.height(16.dp))
                     
-                    // Progress info without progress bar
-                    Card(
+                    // Progress info without progress bar (hidden to avoid duplicate info)
+                    if (false) Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC))
                     ) {
@@ -789,4 +887,21 @@ fun StravaSyncLoadingScreen(
             }
         }
     }
-} 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StravaSyncLoadingScreenPreview() {
+    val context = LocalContext.current
+    val stravaViewModel = com.example.fitnessapp.viewmodel.StravaViewModel.getInstance(context)
+    val authViewModel = com.example.fitnessapp.viewmodel.AuthViewModel(SharedPreferencesMock())
+    FitnessAppTheme {
+            StravaSyncLoadingScreen(
+                onNavigateBack = {},
+                onSyncComplete = {},
+                onViewActivities = {},
+                stravaViewModel = stravaViewModel,
+                authViewModel = authViewModel
+            )
+    }
+}

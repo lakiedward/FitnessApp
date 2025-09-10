@@ -18,6 +18,10 @@ import com.example.fitnessapp.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
 import androidx.compose.runtime.livedata.observeAsState
 import com.example.fitnessapp.model.TrainingPlan
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.mock.SharedPreferencesMock
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 @Composable
 fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel) {
@@ -162,5 +166,15 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoadingScreenPreview() {
+    val navController = rememberNavController()
+    val authViewModel = AuthViewModel(SharedPreferencesMock())
+    FitnessAppTheme {
+        LoadingScreen(navController = navController, authViewModel = authViewModel)
     }
 }

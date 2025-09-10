@@ -13,10 +13,8 @@ class AuthManager(private val context: Context) {
 
     fun getJwtToken(): String? {
         val token = prefs.getString("jwt_token", null)
-        Log.d("JWT_DEBUG", "[AuthManager] getJwtToken() called")
-        Log.d("JWT_DEBUG", "[AuthManager] Token exists: ${!token.isNullOrEmpty()}")
-        Log.d("JWT_DEBUG", "[AuthManager] Token length: ${token?.length}")
-        Log.d("JWT_DEBUG", "[AuthManager] Token first 10 chars: ${token?.take(10)}...")
+        // Avoid logging token contents
+        Log.d("JWT_DEBUG", "[AuthManager] getJwtToken() called (hasToken=${!token.isNullOrEmpty()})")
         return token
     }
 
@@ -52,12 +50,9 @@ class AuthManager(private val context: Context) {
 
     fun saveJwtToken(token: String) {
         Log.d("JWT_DEBUG", "[AuthManager] saveJwtToken() called")
-        Log.d("JWT_DEBUG", "[AuthManager] Token length: ${token.length}")
-        Log.d("JWT_DEBUG", "[AuthManager] Token first 10 chars: ${token.take(10)}...")
         prefs.edit().putString("jwt_token", token).apply()
-        // Verify the token was saved
+        // Verify the token was saved (no sensitive data in logs)
         val savedToken = prefs.getString("jwt_token", null)
-        Log.d("JWT_DEBUG", "[AuthManager] Token saved successfully: ${savedToken != null}")
-        Log.d("JWT_DEBUG", "[AuthManager] Saved token length: ${savedToken?.length}")
+        Log.d("JWT_DEBUG", "[AuthManager] Token saved: ${savedToken != null}")
     }
 } 

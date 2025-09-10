@@ -57,6 +57,10 @@ class StravaViewModel(private val context: Context) : ViewModel() {
     private val _ftpEstimate = MutableStateFlow<FTPEstimate?>(null)
     val ftpEstimate: StateFlow<FTPEstimate?> = _ftpEstimate.asStateFlow()
 
+    // Cycling FTHR estimate (bpm)
+    private val _fthrEstimate = MutableStateFlow<Int?>(null)
+    val fthrEstimate: StateFlow<Int?> = _fthrEstimate.asStateFlow()
+
     private val prefs: SharedPreferences by lazy {
         context.getSharedPreferences("strava_prefs", Context.MODE_PRIVATE)
     }
@@ -854,15 +858,9 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 Log.d("StravaViewModel", "Starting sync check...")
                 val response = apiService.syncCheck("Bearer $jwtToken")
                 if (response.isSuccessful) {
-                    val syncResult = response.body()
-                    Log.d("StravaViewModel", "Sync check result: ${syncResult?.message}")
-
-                    if (syncResult?.activities_synced != null && syncResult.activities_synced > 0) {
-                        Log.d("StravaViewModel", "Activities synced: ${syncResult.activities_synced}")
-                        // No need to refresh activities since sync-live handles this
-                    } else {
-                        Log.d("StravaViewModel", "No new activities to sync")
-                    }
+                    // Endpoint may stream SSE (text/event-stream) which isn't JSON parsable.
+                    // Avoid parsing and just treat HTTP 200 as OK.
+                    Log.d("StravaViewModel", "Sync check completed (HTTP ${response.code()})")
                 } else {
                     Log.e("StravaViewModel", "Sync check failed: ${response.errorBody()?.string()}")
                 }
@@ -888,6 +886,28 @@ class StravaViewModel(private val context: Context) : ViewModel() {
             } catch (e: Exception) {
                 Log.e("StravaViewModel", "Error estimating FTP", e)
                 _ftpEstimate.value = null
+            }
+        }
+    }
+
+    fun estimateCyclingFthr(days: Int = 90) {
+        viewModelScope.launch {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
+                val response = withContext(Dispatchers.IO) {
+                    apiService.estimateCyclingFthr("Bearer $jwtToken", days)
+                }
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    val value = (body?.get("estimated_fthr") as? Number)?.toInt()
+                    _fthrEstimate.value = value
+                } else {
+                    Log.e("StravaViewModel", "FTHR estimate failed: ${response.errorBody()?.string()}")
+                    _fthrEstimate.value = null
+                }
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Error estimating cycling FTHR", e)
+                _fthrEstimate.value = null
             }
         }
     }

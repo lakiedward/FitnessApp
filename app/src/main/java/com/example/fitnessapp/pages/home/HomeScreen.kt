@@ -59,6 +59,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import java.text.NumberFormat
+import kotlin.math.max
+import kotlin.math.roundToInt
+import com.example.fitnessapp.navigation.Routes
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.mock.SharedPreferencesMock
@@ -268,15 +272,22 @@ private fun TodayTrainingCard(todayWorkout: Any?) {
 }
 
 @Composable
-private fun QuickActionsSection(navController: NavController) {
-    Column {
+private fun SectionHeader(title: String, modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = "Quick Actions",
+            text = title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+@Composable
+private fun QuickActionsSection(navController: NavController) {
+    Column {
+        SectionHeader(title = "Quick Actions")
 
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -286,28 +297,28 @@ private fun QuickActionsSection(navController: NavController) {
                 QuickActionCard(
                     title = "View Calendar",
                     icon = Icons.Filled.CalendarToday,
-                    onClick = { navController.navigate("calendar_screen") }
+                    onClick = { navController.navigate(Routes.CALENDAR) }
                 )
             }
             item {
                 QuickActionCard(
-                    title = "Training Plans",
+                    title = "Training Dashboard",
                     icon = Icons.Filled.Assignment,
-                    onClick = { navController.navigate("training_plans") }
+                    onClick = { navController.navigate(Routes.TRAINING_DASHBOARD) }
                 )
             }
             item {
                 QuickActionCard(
                     title = "Settings",
                     icon = Icons.Filled.Settings,
-                    onClick = { navController.navigate("settings") }
+                    onClick = { navController.navigate(Routes.MORE) }
                 )
             }
             item {
                 QuickActionCard(
-                    title = "More",
-                    icon = Icons.Filled.MoreHoriz,
-                    onClick = { navController.navigate("more") }
+                    title = "Strava Sync",
+                    icon = Icons.Filled.FitnessCenter,
+                    onClick = { navController.navigate(Routes.STRAVA_SYNC_LOADING) }
                 )
             }
         }
@@ -322,7 +333,7 @@ private fun QuickActionCard(
 ) {
     Card(
         modifier = Modifier
-            .width(120.dp)
+            .width(140.dp)
             .height(100.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
@@ -358,13 +369,7 @@ private fun QuickActionCard(
 @Composable
 private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading: Boolean?, sleepHours: Double, steps: Long?, caloriesBurned: Double, calorieAllowance: Double) {
     Column {
-        Text(
-            text = "Your Metrics",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+        SectionHeader(title = "Your Metrics")
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(
@@ -380,7 +385,7 @@ private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading:
                 )
                 MetricCard(
                     title = "Steps",
-                    value = steps?.toString() ?: "No data",
+                    value = steps?.let { NumberFormat.getIntegerInstance().format(it) } ?: "No data",
                     unit = "steps",
                     icon = Icons.Filled.DirectionsWalk,
                     modifier = Modifier.weight(1f)
@@ -393,14 +398,14 @@ private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading:
             ) {
                 MetricCard(
                     title = "Calories Burned",
-                    value = if (caloriesBurned > 0) caloriesBurned.toInt().toString() else "No data",
+                    value = if (caloriesBurned > 0) NumberFormat.getIntegerInstance().format(caloriesBurned.roundToInt()) else "No data",
                     unit = "kcal",
                     icon = Icons.Filled.LocalFireDepartment,
                     modifier = Modifier.weight(1f)
                 )
                 MetricCard(
                     title = "Daily Allowance",
-                    value = if (calorieAllowance > 0) calorieAllowance.toInt().toString() else "2,000",
+                    value = if (calorieAllowance > 0) NumberFormat.getIntegerInstance().format(calorieAllowance.roundToInt()) else "2,000",
                     unit = "kcal",
                     icon = Icons.Filled.Favorite,
                     modifier = Modifier.weight(1f)
@@ -420,8 +425,9 @@ private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading:
                 )
                 MetricCard(
                     title = "Remaining",
-                    value = if (calorieAllowance > 0 && caloriesBurned > 0) {
-                        (calorieAllowance - caloriesBurned).toInt().toString()
+                    value = if (calorieAllowance > 0) {
+                        val rem = max((calorieAllowance - caloriesBurned).roundToInt(), 0)
+                        NumberFormat.getIntegerInstance().format(rem)
                     } else "2,000",
                     unit = "kcal",
                     icon = Icons.Filled.FitnessCenter,
@@ -527,11 +533,10 @@ fun ModernBottomNavigation(navController: NavController) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     val navigationItems = mapOf(
-        "home_screen" to (Icons.Filled.Home to "Home"),
-        "calendar_screen" to (Icons.Filled.CalendarToday to "Calendar"),
-        "training_plans" to (Icons.Filled.Assignment to "Plans"),
-        "profile" to (Icons.Filled.Person to "Profile"),
-        "more" to (Icons.Filled.MoreHoriz to "More")
+        Routes.HOME to (Icons.Filled.Home to "Home"),
+        Routes.CALENDAR to (Icons.Filled.CalendarToday to "Calendar"),
+        Routes.TRAINING_DASHBOARD to (Icons.Filled.Assignment to "Plans"),
+        Routes.MORE to (Icons.Filled.MoreHoriz to "More")
     )
 
     Card(

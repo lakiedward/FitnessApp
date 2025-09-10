@@ -31,6 +31,9 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -245,6 +248,27 @@ fun WorkoutExecutionScreen(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WorkoutExecutionScreenPreview() {
+    val navController = rememberNavController()
+    val sampleTraining = TrainingPlan(
+        id = 1,
+        user_id = 1,
+        date = "2024-01-01",
+        workout_name = "Intervals Session",
+        duration = "01:00:00",
+        intensity = "Hard",
+        description = "Sample workout description",
+        workout_type = "Cycling",
+        zwo_path = null,
+        stepsJson = null
+    )
+    FitnessAppTheme {
+        WorkoutExecutionScreen(trainingId = 1, training = sampleTraining, navController = navController)
     }
 }
 

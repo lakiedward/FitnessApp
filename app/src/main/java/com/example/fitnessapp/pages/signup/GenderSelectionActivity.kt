@@ -21,6 +21,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.fitnessapp.R
 import com.example.fitnessapp.model.UserDetalis
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -188,5 +191,15 @@ fun GenderOption(
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GenderSelectionScreenPreview() {
+    val navController = rememberNavController()
+    val userState = remember { mutableStateOf(UserDetalis(varsta = 25, inaltime = 175f, greutate = 70f, gender = "", discipline = "")) }
+    FitnessAppTheme {
+        GenderSelectionScreen(navController = navController, userDetalis = userState)
     }
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">308329252100</string>
+    <string name="google_api_key" translatable="false">AIzaSyCl_WWGdtBXcfY9BlDn4V61DYbbnUVZIs4</string>
+    <string name="google_app_id" translatable="false">1:308329252100:android:c30ef06d73a945ddf27c51</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCl_WWGdtBXcfY9BlDn4V61DYbbnUVZIs4</string>
+    <string name="google_storage_bucket" translatable="false">fitnessapp-bf757.firebasestorage.app</string>
+    <string name="project_id" translatable="false">fitnessapp-bf757</string>
+</resources>
