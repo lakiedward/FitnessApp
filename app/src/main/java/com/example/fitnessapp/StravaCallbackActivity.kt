@@ -60,6 +60,9 @@ class StravaCallbackActivity : ComponentActivity() {
         val code = intent.data?.getQueryParameter("code")
         val status = intent.data?.getQueryParameter("status")
         
+        // During OAuth callback handling, temporarily suppress global auto-logout
+        com.example.fitnessapp.utils.AuthGuard.suppressAutoLogoutFor(60_000)
+
         Log.d(TAG, "[Callback] Extracted code: ${code?.take(4)}...${code?.takeLast(4)}")
         Log.d(TAG, "[Callback] Extracted status: $status")
         

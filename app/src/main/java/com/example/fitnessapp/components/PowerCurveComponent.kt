@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -70,6 +72,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -157,43 +160,14 @@ fun PowerCurveComponent(
                             .clip(RoundedCornerShape(16.dp))
                     )
                 }
-                // Controls row (switches) tightly above chart
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 6.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Switch(
-                            checked = showFtpLine,
-                            onCheckedChange = { showFtpLine = it },
-                            modifier = Modifier.size(44.dp, 24.dp)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        powerCurveData?.referenceData?.userFtp?.let { ftp ->
-                            Text(
-                                "FTP Line (${ftp.toInt()} W)",
-                                color = Color(0xFF3B82F6),
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Switch(
-                            checked = showComparisonLine,
-                            onCheckedChange = { showComparisonLine = it },
-                            modifier = Modifier.size(44.dp, 24.dp)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            "Previous Best",
-                            color = Color(0xFF10B981),
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
+                // Adaptive controls (no overlap on compact screens)
+                PowerCurveControls(
+                    ftp = powerCurveData?.referenceData?.userFtp,
+                    showFtpLine = showFtpLine,
+                    onToggleFtp = { showFtpLine = it },
+                    showComparisonLine = showComparisonLine,
+                    onToggleComparison = { showComparisonLine = it }
+                )
                 androidx.compose.material3.HorizontalDivider(
                     modifier = Modifier.padding(vertical = 6.dp),
                     thickness = 1.dp,
@@ -241,6 +215,106 @@ fun PowerCurveComponent(
 
                 if (powerCurveData != null) {
                     PowerCurveStats(powerCurveData!!, fthr)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PowerCurveControls(
+    ftp: Double?,
+    showFtpLine: Boolean,
+    onToggleFtp: (Boolean) -> Unit,
+    showComparisonLine: Boolean,
+    onToggleComparison: (Boolean) -> Unit
+) {
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val compact = maxWidth < 360.dp
+        if (compact) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 6.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Switch(
+                        checked = showFtpLine,
+                        onCheckedChange = onToggleFtp,
+                        modifier = Modifier.size(44.dp, 24.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = buildString {
+                            append("FTP Line")
+                            ftp?.toInt()?.let { append(" ($it W)") }
+                        },
+                        color = Color(0xFF3B82F6),
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Switch(
+                        checked = showComparisonLine,
+                        onCheckedChange = onToggleComparison,
+                        modifier = Modifier.size(44.dp, 24.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = "Previous Best",
+                        color = Color(0xFF10B981),
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Switch(
+                        checked = showFtpLine,
+                        onCheckedChange = onToggleFtp,
+                        modifier = Modifier.size(44.dp, 24.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = buildString {
+                            append("FTP Line")
+                            ftp?.toInt()?.let { append(" ($it W)") }
+                        },
+                        color = Color(0xFF3B82F6),
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Switch(
+                        checked = showComparisonLine,
+                        onCheckedChange = onToggleComparison,
+                        modifier = Modifier.size(44.dp, 24.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = "Previous Best",
+                        color = Color(0xFF10B981),
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
         }
@@ -342,6 +416,7 @@ private fun PowerCurveChart(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SelectionInfoBar(
     marker: PowerCurveMarker,
@@ -359,19 +434,21 @@ private fun SelectionInfoBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            FlowRow(
+                modifier = Modifier
+                    .weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 MetricChip(label = marker.interval, color = Color(0xFF374151))
-                Spacer(Modifier.width(8.dp))
                 MetricChip(label = marker.power, color = Color(0xFFFF6B35))
                 marker.hr?.let {
-                    Spacer(Modifier.width(8.dp))
                     MetricChip(label = it, color = Color(0xFFEF4444))
                 }
                 marker.zone?.let {
-                    Spacer(Modifier.width(8.dp))
                     MetricPill(label = it, bg = getZoneColorFromLabel(it))
                 }
             }
@@ -413,7 +490,7 @@ private fun MetricPill(label: String, bg: Color) {
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
-            softWrap = false
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

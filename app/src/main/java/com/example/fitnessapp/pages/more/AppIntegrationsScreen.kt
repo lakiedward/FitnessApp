@@ -421,6 +421,7 @@ fun AppIntegrationsScreen(
     apiService: ApiService,
     onNavigateBack: () -> Unit = {},
     onOpenStravaSync: () -> Unit = {},
+    onRequireLogin: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -446,6 +447,21 @@ fun AppIntegrationsScreen(
         } else {
             Log.d(TAG, "Some permissions were denied")
             healthConnectViewModel.onPermissionsDenied()
+        }
+    }
+
+    // Auto-redirect to Login if JWT absent or user becomes unauthenticated
+    LaunchedEffect(Unit) {
+        val jwt = authViewModel.getToken()
+        if (jwt.isNullOrEmpty()) {
+            onRequireLogin()
+            return@LaunchedEffect
+        }
+    }
+
+    LaunchedEffect(authState.value) {
+        if (authState.value is AuthState.Unauthenticated) {
+            onRequireLogin()
         }
     }
 
@@ -542,6 +558,17 @@ fun AppIntegrationsScreen(
 
     fun connectToStrava() {
         Log.d(TAG, "Attempting to connect to Strava")
+        // Ensure user is authenticated before starting OAuth
+        val jwt = authViewModel.getToken()
+        if (jwt.isNullOrEmpty()) {
+            Log.w(TAG, "Cannot start Strava OAuth: JWT token missing")
+            isConnecting = false
+            errorMessage = "Pentru a conecta Strava, autentifică-te mai întâi în aplicație."
+            // Allow host to route to login if desired
+            onRequireLogin()
+            return
+        }
+
         isConnecting = true
         scope.launch {
             try {
@@ -552,7 +579,13 @@ fun AppIntegrationsScreen(
             } catch (e: Exception) {
                 Log.e(TAG, "Error starting OAuth: ${e.message}", e)
                 isConnecting = false
-                errorMessage = "Failed to start OAuth: ${e.message}"
+                // Map common authorization errors to a clearer message
+                errorMessage = when {
+                    (e.message ?: "").contains("401") ||
+                    (e.message ?: "").contains("Not logged in", ignoreCase = true) ->
+                        "Sesiunea a expirat sau lipsește. Te rugăm să te reconectezi."
+                    else -> "Failed to start OAuth: ${e.message}"
+                }
             }
         }
     }

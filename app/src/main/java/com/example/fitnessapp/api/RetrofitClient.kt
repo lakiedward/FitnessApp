@@ -2,6 +2,9 @@ package com.example.fitnessapp.api
 
 import com.example.fitnessapp.BuildConfig
 import com.example.fitnessapp.utils.TokenStore
+import com.example.fitnessapp.utils.AuthEvent
+import com.example.fitnessapp.utils.AuthEventBus
+import com.example.fitnessapp.utils.AuthGuard
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -34,8 +37,20 @@ object RetrofitClient {
         chain.proceed(request)
     }
 
+    // Interceptor to catch unauthorized responses globally
+    private val unauthorizedInterceptor = Interceptor { chain ->
+        val response = chain.proceed(chain.request())
+        if (response.code == 401 && !AuthGuard.isSuppressed()) {
+            // Clear in-memory token and emit global event
+            TokenStore.clear()
+            AuthEventBus.emit(AuthEvent.TokenInvalid)
+        }
+        response
+    }
+
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(authInterceptor)
+        .addInterceptor(unauthorizedInterceptor)
         .addInterceptor(logging)
         .connectTimeout(300, TimeUnit.SECONDS)  // 5 minutes - increased for batch processing
         .readTimeout(300, TimeUnit.SECONDS)     // 5 minutes - increased for batch processing

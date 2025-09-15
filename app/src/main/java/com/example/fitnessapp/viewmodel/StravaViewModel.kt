@@ -339,6 +339,8 @@ class StravaViewModel(private val context: Context) : ViewModel() {
         Log.d("STRAVA_DEBUG", "[connect] Current state before: ${_stravaState.value}")
         Log.d("STRAVA_DEBUG", "[connect] isOAuthInProgress before: $isOAuthInProgress")
         try {
+            // Suppress global auto-logout while OAuth is in progress
+            com.example.fitnessapp.utils.AuthGuard.suppressAutoLogoutFor(60_000)
             isOAuthInProgress = true
             Log.d("STRAVA_DEBUG", "[connect] OAuth started, disabling connection checks")
             Log.d("STRAVA_DEBUG", "[connect] isOAuthInProgress set to: $isOAuthInProgress")
@@ -360,6 +362,8 @@ class StravaViewModel(private val context: Context) : ViewModel() {
     suspend fun handleAuthCode(code: String) {
         Log.d("STRAVA_DEBUG", "[handleAuthCode] Processing auth code: ${code.take(10)}...")
         try {
+            // Extend suppression during token exchange
+            com.example.fitnessapp.utils.AuthGuard.suppressAutoLogoutFor(60_000)
             val jwtToken = authManager.getJwtToken() ?: throw Exception("Not logged in")
             val response = withContext(Dispatchers.IO) {
                 apiService.exchangeCodeForToken("Bearer $jwtToken", code).execute()
@@ -1188,6 +1192,10 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                     )
                     emptyMap()
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                // Composition left; treat as benign and propagate cancellation without noisy logs
+                Log.d("StravaViewModel", "Streams request cancelled for activity $activityId")
+                throw e
             } catch (e: Exception) {
                 Log.e("StravaViewModel", "Error getting streams from DB for activity $activityId", e)
                 emptyMap()

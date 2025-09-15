@@ -79,6 +79,25 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
 
     fun login(username: String, password: String) {
         val user = User(username, password)
+        // Local validations for clearer, field-related feedback
+        if (username.isBlank()) {
+            _authState.value = AuthState.Error("Introduceți adresa de email")
+            return
+        }
+        val emailRegex = android.util.Patterns.EMAIL_ADDRESS
+        if (!emailRegex.matcher(username).matches()) {
+            _authState.value = AuthState.Error("Adresa de email nu este validă")
+            return
+        }
+        if (password.isBlank()) {
+            _authState.value = AuthState.Error("Introduceți parola")
+            return
+        }
+        if (password.length < 6) {
+            _authState.value = AuthState.Error("Parola trebuie să aibă cel puțin 6 caractere")
+            return
+        }
+
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
@@ -90,13 +109,35 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
                         initUserDataAfterAuth()
                         _authState.value = AuthState.Authenticated(token)
                     } else {
-                        _authState.value = AuthState.Error("Login failed: Token missing")
+                        _authState.value = AuthState.Error("Serverul nu a returnat token-ul de autentificare")
                     }
                 } else {
-                    _authState.value = AuthState.Error("Login failed: ${response.message()}")
+                    val code = response.code()
+                    val raw = try { response.errorBody()?.string() } catch (_: Exception) { null }
+                    // Try to extract a message field if backend returns JSON
+                    val backendMsg = try {
+                        val gson = com.google.gson.Gson()
+                        val map = gson.fromJson(raw, Map::class.java) as? Map<*, *>
+                        (map?.get("detail") ?: map?.get("message") ?: map?.get("error"))?.toString()
+                    } catch (_: Exception) { null }
+
+                    val friendly = when (code) {
+                        400, 422 -> backendMsg ?: "Date invalide. Verificați formatul emailului și parola."
+                        401 -> "Email sau parolă incorecte."
+                        404 -> "Contul nu există sau a fost dezactivat."
+                        429 -> "Prea multe încercări. Încercați din nou în câteva minute."
+                        in 500..599 -> "Server indisponibil momentan. Încercați mai târziu."
+                        else -> backendMsg ?: "Nu am putut autentifica (cod $code)."
+                    }
+                    _authState.value = AuthState.Error(friendly)
                 }
             } catch (e: Exception) {
-                _authState.value = AuthState.Error("Login failed: ${e.message}")
+                val friendly = when (e) {
+                    is java.net.UnknownHostException -> "Nu există conexiune la internet."
+                    is java.net.SocketTimeoutException -> "Conexiune lentă. Încercați din nou."
+                    else -> "Eroare neașteptată: ${e.message}"
+                }
+                _authState.value = AuthState.Error(friendly)
             }
         }
     }

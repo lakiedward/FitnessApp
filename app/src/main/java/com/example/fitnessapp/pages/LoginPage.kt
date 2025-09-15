@@ -336,8 +336,8 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         ),
                         keyboardActions = KeyboardActions(onDone = {
                             // Validate and submit
-                            if (email.isBlank()) emailError = "Enter your email"
-                            if (password.isBlank()) passwordError = "Enter your password"
+                            if (email.isBlank()) emailError = "Introduceți adresa de email"
+                            if (password.isBlank()) passwordError = "Introduceți parola"
                             if (emailError == null && passwordError == null) {
                                 authViewModel.login(email, password)
                             }
@@ -367,13 +367,13 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         onClick = {
                             // basic validation
                             emailError = when {
-                                email.isBlank() -> "Enter your email"
-                                !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Invalid email"
+                                email.isBlank() -> "Introduceți adresa de email"
+                                !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Email invalid"
                                 else -> null
                             }
                             passwordError = when {
-                                password.isBlank() -> "Enter your password"
-                                password.length < 6 -> "At least 6 characters"
+                                password.isBlank() -> "Introduceți parola"
+                                password.length < 6 -> "Cel puțin 6 caractere"
                                 else -> null
                             }
                             if (emailError == null && passwordError == null) {

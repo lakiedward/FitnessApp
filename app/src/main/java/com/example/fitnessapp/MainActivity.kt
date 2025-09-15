@@ -67,6 +67,8 @@ import com.example.fitnessapp.viewmodel.HealthConnectViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModel
 import kotlinx.coroutines.launch
 import com.example.fitnessapp.navigation.Routes
+import com.example.fitnessapp.utils.AuthEvent
+import com.example.fitnessapp.utils.AuthEventBus
 
 class MainActivity : ComponentActivity() {
     private lateinit var authViewModel: AuthViewModel
@@ -117,6 +119,15 @@ class MainActivity : ComponentActivity() {
                     stravaViewModel,
                     healthConnectViewModel
                 )
+            }
+        }
+
+        // Global listener: when a 401 happens anywhere, logout
+        lifecycleScope.launch {
+            AuthEventBus.events.collect { event ->
+                if (event is AuthEvent.TokenInvalid) {
+                    authViewModel.logout()
+                }
             }
         }
     }
@@ -170,7 +181,8 @@ fun AppNavigation(
 
     // Navigate to login when user is logged out, using LaunchedEffect to avoid constant recomposition
     LaunchedEffect(authState) {
-        if (authState is com.example.fitnessapp.viewmodel.AuthState.Unauthenticated) {
+        if (authState is com.example.fitnessapp.viewmodel.AuthState.Unauthenticated &&
+            !com.example.fitnessapp.utils.AuthGuard.isSuppressed()) {
             navController.navigate("login_screen") {
                 popUpTo(0) { inclusive = true }
             }
@@ -207,7 +219,8 @@ fun AppNavigation(
                 healthConnectViewModel = healthConnectViewModel,
                 apiService = RetrofitClient.retrofit.create(ApiService::class.java),
                 onOpenStravaSync = { navController.navigate(Routes.STRAVA_SYNC_LOADING) },
-                onNavigateBack = { navController.navigateUp() }
+                onNavigateBack = { navController.navigateUp() },
+                onRequireLogin = { navController.navigate(Routes.LOGIN) }
             )
         }
         composable(Routes.ADD_AGE) {

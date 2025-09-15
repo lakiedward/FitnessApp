@@ -28,8 +28,20 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
     val trainingPlan by authViewModel.trainingPlan.observeAsState(initial = emptyList<TrainingPlan>())
     var hasTimedOut by remember { mutableStateOf(false) }
 
+    // Kick off an initial fetch
     LaunchedEffect(Unit) {
         authViewModel.getTrainingPlans()
+    }
+
+    // Periodically poll the training plan while the screen is visible until it arrives or timeout triggers
+    LaunchedEffect(trainingPlan, hasTimedOut) {
+        if (!hasTimedOut && trainingPlan.isEmpty()) {
+            // poll every 5 seconds
+            while (!hasTimedOut && trainingPlan.isEmpty()) {
+                delay(5_000)
+                authViewModel.getTrainingPlans(retry = false)
+            }
+        }
     }
 
     LaunchedEffect(trainingPlan) {

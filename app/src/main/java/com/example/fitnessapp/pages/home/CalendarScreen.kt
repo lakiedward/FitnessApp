@@ -230,6 +230,11 @@ fun InfiniteCalendarPage(
     // Unified activities state (from new endpoint)
     var isInitialLoading by remember { mutableStateOf(true) }
     var unifiedActivities by remember { mutableStateOf<List<StravaActivity>>(emptyList()) }
+    // Track already loaded date coverage to avoid duplicate requests
+    var earliestLoadedDate by remember { mutableStateOf<String?>(null) } // yyyy-MM-dd
+    var latestLoadedDate by remember { mutableStateOf<String?>(null) }   // yyyy-MM-dd
+    // Track in-flight/finished windows to prevent re-requesting the same ranges
+    val requestedWindows = remember { mutableSetOf<String>() }
     var isActivitiesLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -294,59 +299,159 @@ fun InfiniteCalendarPage(
                     }
                 }
 
-                val startDate =
-                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(startCalendar.time)
-                val endDate =
-                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(endCalendar.time)
+                val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val startDate = fmt.format(startCalendar.time)
+                val endDate = fmt.format(endCalendar.time)
+
+                // Skip if requested window is already fully covered by what we loaded before
+                run {
+                    val earliest = earliestLoadedDate
+                    val latest = latestLoadedDate
+                    if (!isInitialLoad && earliest != null && latest != null) {
+                        val startD = fmt.parse(startDate)!!.time
+                        val endD = fmt.parse(endDate)!!.time
+                        val earliestD = fmt.parse(earliest)!!.time
+                        val latestD = fmt.parse(latest)!!.time
+                        if (startD >= earliestD && endD <= latestD) {
+                            Log.d(
+                                "CalendarScreen",
+                                "Window $startDate..$endDate already covered by $earliest..$latest; skip"
+                            )
+                            return@launch
+                        }
+                    }
+                }
 
                 Log.d(
                     "CalendarScreen",
                     "Loading unified activities from $startDate to $endDate (isInitial: $isInitialLoad)"
                 )
 
-                // Bound the fetch to avoid long hangs due to backend timeouts
+                // Show something fast: quick DB prefetch first (up to 4s)
+                var activities: List<StravaActivity> = emptyList()
+                val quickDb = withTimeoutOrNull(4_000) {
+                    stravaViewModel.getActivitiesFromDatabase(startDate, endDate)
+                } ?: emptyList()
+                if (quickDb.isNotEmpty()) {
+                    val mergedQuick = (unifiedActivities + quickDb)
+                        .associateBy { it.id }
+                        .values
+                        .toList()
+                    unifiedActivities = mergedQuick
+                    earliestLoadedDate = listOfNotNull(earliestLoadedDate, startDate).minOrNull()
+                    latestLoadedDate = listOfNotNull(latestLoadedDate, endDate).maxOrNull()
+                    Log.d("CalendarScreen", "Quick DB prefetch loaded ${quickDb.size} activities")
+                    isActivitiesLoading = false // hide spinner early
+                }
+
+                // Then try the unified endpoint with a bounded timeout
                 val timeoutMs = if (isInitialLoad) 22_000L else 12_000L
-                var activities = try {
-                    withTimeout(timeoutMs) {
+                try {
+                    val unified = withTimeoutOrNull(timeoutMs) {
                         stravaViewModel.getUnifiedActivities(startDate, endDate)
-                    }
-                } catch (e: TimeoutCancellationException) {
-                    Log.w("CalendarScreen", "Unified activities load timed out for $startDate..$endDate; trying DB fallback")
-                    if (isInitialLoad) {
-                        snackbarHostState.showSnackbar(
-                            message = "Loading activities timed out. Trying fallback...",
-                            duration = SnackbarDuration.Short
-                        )
-                    }
-                    // Fallback to DB-only list (faster, may omit app workouts)
-                    val dbFallback = withTimeoutOrNull(12_000) {
-                        stravaViewModel.getActivitiesFromDatabase(startDate, endDate)
                     } ?: emptyList()
-                    if (dbFallback.isNotEmpty()) {
-                        Log.d("CalendarScreen", "Loaded ${dbFallback.size} activities via DB fallback")
-                    }
-                    dbFallback
+                    activities = unified
                 } catch (e: CancellationException) {
                     // Ignore UX noise when composition cancels ongoing work (e.g., fast scroll)
                     Log.d("CalendarScreen", "Unified activities load cancelled")
                     return@launch
                 }
-                // If unified endpoint responded but returned empty, try a quick DB fallback to show history
-                if (activities.isEmpty()) {
-                    val quickDb = withTimeoutOrNull(8_000) {
+                // If unified still empty and we didn't get quick DB, do a short DB fallback
+                if (activities.isEmpty() && quickDb.isEmpty()) {
+                    val dbFallbackShort = withTimeoutOrNull(6_000) {
                         stravaViewModel.getActivitiesFromDatabase(startDate, endDate)
                     } ?: emptyList()
-                    if (quickDb.isNotEmpty()) {
-                        Log.d("CalendarScreen", "Unified empty; using ${quickDb.size} DB activities")
-                        activities = quickDb
+                    if (dbFallbackShort.isNotEmpty()) {
+                        Log.d("CalendarScreen", "Unified empty; using ${dbFallbackShort.size} DB activities (fallback)")
+                        activities = dbFallbackShort
+                    } else {
+                        Log.w("CalendarScreen", "No unified or DB activities returned in time for $startDate..$endDate")
                     }
                 }
                 if (activities.isNotEmpty()) {
-                    unifiedActivities = activities
-                    Log.d("CalendarScreen", "Loaded ${activities.size} unified activities")
+                    // Merge newly loaded activities with the existing ones so history persists across scroll
+                    val merged = (unifiedActivities + activities)
+                        .associateBy { it.id } // de-duplicate by activity id
+                        .values
+                        .toList()
+                    unifiedActivities = merged
+                    // Expand loaded coverage
+                    earliestLoadedDate = listOfNotNull(earliestLoadedDate, startDate).minOrNull()
+                    latestLoadedDate = listOfNotNull(latestLoadedDate, endDate).maxOrNull()
+                    Log.d(
+                        "CalendarScreen",
+                        "Merged activities: new=${activities.size}, total=${unifiedActivities.size}"
+                    )
                 } else {
                     Log.d("CalendarScreen", "Activities result empty; keeping previous list of ${unifiedActivities.size}")
                 }
+
+                // Bidirectional prefetch around current window (±14 days beyond buffer)
+                try {
+                    val marginDays = 14
+                    // Older prefetch
+                    run {
+                        val cal = Calendar.getInstance().apply { time = fmt.parse(startDate)!! }
+                        cal.add(Calendar.DAY_OF_MONTH, -(bufferDays + marginDays))
+                        val prefStart = fmt.format(cal.time)
+                        cal.time = fmt.parse(startDate)!!
+                        cal.add(Calendar.DAY_OF_MONTH, -1)
+                        val prefEnd = fmt.format(cal.time)
+                        val key = "$prefStart:$prefEnd"
+                        val earliest = earliestLoadedDate
+                        if (earliest == null || fmt.parse(prefStart)!!.time < fmt.parse(earliest)!!.time) {
+                            if (!requestedWindows.contains(key)) {
+                                requestedWindows.add(key)
+                                launch {
+                                    val more = withTimeoutOrNull(10_000) {
+                                        stravaViewModel.getUnifiedActivities(prefStart, prefEnd)
+                                    } ?: emptyList()
+                                    if (more.isNotEmpty()) {
+                                        val merged2 = (unifiedActivities + more)
+                                            .associateBy { it.id }
+                                            .values
+                                            .toList()
+                                        unifiedActivities = merged2
+                                        earliestLoadedDate = listOfNotNull(earliestLoadedDate, prefStart).minOrNull()
+                                        Log.d("CalendarScreen", "Prefetched older: ${more.size} items; earliest=$earliestLoadedDate")
+                                    }
+                                    requestedWindows.remove(key)
+                                }
+                            }
+                        }
+                    }
+                    // Newer prefetch
+                    run {
+                        val cal = Calendar.getInstance().apply { time = fmt.parse(endDate)!! }
+                        cal.add(Calendar.DAY_OF_MONTH, 1)
+                        val prefStart = fmt.format(cal.time)
+                        cal.time = fmt.parse(endDate)!!
+                        cal.add(Calendar.DAY_OF_MONTH, bufferDays + marginDays)
+                        val prefEnd = fmt.format(cal.time)
+                        val key = "$prefStart:$prefEnd"
+                        val latest = latestLoadedDate
+                        if (latest == null || fmt.parse(prefEnd)!!.time > fmt.parse(latest)!!.time) {
+                            if (!requestedWindows.contains(key)) {
+                                requestedWindows.add(key)
+                                launch {
+                                    val more = withTimeoutOrNull(10_000) {
+                                        stravaViewModel.getUnifiedActivities(prefStart, prefEnd)
+                                    } ?: emptyList()
+                                    if (more.isNotEmpty()) {
+                                        val merged2 = (unifiedActivities + more)
+                                            .associateBy { it.id }
+                                            .values
+                                            .toList()
+                                        unifiedActivities = merged2
+                                        latestLoadedDate = listOfNotNull(latestLoadedDate, prefEnd).maxOrNull()
+                                        Log.d("CalendarScreen", "Prefetched newer: ${more.size} items; latest=$latestLoadedDate")
+                                    }
+                                    requestedWindows.remove(key)
+                                }
+                            }
+                        }
+                    }
+                } catch (_: Exception) { }
             } catch (e: Exception) {
                 Log.e("CalendarScreen", "Error loading unified activities", e)
             } finally {
@@ -422,6 +527,11 @@ fun InfiniteCalendarPage(
                                 "CalendarScreen",
                                 "Making SSE request (attempt ${currentRetry + 1})"
                             )
+                            if (connection.responseCode == 401) {
+                                com.example.fitnessapp.utils.AuthEventBus.emit(
+                                    com.example.fitnessapp.utils.AuthEvent.TokenInvalid
+                                )
+                            }
 
                             if (connection.responseCode != 200) {
                                 val errorBody =
@@ -681,7 +791,8 @@ fun InfiniteCalendarPage(
             }
             .distinctUntilChanged()
             .debounce(600)
-            .filter { pair: Pair<Int, Int> -> !isInitialLoading && pair.second > 7 }
+            // Trigger loads sooner (after ~2 items scrolled away from center)
+            .filter { pair: Pair<Int, Int> -> !isInitialLoading && pair.second > 2 }
             .collectLatest { pair: Pair<Int, Int> ->
                 Log.d("CalendarScreen", "Scroll triggered load at index ${pair.first} (distance: ${pair.second})")
                 loadActivitiesForDateRange(isInitialLoad = false)
@@ -1508,8 +1619,32 @@ fun RoutePreview(
     LaunchedEffect(activityId) {
         try {
             val mapViewResponse = stravaViewModel.getActivityMapView(activityId)
+            // 1) Primary: try GPX data from backend
             val gpxData = mapViewResponse["gpx_data"] ?: ""
-            val points = parseGpxPoints(gpxData)
+            var points = parseGpxPoints(gpxData)
+
+            // 2) Fallback: polyline returned by backend (if any)
+            if ((points.isEmpty() || points.size < 2)) {
+                val polyline = mapViewResponse["polyline"] ?: mapViewResponse["summary_polyline"]
+                if (!polyline.isNullOrEmpty()) {
+                    points = decodePolylineToOffsets(polyline)
+                }
+            }
+
+            // 3) Fallback: activity details (may contain map.summaryPolyline)
+            if ((points.isEmpty() || points.size < 2)) {
+                val activity = stravaViewModel.getActivityById(activityId)
+                val activityPolyline = activity?.map?.summaryPolyline ?: activity?.map?.polyline
+                if (!activityPolyline.isNullOrEmpty()) {
+                    points = decodePolylineToOffsets(activityPolyline)
+                }
+            }
+
+            // 4) Fallback: streams from DB (latlng stream)
+            if ((points.isEmpty() || points.size < 2)) {
+                val streams = stravaViewModel.getActivityStreamsFromDB(activityId)
+                points = parseStreamsToOffsets(streams)
+            }
 
             // Only proceed if we have actual route data (at least 2 points for a valid route)
             if (points.isNotEmpty() && points.size >= 2) {
@@ -1734,6 +1869,78 @@ fun RoutePreview(
             }
         }
     }
+}
+
+// Decode Google encoded polyline into Offsets (lng as x, lat as y)
+private fun decodePolylineToOffsets(encoded: String): List<Offset> {
+    if (encoded.isEmpty()) return emptyList()
+    val poly: MutableList<Offset> = ArrayList()
+    var index = 0
+    val len = encoded.length
+    var lat = 0
+    var lng = 0
+
+    while (index < len) {
+        var b: Int
+        var shift = 0
+        var result = 0
+        do {
+            b = encoded[index++].code - 63
+            result = result or (b and 0x1f shl shift)
+            shift += 5
+        } while (b >= 0x20 && index < len)
+        val dlat = if (result and 1 != 0) (result.inv() shr 1) else (result shr 1)
+        lat += dlat
+
+        shift = 0
+        result = 0
+        do {
+            if (index >= len) break
+            b = encoded[index++].code - 63
+            result = result or (b and 0x1f shl shift)
+            shift += 5
+        } while (b >= 0x20 && index < len)
+        val dlng = if (result and 1 != 0) (result.inv() shr 1) else (result shr 1)
+        lng += dlng
+
+        val latF = (lat / 1E5).toFloat()
+        val lngF = (lng / 1E5).toFloat()
+        poly.add(Offset(lngF, latF))
+    }
+    return poly
+}
+
+// Try to parse various lat/lng stream shapes to a list of Offsets
+private fun parseStreamsToOffsets(streams: Map<String, Any>): List<Offset> {
+    if (streams.isEmpty()) return emptyList()
+    try {
+        // Streams may be nested under "streams" key
+        val container: Any? = streams["streams"] ?: streams
+        val map = container as? Map<*, *> ?: return emptyList()
+
+        // Common shapes: {"latlng": [[lat,lng], ...]} or {"latlng": {"data": [[lat,lng], ...]}}
+        val raw = map["latlng"] ?: map["lat_lng"] ?: map["latLng"]
+        val pairs: List<List<Number>>? = when (raw) {
+            is Map<*, *> -> {
+                val data = raw["data"]
+                if (data is List<*>) data.filterIsInstance<List<Number>>() else null
+            }
+            is List<*> -> raw.filterIsInstance<List<Number>>()
+            else -> null
+        }
+        if (pairs != null && pairs.size >= 2) {
+            return pairs.mapNotNull { pair ->
+                if (pair.size >= 2) {
+                    val lat = pair[0].toFloat()
+                    val lng = pair[1].toFloat()
+                    Offset(lng, lat)
+                } else null
+            }
+        }
+    } catch (e: Exception) {
+        Log.w("RoutePreview", "Could not parse streams latlng: ${e.message}")
+    }
+    return emptyList()
 }
 
 private fun calculateZoomLevel(minLat: Float, maxLat: Float, minLng: Float, maxLng: Float): Int {

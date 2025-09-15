@@ -185,26 +185,27 @@ fun ActivityChartsComponent(
 
     // Load streams data on component creation
     LaunchedEffect(activityId) {
-        scope.launch {
-            try {
-                Log.d("ActivityChartsComponent", "Loading streams for activity $activityId")
-                val streams = stravaViewModel.getActivityStreamsFromDB(activityId)
-                Log.d("ActivityChartsComponent", "Received streams: ${streams.keys}")
-                streamsData = streams
-                dataSource = streams["source"] as? String
+        try {
+            Log.d("ActivityChartsComponent", "Loading streams for activity $activityId")
+            val streams = stravaViewModel.getActivityStreamsFromDB(activityId)
+            Log.d("ActivityChartsComponent", "Received streams: ${streams.keys}")
+            streamsData = streams
+            dataSource = streams["source"] as? String
 
-                // Extract and combine metrics
-                val actualStreams = streams["streams"] as? Map<*, *>
-                if (actualStreams != null) {
-                    combinedMetrics = extractCombinedMetrics(actualStreams)
-                    Log.d("ActivityChartsComponent", "Combined metrics extracted successfully")
-                }
-
-                isLoading = false
-            } catch (e: Exception) {
-                Log.e("ActivityChartsComponent", "Error loading streams", e)
-                isLoading = false
+            // Extract and combine metrics
+            val actualStreams = streams["streams"] as? Map<*, *>
+            if (actualStreams != null) {
+                combinedMetrics = extractCombinedMetrics(actualStreams)
+                Log.d("ActivityChartsComponent", "Combined metrics extracted successfully")
             }
+
+            isLoading = false
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Composition disposed; don't treat as error
+            Log.d("ActivityChartsComponent", "Streams load cancelled for activity $activityId")
+        } catch (e: Exception) {
+            Log.e("ActivityChartsComponent", "Error loading streams", e)
+            isLoading = false
         }
     }
 
