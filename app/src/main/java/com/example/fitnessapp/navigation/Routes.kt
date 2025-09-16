@@ -8,7 +8,6 @@ object Routes {
 
     // Onboarding
     const val ENTER_EMAIL = "enter_add_email"
-    const val GENDER_SELECTION = "gender_selection_screen"
     const val ADD_AGE = "add_age_screen"
     const val STRAVA_AUTH = "strava_auth_screen"
     const val CHOOSE_DISCIPLINE = "choose_discipline"

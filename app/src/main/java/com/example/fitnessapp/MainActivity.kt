@@ -55,7 +55,6 @@ import com.example.fitnessapp.pages.signup.AddSwimPaceScreen
 import com.example.fitnessapp.pages.signup.ChooseDisciplineScreen
 import com.example.fitnessapp.pages.signup.ChooseSportsScreen
 import com.example.fitnessapp.pages.signup.DisciplineLoadingScreen
-import com.example.fitnessapp.pages.signup.GenderSelectionScreen
 import com.example.fitnessapp.pages.signup.PlanLengthScreen
 import com.example.fitnessapp.pages.signup.SetupStatusLoadingScreen
 import com.example.fitnessapp.pages.signup.StravaAuthScreen
@@ -208,9 +207,6 @@ fun AppNavigation(
         }
         composable(Routes.LOGIN) {
             LoginScreen(navController, authViewModel)
-        }
-        composable(Routes.GENDER_SELECTION) {
-            GenderSelectionScreen(navController, userDetalis)
         }
         composable(Routes.APP_INTEGRATIONS) {
             AppIntegrationsScreen(

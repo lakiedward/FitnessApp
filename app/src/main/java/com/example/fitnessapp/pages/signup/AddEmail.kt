@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.fitnessapp.navigation.Routes
 import com.example.fitnessapp.viewmodel.AuthState
 import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.R
@@ -42,13 +43,12 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
 
     LaunchedEffect(authState) {
         if (authState is AuthState.Authenticated) {
-            navController.navigate("gender_selection_screen")
+            navController.navigate(Routes.ADD_AGE)
             authViewModel.resetAuthState()
         }
     }
 
     // Input state variables
-    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -118,35 +118,6 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
-
-                // Name Field
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { 
-                        name = it
-                        errorMessage = null
-                    },
-                    label = { Text("Your Name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.user),
-                            contentDescription = "User Icon",
-                            modifier = Modifier.size(20.dp),
-                            tint = Color(0xFF6366F1)
-                        )
-                    },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFF6366F1),
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                        focusedLabelColor = Color(0xFF6366F1),
-                        unfocusedLabelColor = Color.Gray
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // Email Field
                 OutlinedTextField(
@@ -295,11 +266,6 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                         errorMessage = null
                         
                         // Validate required fields
-                        if (name.isBlank()) {
-                            errorMessage = "Please enter your name"
-                            return@Button
-                        }
-                        
                         // Validate email format
                         if (!isValidEmail(email)) {
                             errorMessage = "Please enter a valid email address"
