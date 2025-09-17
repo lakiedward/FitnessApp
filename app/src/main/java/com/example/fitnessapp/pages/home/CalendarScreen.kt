@@ -256,7 +256,46 @@ fun InfiniteCalendarPage(
         set(Calendar.SECOND, 0)
     }
 
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = Int.MAX_VALUE / 2)
+    val pastWindowDays = 365
+    val futureWindowDays = 180
+    val todayMillis = today.timeInMillis
+    val defaultPastMillis = (today.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -pastWindowDays) }.timeInMillis
+    val defaultFutureMillis = (today.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, futureWindowDays) }.timeInMillis
+
+    val trainingPlanDatesMillis = trainingPlans.mapNotNull { parseDateToEpochMillis(it.date) }
+    val earliestPlanMillis = trainingPlanDatesMillis.minOrNull()
+    val latestPlanMillis = trainingPlanDatesMillis.maxOrNull()
+
+    val earliestActivityMillis = remember(unifiedActivities) {
+        unifiedActivities.mapNotNull { parseActivityStartMillis(it) }.minOrNull()
+    }
+    val latestActivityMillis = remember(unifiedActivities) {
+        unifiedActivities.mapNotNull { parseActivityStartMillis(it) }.maxOrNull()
+    }
+
+    val resolvedEarliestMillis = listOfNotNull(defaultPastMillis, earliestPlanMillis, earliestActivityMillis, todayMillis).minOrNull() ?: defaultPastMillis
+    val resolvedLatestMillis = listOfNotNull(defaultFutureMillis, latestPlanMillis, latestActivityMillis, todayMillis).maxOrNull()
+        ?.coerceAtLeast(resolvedEarliestMillis) ?: resolvedEarliestMillis
+
+    val dayInMillis = 86_400_000L
+    val totalDays = ((resolvedLatestMillis - resolvedEarliestMillis) / dayInMillis).toInt().coerceAtLeast(0) + 1
+
+    fun calendarToIndex(calendar: Calendar): Int {
+        val diff = ((calendar.timeInMillis - resolvedEarliestMillis) / dayInMillis).toInt()
+        return diff.coerceIn(0, totalDays - 1)
+    }
+
+    val todayIndex = calendarToIndex(today)
+
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = todayIndex)
+    val earliestAllowedCalendar = calendarFromEpochMillis(resolvedEarliestMillis)
+    val latestAllowedCalendar = calendarFromEpochMillis(resolvedLatestMillis)
+
+    fun indexToCalendar(index: Int): Calendar {
+        val clampedIndex = index.coerceIn(0, totalDays - 1)
+        return calendarFromEpochMillis(resolvedEarliestMillis + clampedIndex.toLong() * dayInMillis)
+    }
+
     var showDatePicker by remember { mutableStateOf(false) }
     var selectedTrainingPlan by remember { mutableStateOf<TrainingPlan?>(null) }
     var showMapDialog by remember { mutableStateOf(false) }
@@ -270,33 +309,34 @@ fun InfiniteCalendarPage(
                 isActivitiesLoading = true
                 val startCalendar: Calendar
                 val endCalendar: Calendar
-                val bufferDays = if (isInitialLoad) 7 else 30
+                val bufferDays = if (isInitialLoad) 0 else 30
 
                 if (isInitialLoad) {
-                    startCalendar = Calendar.getInstance().apply {
-                        time = today.time
-                        add(Calendar.DAY_OF_MONTH, -bufferDays)
+                    startCalendar = (today.clone() as Calendar).apply {
+                        set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
+                        if (timeInMillis < earliestAllowedCalendar.timeInMillis) {
+                            timeInMillis = earliestAllowedCalendar.timeInMillis
+                        }
                     }
-                    endCalendar = Calendar.getInstance().apply {
-                        time = today.time
-                        add(Calendar.DAY_OF_MONTH, bufferDays)
+                    endCalendar = (startCalendar.clone() as Calendar).apply {
+                        add(Calendar.DAY_OF_YEAR, 6)
+                        if (timeInMillis > latestAllowedCalendar.timeInMillis) {
+                            timeInMillis = latestAllowedCalendar.timeInMillis
+                        }
                     }
                 } else {
                     val firstVisibleIndex = listState.firstVisibleItemIndex
-                    val visibleItemCount = listState.layoutInfo.visibleItemsInfo.size
+                    val visibleItemCount = listState.layoutInfo.visibleItemsInfo.size.takeIf { it > 0 } ?: 7
 
-                    val startIndex = firstVisibleIndex - bufferDays
-                    val endIndex = firstVisibleIndex + visibleItemCount + bufferDays
+                    val startIndex = (firstVisibleIndex - bufferDays).coerceAtLeast(0)
+                    val endIndex = (firstVisibleIndex + visibleItemCount + bufferDays).coerceAtMost(totalDays - 1)
 
-                    startCalendar = Calendar.getInstance().apply {
-                        time = today.time
-                        add(Calendar.DAY_OF_MONTH, (startIndex - Int.MAX_VALUE / 2).toInt())
-                    }
+                    startCalendar = indexToCalendar(startIndex)
+                    endCalendar = indexToCalendar(endIndex)
+                }
 
-                    endCalendar = Calendar.getInstance().apply {
-                        time = today.time
-                        add(Calendar.DAY_OF_MONTH, (endIndex - Int.MAX_VALUE / 2).toInt())
-                    }
+                if (endCalendar.timeInMillis < startCalendar.timeInMillis) {
+                    endCalendar.timeInMillis = startCalendar.timeInMillis
                 }
 
                 val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -782,21 +822,22 @@ fun InfiniteCalendarPage(
     }
 
     // Load more activities on scroll with debounce to avoid request spam/cancellations
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex }
-            .map { index: Int ->
-                val center = Int.MAX_VALUE / 2
-                val distance = kotlin.math.abs(index - center)
-                Pair(index, distance)
-            }
-            .distinctUntilChanged()
-            .debounce(600)
-            // Trigger loads sooner (after ~2 items scrolled away from center)
-            .filter { pair: Pair<Int, Int> -> !isInitialLoading && pair.second > 2 }
-            .collectLatest { pair: Pair<Int, Int> ->
-                Log.d("CalendarScreen", "Scroll triggered load at index ${pair.first} (distance: ${pair.second})")
-                loadActivitiesForDateRange(isInitialLoad = false)
-            }
+    LaunchedEffect(listState, todayIndex, totalDays) {
+        if (totalDays > 0) {
+            snapshotFlow { listState.firstVisibleItemIndex.coerceIn(0, totalDays - 1) }
+                .map { index: Int ->
+                    val distance = kotlin.math.abs(index - todayIndex)
+                    Pair(index, distance)
+                }
+                .distinctUntilChanged()
+                .debounce(600)
+                // Trigger loads sooner (after ~2 items scrolled away from base day)
+                .filter { pair: Pair<Int, Int> -> !isInitialLoading && pair.second > 2 }
+                .collectLatest { pair: Pair<Int, Int> ->
+                    Log.d("CalendarScreen", "Scroll triggered load at index ${pair.first} (distance: ${pair.second})")
+                    loadActivitiesForDateRange(isInitialLoad = false)
+                }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -842,11 +883,10 @@ fun InfiniteCalendarPage(
                     ) {
                         // Header with updated refresh button
                         CalendarHeader(
-                            today,
-                            listState,
-                            coroutineScope,
+                            listState = listState,
+                            coroutineScope = coroutineScope,
+                            todayIndex = todayIndex,
                             onRefresh = { performSyncLive() })
-
                         // Calendar Content
                         Card(
                             modifier = Modifier.fillMaxSize(),
@@ -860,14 +900,8 @@ fun InfiniteCalendarPage(
                                 contentPadding = PaddingValues(16.dp),
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                items(Int.MAX_VALUE) { index ->
-                                    val calendar = Calendar.getInstance().apply {
-                                        time = today.time
-                                        add(
-                                            Calendar.DAY_OF_MONTH,
-                                            (index - Int.MAX_VALUE / 2).toInt()
-                                        )
-                                    }
+                                items(totalDays) { index ->
+                                    val calendar = indexToCalendar(index)
                                     val dayDateString = SimpleDateFormat(
                                         "yyyy-MM-dd",
                                         Locale.getDefault()
@@ -1096,9 +1130,9 @@ fun StravaMapDialog(
 
 @Composable
 private fun CalendarHeader(
-    today: Calendar,
     listState: LazyListState,
     coroutineScope: CoroutineScope,
+    todayIndex: Int,
     onRefresh: () -> Unit = {}
 ) {
     var isRefreshing by remember { mutableStateOf(false) }
@@ -1166,7 +1200,7 @@ private fun CalendarHeader(
         Card(
             modifier = Modifier
                 .clickable {
-                    val todayIndex = Int.MAX_VALUE / 2
+
                     coroutineScope.launch {
                         listState.animateScrollToItem(todayIndex)
                     }
@@ -2173,6 +2207,52 @@ private fun isSameDay(date1: java.util.Date, date2: java.util.Date): Boolean {
             cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
 }
 
+private fun parseDateToEpochMillis(date: String): Long? {
+    return try {
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
+            isLenient = false
+        }
+        val parsed = formatter.parse(date) ?: return null
+        Calendar.getInstance().apply {
+            time = parsed
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    } catch (e: Exception) {
+        null
+    }
+}
+
+private fun calendarFromEpochMillis(epochMillis: Long): Calendar {
+    return Calendar.getInstance().apply {
+        timeInMillis = epochMillis
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+}
+
+private fun parseActivityStartMillis(activity: StravaActivity): Long? {
+    return try {
+        val utcFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+        val parsed = utcFormatter.parse(activity.startDate) ?: return null
+        Calendar.getInstance().apply {
+            time = parsed
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    } catch (e: Exception) {
+        null
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun InfiniteCalendarPagePreview() {
@@ -2183,3 +2263,5 @@ fun InfiniteCalendarPagePreview() {
         )
     }
 }
+
+
