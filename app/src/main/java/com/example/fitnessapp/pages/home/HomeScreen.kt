@@ -39,6 +39,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -135,9 +136,9 @@ fun HomeScreen(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF6366F1),
-                            Color(0xFF8B55F6),
-                            Color(0xFFA855F7)
+                            MaterialTheme.extendedColors.gradientPrimary,
+                            MaterialTheme.extendedColors.gradientSecondary,
+                            MaterialTheme.extendedColors.gradientAccent
                         )
                     )
                 )
@@ -185,12 +186,12 @@ private fun WelcomeHeader() {
             text = "Welcome back!",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onPrimary
         )
         Text(
             text = "Ready for today's training?",
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.White.copy(alpha = 0.8f)
+            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
         )
     }
 }
@@ -202,7 +203,7 @@ private fun TodayTrainingCard(todayWorkout: Any?) {
             .fillMaxWidth()
             .height(140.dp),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -220,7 +221,7 @@ private fun TodayTrainingCard(todayWorkout: Any?) {
                         text = "Today's Training",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF1F2937)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     if (todayWorkout != null) {
@@ -228,12 +229,12 @@ private fun TodayTrainingCard(todayWorkout: Any?) {
                             text = "Workout Session",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF6366F1)
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = "Ready to start",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF6B7280),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -242,12 +243,12 @@ private fun TodayTrainingCard(todayWorkout: Any?) {
                             text = "Rest Day",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF10B981)
+                            color = MaterialTheme.extendedColors.success
                         )
                         Text(
                             text = "Recovery time",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF6B7280)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -256,14 +257,14 @@ private fun TodayTrainingCard(todayWorkout: Any?) {
                     modifier = Modifier
                         .size(80.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFF3F4F6)),
+                        .background(MaterialTheme.extendedColors.surfaceMuted),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = if (todayWorkout != null) Icons.Filled.FitnessCenter else Icons.Filled.SelfImprovement,
                         contentDescription = null,
                         modifier = Modifier.size(40.dp),
-                        tint = Color(0xFF6366F1)
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -278,7 +279,7 @@ private fun SectionHeader(title: String, modifier: Modifier = Modifier) {
             text = title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onPrimary
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
@@ -337,7 +338,7 @@ private fun QuickActionCard(
             .height(100.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -351,14 +352,14 @@ private fun QuickActionCard(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(32.dp),
-                tint = Color(0xFF6366F1)
+                tint = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF1F2937),
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -449,7 +450,7 @@ private fun MetricCard(
     Card(
         modifier = modifier.height(110.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -466,14 +467,14 @@ private fun MetricCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF6B7280),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium
                 )
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    tint = Color(0xFF6366F1)
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -482,13 +483,13 @@ private fun MetricCard(
                     text = value,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1F2937)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 if (unit.isNotEmpty()) {
                     Text(
                         text = unit,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF9CA3AF)
+                        color = MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -501,7 +502,7 @@ private fun ErrorCard(errorMessage: String, homeViewModel: HomeViewModel) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
     ) {
         Row(
             modifier = Modifier
@@ -513,14 +514,14 @@ private fun ErrorCard(errorMessage: String, homeViewModel: HomeViewModel) {
             Text(
                 text = "Error: $errorMessage",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFFDC2626),
+                color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { homeViewModel.clearError() }) {
                 Icon(
                     Icons.Default.Close,
                     contentDescription = "Dismiss",
-                    tint = Color(0xFFDC2626)
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
         }
@@ -544,7 +545,7 @@ fun ModernBottomNavigation(navController: NavController) {
             .fillMaxWidth()
             .padding(horizontal = 24.dp, vertical = 16.dp),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
     ) {
         Row(
@@ -594,14 +595,14 @@ fun BottomNavItem(
             imageVector = icon,
             contentDescription = label,
             modifier = Modifier.size(24.dp),
-            tint = if (isSelected) Color(0xFF6366F1) else Color(0xFF9CA3AF)
+            tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-            color = if (isSelected) Color(0xFF6366F1) else Color(0xFF9CA3AF)
+            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
         )
     }
 }
@@ -618,3 +619,4 @@ fun HomeScreenPreview() {
         )
     }
 }
+

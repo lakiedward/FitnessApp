@@ -50,6 +50,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -88,6 +89,7 @@ import com.example.fitnessapp.components.TrainingChart
 import com.example.fitnessapp.mock.SharedPreferencesMock
 import com.example.fitnessapp.model.TrainingPlan
 import com.example.fitnessapp.ui.theme.WorkoutColors
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.viewmodel.TrainingDetailViewModel
 
@@ -189,9 +191,9 @@ fun TrainingDetailScreen(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.extendedColors.chartAltitude,
+                        MaterialTheme.extendedColors.gradientAccent
                     )
                 )
             )
@@ -221,7 +223,7 @@ fun TrainingDetailScreen(
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
 
@@ -241,7 +243,7 @@ fun TrainingDetailScreen(
                             else -> Icons.Default.Speed
                         },
                         contentDescription = "Workout type: ${training.workout_type}",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -249,7 +251,7 @@ fun TrainingDetailScreen(
                         text = training.workout_name,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
 
@@ -261,7 +263,7 @@ fun TrainingDetailScreen(
             Card(
                 modifier = Modifier.fillMaxSize(),
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 when {
@@ -297,7 +299,7 @@ fun TrainingDetailScreen(
                                             .size(12.dp)
                                             .graphicsLayer(scaleX = dotScale, scaleY = dotScale)
                                             .background(
-                                                color = Color(0xFF6366F1),
+                                                color = MaterialTheme.colorScheme.primary,
                                                 shape = RoundedCornerShape(6.dp)
                                             )
                                     )
@@ -307,7 +309,7 @@ fun TrainingDetailScreen(
                             Text(
                                 text = stringResource(R.string.calculating_training_metrics),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF6B7280)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -379,7 +381,7 @@ fun TrainingDetailScreen(
                                     ) {
                                         Text(
                                             text = stringResource(R.string.retry_button),
-                                            color = Color.White
+                                            color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     }
                                 }
@@ -444,7 +446,7 @@ fun TrainingDetailScreen(
                                             .fillMaxWidth()
                                             .testTag(stringResource(R.string.test_tag_workout_structure_card)),
                                         shape = RoundedCornerShape(16.dp),
-                                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                                     ) {
                                         Column(
@@ -495,7 +497,7 @@ fun TrainingDetailScreen(
                                             .fillMaxWidth()
                                             .testTag(stringResource(R.string.test_tag_empty_state_card)),
                                         shape = RoundedCornerShape(16.dp),
-                                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                                     ) {
                                         Column(
@@ -505,7 +507,7 @@ fun TrainingDetailScreen(
                                             Icon(
                                                 imageVector = Icons.Default.Error,
                                                 contentDescription = null,
-                                                tint = Color(0xFF9CA3AF),
+                                                tint = MaterialTheme.colorScheme.outline,
                                                 modifier = Modifier.size(48.dp)
                                             )
                                             Spacer(modifier = Modifier.height(16.dp))
@@ -535,7 +537,7 @@ fun TrainingDetailScreen(
                                             .fillMaxWidth()
                                             .testTag(stringResource(R.string.test_tag_metrics_card)),
                                         shape = RoundedCornerShape(16.dp),
-                                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                                     ) {
                                         Column(
@@ -570,7 +572,7 @@ fun TrainingDetailScreen(
                                                 } else {
                                                     Text(
                                                         text = "Loading metrics...", 
-                                                        color = Color.Gray,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                         style = MaterialTheme.typography.bodyMedium
                                                     )
                                                 }
@@ -668,7 +670,7 @@ fun TrainingDetailScreen(
                                         .fillMaxWidth()
                                         .testTag(stringResource(R.string.test_tag_description_card)),
                                     shape = RoundedCornerShape(16.dp),
-                                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                                 ) {
                                     Column(
@@ -691,7 +693,7 @@ fun TrainingDetailScreen(
                                             Text(
                                                 text = training.description,
                                                 style = MaterialTheme.typography.bodyLarge,
-                                                color = Color(0xFF374151),
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 lineHeight = MaterialTheme.typography.bodyLarge.lineHeight * 1.2
                                             )
                                         }
@@ -706,7 +708,7 @@ fun TrainingDetailScreen(
                                         .fillMaxWidth()
                                         .testTag(stringResource(R.string.test_tag_strava_sync_card)),
                                     shape = RoundedCornerShape(16.dp),
-                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.extendedColors.surfaceSubtle),
                                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                                 ) {
                                     Row(
@@ -727,7 +729,7 @@ fun TrainingDetailScreen(
                                             Text(
                                                 text = stringResource(R.string.sync_to_strava),
                                                 style = MaterialTheme.typography.bodyLarge,
-                                                color = Color(0xFF374151)
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
                                         Button(
@@ -740,7 +742,7 @@ fun TrainingDetailScreen(
                                         ) {
                                             Icon(Icons.Default.Sync, contentDescription = null, modifier = Modifier.size(16.dp))
                                             Spacer(modifier = Modifier.width(4.dp))
-                                            Text(stringResource(R.string.sync_button), color = Color.White)
+                                            Text(stringResource(R.string.sync_button), color = MaterialTheme.colorScheme.onPrimary)
                                         }
                                     }
                                 }
@@ -804,7 +806,7 @@ private fun ModernMetricItem(label: String, value: String, icon: ImageVector? = 
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = Color(0xFF6366F1),
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -813,12 +815,12 @@ private fun ModernMetricItem(label: String, value: String, icon: ImageVector? = 
             text = value,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF6366F1)
+            color = MaterialTheme.colorScheme.primary
         )
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color(0xFF6B7280),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Medium
         )
     }
@@ -978,40 +980,47 @@ private fun ZoneDistributionBars(steps: List<com.example.fitnessapp.model.Workou
             Text(
                 text = "Z$zone", 
                 style = MaterialTheme.typography.bodySmall, 
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
 }
 
 // Helper function for zone colors
+@Composable
 private fun getZoneColor(zone: Int): Color {
     return when (zone) {
-        1 -> Color(0xFF6EE7B7) // Light green
-        2 -> Color(0xFF34D399) // Green
-        3 -> Color(0xFF10B981) // Medium green
-        4 -> Color(0xFF059669) // Dark green
-        else -> Color(0xFF047857) // Darkest green
+        1 -> MaterialTheme.extendedColors.hrZone1 // Light green
+        2 -> MaterialTheme.extendedColors.hrZone2 // Green
+        3 -> MaterialTheme.extendedColors.success // Medium green
+        4 -> MaterialTheme.extendedColors.hrZone4 // Dark green
+        else -> MaterialTheme.extendedColors.hrZone5 // Darkest green
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun TrainingDetailScreenPreview() {
-    TrainingDetailScreen(
-        training = TrainingPlan(
-            id = 1,
-            user_id = 1,
-            date = "2024-06-01",
-            workout_name = "Test Workout",
-            duration = "01:00:00",
-            intensity = "Medium",
-            description = "Test description",
-            workout_type = "cycling",
-            zwo_path = null,
-            stepsJson = null
-        ),
-        navController = rememberNavController(),
-        authViewModel = AuthViewModel(SharedPreferencesMock())
-    )
+    FitnessAppTheme {
+        TrainingDetailScreen(
+            training = TrainingPlan(
+                id = 1,
+                user_id = 1,
+                date = "2024-06-01",
+                workout_name = "Test Workout",
+                duration = "01:00:00",
+                intensity = "Medium",
+                description = "Test description",
+                workout_type = "cycling",
+                zwo_path = null,
+                stepsJson = null
+            ),
+            navController = rememberNavController(),
+            authViewModel = AuthViewModel(SharedPreferencesMock())
+        )
+    }
 }
+
+
+
+

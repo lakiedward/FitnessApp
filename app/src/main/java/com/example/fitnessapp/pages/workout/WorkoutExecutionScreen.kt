@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -114,12 +115,12 @@ fun WorkoutExecutionScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = Color(0xFFF8FAFC)
+        containerColor = MaterialTheme.extendedColors.surfaceSubtle
     ) { paddingValues ->
 
         Box(modifier = Modifier
@@ -183,7 +184,7 @@ fun WorkoutExecutionScreen(
                                 .fillMaxWidth()
                                 .height(56.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF6366F1)
+                                containerColor = MaterialTheme.colorScheme.primary
                             ),
                             shape = RoundedCornerShape(12.dp)
                         ) {
@@ -203,7 +204,7 @@ fun WorkoutExecutionScreen(
                                 .fillMaxWidth()
                                 .height(56.dp),
                             colors = ButtonDefaults.buttonColors(
-                                disabledContainerColor = Color(0xFFE5E7EB)
+                                disabledContainerColor = MaterialTheme.extendedColors.chartGrid
                             ),
                             shape = RoundedCornerShape(12.dp)
                         ) {
@@ -276,7 +277,7 @@ fun WorkoutExecutionScreenPreview() {
 private fun WorkoutHeader(training: TrainingPlan) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -290,7 +291,7 @@ private fun WorkoutHeader(training: TrainingPlan) {
             Text(
                 text = "Duration: ${training.duration} | Intensity: ${training.intensity}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF6B7280)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -308,7 +309,7 @@ private fun TrainerConnectionCard(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -329,7 +330,7 @@ private fun TrainerConnectionCard(
                         Icon(
                             Icons.Default.CheckCircle,
                             contentDescription = "Connected",
-                            tint = Color(0xFF10B981)
+                            tint = MaterialTheme.extendedColors.success
                         )
                     }
                     ConnectionState.SCANNING -> {
@@ -345,7 +346,7 @@ private fun TrainerConnectionCard(
                                 showDeviceDialog = true
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF6366F1)
+                                containerColor = MaterialTheme.colorScheme.primary
                             )
                         ) {
                             Text("Scan")
@@ -365,12 +366,12 @@ private fun TrainerConnectionCard(
                         Text(
                             text = "✓ ${device.name}",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF10B981)
+                            color = MaterialTheme.extendedColors.success
                         )
                         TextButton(
                             onClick = { trainerViewModel.disconnectDevice(device.id) }
                         ) {
-                            Text("Disconnect", color = Color(0xFFEF4444))
+                            Text("Disconnect", color = MaterialTheme.extendedColors.chartHeartRate)
                         }
                     }
                 }
@@ -417,7 +418,7 @@ private fun TrainerConnectionCard(
                             Text(
                                 text = "No devices found. Try scanning again.",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF6B7280)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         } else {
                             availableDevices.forEach { device ->
@@ -456,7 +457,7 @@ private fun HeartRateConnectionCard(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -478,7 +479,7 @@ private fun HeartRateConnectionCard(
                             Icon(
                                 Icons.Default.CheckCircle,
                                 contentDescription = "Connected",
-                                tint = Color(0xFF10B981)
+                                tint = MaterialTheme.extendedColors.success
                             )
                         } else {
                             Button(
@@ -487,7 +488,7 @@ private fun HeartRateConnectionCard(
                                     showDeviceDialog = true
                                 },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF6366F1)
+                                    containerColor = MaterialTheme.colorScheme.primary
                                 )
                             ) {
                                 Text("Scan")
@@ -507,7 +508,7 @@ private fun HeartRateConnectionCard(
                                 showDeviceDialog = true
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF6366F1)
+                                containerColor = MaterialTheme.colorScheme.primary
                             )
                         ) {
                             Text("Scan")
@@ -527,12 +528,12 @@ private fun HeartRateConnectionCard(
                         Text(
                             text = "✓ ${device.name}",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF10B981)
+                            color = MaterialTheme.extendedColors.success
                         )
                         TextButton(
                             onClick = { trainerViewModel.disconnectDevice(device.id) }
                         ) {
-                            Text("Disconnect", color = Color(0xFFEF4444))
+                            Text("Disconnect", color = MaterialTheme.extendedColors.chartHeartRate)
                         }
                     }
                 }
@@ -579,7 +580,7 @@ private fun HeartRateConnectionCard(
                             Text(
                                 text = "No heart rate devices found. Try scanning again.",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF6B7280)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         } else {
                             availableDevices.forEach { device ->
@@ -610,7 +611,7 @@ private fun HeartRateConnectionCard(
 private fun CurrentWorkoutStepCard(session: WorkoutSession) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -624,7 +625,7 @@ private fun CurrentWorkoutStepCard(session: WorkoutSession) {
             Text(
                 text = "Elapsed Time: ${formatTime(session.elapsedTime)}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF6B7280)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             // Progress bar
@@ -633,7 +634,7 @@ private fun CurrentWorkoutStepCard(session: WorkoutSession) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                color = Color(0xFF6366F1)
+                color = MaterialTheme.colorScheme.primary
             )
 
             // Afișează detaliile pasului curent
@@ -679,7 +680,7 @@ private fun CurrentWorkoutStepCard(session: WorkoutSession) {
 private fun RealTimeMetricsCard(data: RealTimeData) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -695,10 +696,10 @@ private fun RealTimeMetricsCard(data: RealTimeData) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                MetricItem("Putere", "${data.power}W", Color(0xFF6366F1))
-                MetricItem("Puls", "${data.heartRate} bpm", Color(0xFFEF4444))
-                MetricItem("Cadență", "${data.cadence} rpm", Color(0xFF10B981))
-                MetricItem("Viteză", "${String.format("%.1f", data.speed)} km/h", Color(0xFFF59E0B))
+                MetricItem("Putere", "${data.power}W", MaterialTheme.colorScheme.primary)
+                MetricItem("Puls", "${data.heartRate} bpm", MaterialTheme.extendedColors.chartHeartRate)
+                MetricItem("Cadență", "${data.cadence} rpm", MaterialTheme.extendedColors.success)
+                MetricItem("Viteză", "${String.format("%.1f", data.speed)} km/h", MaterialTheme.extendedColors.warning)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -710,7 +711,7 @@ private fun RealTimeMetricsCard(data: RealTimeData) {
                 MetricItem(
                     "Distance",
                     "${String.format("%.2f", data.distance)} km",
-                    Color(0xFF8B5CF6)
+                    MaterialTheme.extendedColors.chartAltitude
                 )
             }
         }
@@ -731,7 +732,7 @@ private fun MetricItem(label: String, value: String, color: Color) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = Color(0xFF6B7280)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -748,7 +749,7 @@ private fun WorkoutControlsCard(
 ) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -763,7 +764,7 @@ private fun WorkoutControlsCard(
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.extendedColors.success),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Icon(
@@ -785,7 +786,7 @@ private fun WorkoutControlsCard(
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF59E0B)),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.extendedColors.warning),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Icon(
@@ -808,7 +809,7 @@ private fun WorkoutControlsCard(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6366F1)),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Icon(
@@ -830,7 +831,7 @@ private fun WorkoutControlsCard(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF4444)),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.extendedColors.chartHeartRate),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Icon(
@@ -873,7 +874,7 @@ private fun ErgStatusCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (ergMode) Color(0xFFECFDF5) else Color.White
+            containerColor = if (ergMode) MaterialTheme.extendedColors.successContainer else MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -895,7 +896,7 @@ private fun ErgStatusCard(
                         Text(
                             text = "FTP: ${currentFtp}W",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF6B7280)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -907,28 +908,28 @@ private fun ErgStatusCard(
                         Icon(
                             Icons.Default.CheckCircle,
                             contentDescription = "ERG Active",
-                            tint = Color(0xFF10B981),
+                            tint = MaterialTheme.extendedColors.success,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "ACTIVE",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF10B981),
+                            color = MaterialTheme.extendedColors.success,
                             fontWeight = FontWeight.Bold
                         )
                     } else {
                         Icon(
                             Icons.Default.Cancel,
                             contentDescription = "ERG Inactive",
-                            tint = Color(0xFF6B7280),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "INACTIVE",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF6B7280),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -942,7 +943,7 @@ private fun ErgStatusCard(
                 Text(
                     text = powerZone,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF6366F1),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Medium
                 )
 
@@ -959,19 +960,19 @@ private fun ErgStatusCard(
                         Text(
                             text = "Target",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF6B7280)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = "${targetPower}W",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF6366F1)
+                            color = MaterialTheme.colorScheme.primary
                         )
                         if (currentFtp > 0) {
                             Text(
                                 text = "${ftpPercentage}% FTP",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = Color(0xFF6B7280)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -981,7 +982,7 @@ private fun ErgStatusCard(
                         modifier = Modifier
                             .width(1.dp)
                             .height(40.dp)
-                            .background(Color(0xFFE5E7EB))
+                            .background(MaterialTheme.extendedColors.chartGrid)
                     )
 
                     // Actual Power
@@ -991,20 +992,20 @@ private fun ErgStatusCard(
                         Text(
                             text = "Actual",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF6B7280)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = "${actualPower}W",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = if (kotlin.math.abs(actualPower - targetPower) <= 10) Color(0xFF10B981) else Color(0xFFEF4444)
+                            color = if (kotlin.math.abs(actualPower - targetPower) <= 10) MaterialTheme.extendedColors.success else MaterialTheme.extendedColors.chartHeartRate
                         )
                         if (currentFtp > 0) {
                             val actualFtpPercentage = ((actualPower.toFloat() / currentFtp) * 100).toInt()
                             Text(
                                 text = "${actualFtpPercentage}% FTP",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = Color(0xFF6B7280)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -1014,7 +1015,7 @@ private fun ErgStatusCard(
                         modifier = Modifier
                             .width(1.dp)
                             .height(40.dp)
-                            .background(Color(0xFFE5E7EB))
+                            .background(MaterialTheme.extendedColors.chartGrid)
                     )
 
                     // Difference
@@ -1024,7 +1025,7 @@ private fun ErgStatusCard(
                         Text(
                             text = "Diff",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF6B7280)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         val diff = actualPower - targetPower
                         Text(
@@ -1032,9 +1033,9 @@ private fun ErgStatusCard(
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             color = when {
-                                kotlin.math.abs(diff) <= 10 -> Color(0xFF10B981)
-                                diff > 0 -> Color(0xFFEF4444)
-                                else -> Color(0xFFF59E0B)
+                                kotlin.math.abs(diff) <= 10 -> MaterialTheme.extendedColors.success
+                                diff > 0 -> MaterialTheme.extendedColors.chartHeartRate
+                                else -> MaterialTheme.extendedColors.warning
                             }
                         )
                     }
@@ -1044,9 +1045,10 @@ private fun ErgStatusCard(
                 Text(
                     text = "ERG mode will automatically control trainer resistance based on workout targets",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF6B7280)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
     }
 }
+

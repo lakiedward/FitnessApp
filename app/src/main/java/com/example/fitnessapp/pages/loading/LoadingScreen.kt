@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,9 +67,9 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.extendedColors.chartAltitude,
+                        MaterialTheme.extendedColors.gradientAccent
                     )
                 )
             ),
@@ -80,7 +81,7 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
                 .fillMaxWidth()
                 .padding(32.dp),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -104,7 +105,7 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
                     modifier = Modifier
                         .size(80.dp)
                         .graphicsLayer(scaleX = scale, scaleY = scale),
-                    color = Color(0xFF6366F1),
+                    color = MaterialTheme.colorScheme.primary,
                     strokeWidth = 6.dp
                 )
                 
@@ -114,7 +115,7 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
                     text = "Generating Training Plan",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -122,7 +123,7 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
                 Text(
                     text = "Creating your personalized training plan based on your preferences and goals.",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 
@@ -131,14 +132,14 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFFF6B6B).copy(alpha = 0.1f)
+                            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
                             text = "The request is taking longer than expected. Please try again later.",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFFD32F2F),
+                            color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(16.dp)
                         )
                     }
@@ -170,7 +171,7 @@ fun LoadingScreen(navController: NavHostController, authViewModel: AuthViewModel
                                 .size(12.dp)
                                 .graphicsLayer(scaleX = dotScale, scaleY = dotScale)
                                 .background(
-                                    color = Color(0xFF6366F1),
+                                    color = MaterialTheme.colorScheme.primary,
                                     shape = RoundedCornerShape(6.dp)
                                 )
                         )

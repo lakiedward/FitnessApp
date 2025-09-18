@@ -7,12 +7,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -74,15 +74,18 @@ fun SetupStatusScreen(
         }
     }
     
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        extendedColors.gradientPrimary,
+                        extendedColors.gradientSecondary,
+                        extendedColors.gradientAccent
                     )
                 )
             )
@@ -99,14 +102,14 @@ fun SetupStatusScreen(
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Înapoi",
-                    tint = Color.White
+                    tint = colorScheme.onPrimary
                 )
             }
             
             Text(
                 text = "Verificare configurare",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                color = colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
             
@@ -119,7 +122,7 @@ fun SetupStatusScreen(
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Box(
@@ -132,14 +135,14 @@ fun SetupStatusScreen(
                     isLoading -> {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator(
-                                color = MaterialTheme.colorScheme.primary,
+                                color = colorScheme.primary,
                                 strokeWidth = 4.dp
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
                                 text = "Se verifică configurarea sportivă...",
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -148,14 +151,14 @@ fun SetupStatusScreen(
                             Text(
                                 text = "Eroare la verificare",
                                 style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.error,
+                                color = colorScheme.error,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = error!!,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(24.dp))
                             Button(
@@ -167,7 +170,7 @@ fun SetupStatusScreen(
                                     }
                                 },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
+                                    containerColor = colorScheme.primary
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {

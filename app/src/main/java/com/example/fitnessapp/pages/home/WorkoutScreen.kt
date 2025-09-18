@@ -16,7 +16,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -29,6 +29,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fitnessapp.R
+import com.example.fitnessapp.ui.theme.BrandPrimary
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -143,7 +145,7 @@ class WorkoutViewModel(context: Context) : ViewModel() {
                     PolylineOptions()
                         .addAll(pathPoints)
                         .width(8f)
-                        .color(Color.Blue.hashCode())
+                        .color(BrandPrimary.toArgb())
                 )
             }
         }
@@ -447,5 +449,8 @@ class WorkoutViewModelFactory(private val context: Context) : ViewModelProvider.
 @Preview(showBackground = true)
 @Composable
 fun WorkoutScreenPreview() {
-    WorkoutScreen(navController = rememberNavController())
+    FitnessAppTheme {
+        WorkoutScreen(navController = rememberNavController())
+    }
 }
+

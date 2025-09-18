@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -84,9 +85,9 @@ fun LoadingTrainingScreenPreview() {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.extendedColors.chartAltitude,
+                        MaterialTheme.extendedColors.gradientAccent
                     )
                 )
             )
@@ -103,14 +104,14 @@ fun LoadingTrainingScreenPreview() {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
             
             Text(
                 text = "Loading Training",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
             
@@ -124,7 +125,7 @@ fun LoadingTrainingScreenPreview() {
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -149,7 +150,7 @@ fun LoadingTrainingScreenPreview() {
                     modifier = Modifier
                         .size(80.dp)
                         .graphicsLayer(scaleX = scale, scaleY = scale),
-                    color = Color(0xFF6366F1),
+                    color = MaterialTheme.colorScheme.primary,
                     strokeWidth = 6.dp
                 )
                 
@@ -159,7 +160,7 @@ fun LoadingTrainingScreenPreview() {
                     text = "Loading Training Details",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -167,7 +168,7 @@ fun LoadingTrainingScreenPreview() {
                 Text(
                     text = training.workout_name,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF6366F1),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Medium
                 )
                 
@@ -176,7 +177,7 @@ fun LoadingTrainingScreenPreview() {
                 Text(
                     text = "Fetching FTP from database and calculating training metrics for your workout.",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 
@@ -206,7 +207,7 @@ fun LoadingTrainingScreenPreview() {
                                 .size(12.dp)
                                 .graphicsLayer(scaleX = dotScale, scaleY = dotScale)
                                 .background(
-                                    color = Color(0xFF6366F1),
+                                    color = MaterialTheme.colorScheme.primary,
                                     shape = RoundedCornerShape(6.dp)
                                 )
                         )
@@ -219,7 +220,7 @@ fun LoadingTrainingScreenPreview() {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFFF6B6B).copy(alpha = 0.1f)
+                            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
@@ -230,7 +231,7 @@ fun LoadingTrainingScreenPreview() {
                             Text(
                                 text = "Error: $error",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFFD32F2F)
+                                color = MaterialTheme.colorScheme.error
                             )
                             
                             Spacer(modifier = Modifier.height(12.dp))
@@ -243,8 +244,8 @@ fun LoadingTrainingScreenPreview() {
                                     }
                                 },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF6366F1),
-                                    contentColor = Color.White
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {

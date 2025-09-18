@@ -5,12 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -80,15 +80,18 @@ fun SetupStatusLoadingScreen(
         }
     }
     
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        extendedColors.gradientPrimary,
+                        extendedColors.gradientSecondary,
+                        extendedColors.gradientAccent
                     )
                 )
             ),
@@ -100,7 +103,7 @@ fun SetupStatusLoadingScreen(
                 .fillMaxWidth()
                 .padding(32.dp),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -124,7 +127,7 @@ fun SetupStatusLoadingScreen(
                     modifier = Modifier
                         .size(80.dp)
                         .graphicsLayer(scaleX = scale, scaleY = scale),
-                    color = Color(0xFF6366F1),
+                    color = colorScheme.primary,
                     strokeWidth = 6.dp
                 )
                 
@@ -134,7 +137,7 @@ fun SetupStatusLoadingScreen(
                     text = "Checking Your Data",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = colorScheme.onSurface
                 )
                 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -146,7 +149,7 @@ fun SetupStatusLoadingScreen(
                         "Preparing your training plan..."
                     },
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray,
+                    color = colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 
@@ -176,7 +179,7 @@ fun SetupStatusLoadingScreen(
                                 .size(12.dp)
                                 .graphicsLayer(scaleX = dotScale, scaleY = dotScale)
                                 .background(
-                                    color = Color(0xFF6366F1),
+                                    color = colorScheme.primary,
                                     shape = RoundedCornerShape(6.dp)
                                 )
                         )

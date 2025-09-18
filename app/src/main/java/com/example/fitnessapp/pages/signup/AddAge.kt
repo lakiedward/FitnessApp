@@ -13,13 +13,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -62,15 +62,18 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
 
     val isFormComplete = selectedGender != null && age.isNotBlank() && weight.isNotBlank() && height.isNotBlank()
 
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        extendedColors.gradientPrimary,
+                        extendedColors.gradientSecondary,
+                        extendedColors.gradientAccent
                     )
                 )
             )
@@ -87,14 +90,14 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = colorScheme.onPrimary
                 )
             }
             
             Text(
                 text = "Personal Details",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                color = colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
             
@@ -108,7 +111,7 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -121,7 +124,7 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                     text = "What's Your Gender?",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -138,7 +141,7 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                     text = "How Old Are You?",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 
@@ -151,10 +154,10 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     shape = RoundedCornerShape(12.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFF6366F1),
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                        focusedLabelColor = Color(0xFF6366F1),
-                        unfocusedLabelColor = Color.Gray
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        focusedLabelColor = colorScheme.primary,
+                        unfocusedLabelColor = colorScheme.onSurfaceVariant
                     )
                 )
 
@@ -165,7 +168,7 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                     text = "What Is Your Weight?",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 
@@ -186,10 +189,10 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     shape = RoundedCornerShape(12.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFF6366F1),
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                        focusedLabelColor = Color(0xFF6366F1),
-                        unfocusedLabelColor = Color.Gray
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        focusedLabelColor = colorScheme.primary,
+                        unfocusedLabelColor = colorScheme.onSurfaceVariant
                     )
                 )
 
@@ -200,7 +203,7 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                     text = "What Is Your Height?",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 
@@ -221,10 +224,10 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     shape = RoundedCornerShape(12.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFF6366F1),
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                        focusedLabelColor = Color(0xFF6366F1),
-                        unfocusedLabelColor = Color.Gray
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        focusedLabelColor = colorScheme.primary,
+                        unfocusedLabelColor = colorScheme.onSurfaceVariant
                     )
                 )
 
@@ -260,9 +263,9 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6366F1),
-                        contentColor = Color.White,
-                        disabledContainerColor = Color.Gray.copy(alpha = 0.6f)
+                        containerColor = colorScheme.primary,
+                        contentColor = colorScheme.onPrimary,
+                        disabledContainerColor = colorScheme.surfaceVariant
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -296,6 +299,9 @@ fun ToggleButtonsRow(
     selectedOption: String,
     onOptionSelected: (String) -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -307,7 +313,7 @@ fun ToggleButtonsRow(
                     .height(48.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (option == selectedOption) Color(0xFF6366F1) else Color(0xFFF8FAFC)
+                    containerColor = if (option == selectedOption) colorScheme.primary else extendedColors.surfaceSubtle
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = if (option == selectedOption) 4.dp else 2.dp
@@ -325,7 +331,7 @@ fun ToggleButtonsRow(
                 ) {
                     Text(
                         text = option,
-                        color = if (option == selectedOption) Color.White else Color.Black,
+                        color = if (option == selectedOption) colorScheme.onPrimary else colorScheme.onSurface,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -366,13 +372,16 @@ private fun GenderOptionCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Card(
         modifier = modifier
             .height(112.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFF6366F1) else Color(0xFFF8FAFC)
+            containerColor = if (isSelected) colorScheme.primary else extendedColors.surfaceSubtle
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (isSelected) 6.dp else 2.dp
@@ -388,13 +397,13 @@ private fun GenderOptionCard(
             Image(
                 painter = painterResource(id = iconRes),
                 contentDescription = label,
-                colorFilter = ColorFilter.tint(if (isSelected) Color.White else Color(0xFF6366F1)),
+                colorFilter = ColorFilter.tint(if (isSelected) colorScheme.onPrimary else colorScheme.primary),
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = label,
-                color = if (isSelected) Color.White else Color.Black,
+                color = if (isSelected) colorScheme.onPrimary else colorScheme.onSurface,
                 fontWeight = FontWeight.SemiBold
             )
         }

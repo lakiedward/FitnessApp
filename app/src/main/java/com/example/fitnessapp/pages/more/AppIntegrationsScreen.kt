@@ -31,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -84,7 +85,7 @@ private fun StatusBadge(
     text: String,
     modifier: Modifier = Modifier
 ) {
-    val successColor = Color(0xFF10B981)
+    val successColor = MaterialTheme.extendedColors.success
     val errorColor = MaterialTheme.colorScheme.error
 
     Row(
@@ -172,7 +173,7 @@ private fun DataSummaryCard(
 ) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.extendedColors.surfaceSubtle),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -183,14 +184,14 @@ private fun DataSummaryCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color(0xFF6B7280),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Medium
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color(0xFF1F2937),
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
             if (subtitle != null) {
@@ -198,7 +199,7 @@ private fun DataSummaryCard(
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF9CA3AF)
+                    color = MaterialTheme.colorScheme.outline
                 )
             }
         }
@@ -385,7 +386,7 @@ private fun ErrorStateCard(
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Retry", color = Color.White)
+                        Text("Retry", color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
                 if (onDismiss != null) {
@@ -594,7 +595,7 @@ fun AppIntegrationsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         // Header with violet-blue gradient
         Box(
@@ -603,9 +604,9 @@ fun AppIntegrationsScreen(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF6366F1),
-                            Color(0xFF8B5CF6),
-                            Color(0xFFA855F7)
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.extendedColors.chartAltitude,
+                            MaterialTheme.extendedColors.gradientAccent
                         )
                     )
                 )
@@ -622,7 +623,7 @@ fun AppIntegrationsScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_back),
                         contentDescription = "Back",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -641,7 +642,7 @@ fun AppIntegrationsScreen(
                     Text(
                         text = "App Integrations",
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -664,7 +665,7 @@ fun AppIntegrationsScreen(
             // Strava Integration Section (simplified)
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(20.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
@@ -710,8 +711,8 @@ fun AppIntegrationsScreen(
                                 onClick = onOpenStravaSync,
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF6366F1),
-                                    contentColor = Color.White
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
@@ -744,13 +745,13 @@ fun AppIntegrationsScreen(
                             ) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(32.dp),
-                                    color = Color(0xFF6366F1),
+                                    color = MaterialTheme.colorScheme.primary,
                                     strokeWidth = 3.dp
                                 )
                                 Text(
                                     text = "Connecting...",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF6366F1)
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -761,7 +762,7 @@ fun AppIntegrationsScreen(
                                     onClick = { connectToStrava() },
                                     modifier = Modifier.fillMaxWidth(),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF6366F1)
+                                        containerColor = MaterialTheme.colorScheme.primary
                                     ),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
@@ -771,7 +772,7 @@ fun AppIntegrationsScreen(
                                 Text(
                                     text = "Login required",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFFEF4444)
+                                    color = MaterialTheme.extendedColors.chartHeartRate
                                 )
                             }
                         }
@@ -782,7 +783,7 @@ fun AppIntegrationsScreen(
             // Health Connect Integration Section
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(20.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
@@ -831,11 +832,11 @@ fun AppIntegrationsScreen(
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF6366F1)
+                                    containerColor = MaterialTheme.colorScheme.primary
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Text("Sync Now", color = Color.White, style = MaterialTheme.typography.bodyMedium)
+                                Text("Sync Now", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.bodyMedium)
                             }
 
                             Spacer(modifier = Modifier.height(8.dp))
@@ -878,13 +879,13 @@ fun AppIntegrationsScreen(
                             ) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(32.dp),
-                                    color = Color(0xFFFF9500),
+                                    color = MaterialTheme.extendedColors.warning,
                                     strokeWidth = 3.dp
                                 )
                                 Text(
                                     text = "Waiting for Health Connect permissions...",
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = Color(0xFFFF9500),
+                                    color = MaterialTheme.extendedColors.warning,
                                     fontWeight = FontWeight.Bold
                                 )
 
@@ -921,7 +922,7 @@ fun AppIntegrationsScreen(
                                     Text(
                                         text = "4. Return to this app (tap on Recent Apps button and select this app)",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF6366F1),
+                                        color = MaterialTheme.colorScheme.primary,
                                         fontWeight = FontWeight.Medium
                                     )
                                 }
@@ -931,7 +932,7 @@ fun AppIntegrationsScreen(
                                     onClick = { healthConnectViewModel.openHealthConnectSettings() },
                                     modifier = Modifier.fillMaxWidth(),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFFFF9500)
+                                        containerColor = MaterialTheme.extendedColors.warning
                                     ),
                                     shape = RoundedCornerShape(8.dp)
                                 ) {
@@ -974,7 +975,7 @@ fun AppIntegrationsScreen(
                                 Text(
                                     text = "Health Connect is not supported on this device",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFFDC2626)
+                                    color = MaterialTheme.colorScheme.error
                                 )
                             }
                         }
@@ -1026,7 +1027,7 @@ fun AppIntegrationsScreen(
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF6366F1)
+                                    containerColor = MaterialTheme.colorScheme.primary
                                 ),
                                 shape = RoundedCornerShape(8.dp)
                             ) {

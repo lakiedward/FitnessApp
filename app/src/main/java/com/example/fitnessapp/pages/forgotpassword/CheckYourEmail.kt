@@ -80,7 +80,7 @@ fun CheckYourEmailScreen(navController: NavHostController) {
                 Text(
                     text = "We sent a reset link to contact@dscode...com.\nEnter the 5-digit code mentioned in the email.",
                     fontSize = 16.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 32.dp),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
@@ -109,8 +109,8 @@ fun CheckYourEmailScreen(navController: NavHostController) {
                         .fillMaxWidth(0.6f)
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (code.isNotEmpty()) Color.Black else Color.Gray,
-                        contentColor = Color.White
+                        containerColor = if (code.isNotEmpty()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Text(text = "Verify Code")

@@ -119,8 +119,8 @@ fun ForgotPasswordScreen(navController: NavHostController) {
                         .fillMaxWidth(0.6f)
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (email.isNotEmpty()) Color.Black else Color.Gray,
-                        contentColor = Color.White
+                        containerColor = if (email.isNotEmpty()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Text(text = "Reset Password")

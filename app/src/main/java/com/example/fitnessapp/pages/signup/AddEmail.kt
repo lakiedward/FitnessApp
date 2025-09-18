@@ -7,12 +7,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -56,15 +56,18 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
     var confirmPasswordVisible by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        extendedColors.gradientPrimary,
+                        extendedColors.gradientSecondary,
+                        extendedColors.gradientAccent
                     )
                 )
             )
@@ -81,14 +84,14 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = colorScheme.onPrimary
                 )
             }
             
             Text(
                 text = "Create Account",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                color = colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
             
@@ -102,7 +105,7 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -113,7 +116,7 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                 Text(
                     text = "Sign up with Email",
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color.Black,
+                    color = colorScheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -136,16 +139,16 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                             painter = painterResource(id = R.drawable.user),
                             contentDescription = "Email Icon",
                             modifier = Modifier.size(20.dp),
-                            tint = Color(0xFF6366F1)
+                            tint = colorScheme.primary
                         )
                     },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFF6366F1),
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                        focusedLabelColor = Color(0xFF6366F1),
-                        unfocusedLabelColor = Color.Gray,
-                        errorBorderColor = Color(0xFFDC2626),
-                        errorLabelColor = Color(0xFFDC2626)
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        focusedLabelColor = colorScheme.primary,
+                        unfocusedLabelColor = colorScheme.onSurfaceVariant,
+                        errorBorderColor = colorScheme.error,
+                        errorLabelColor = colorScheme.error
                     )
                 )
 
@@ -154,7 +157,7 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Please enter a valid email address",
-                        color = Color(0xFFDC2626),
+                        color = colorScheme.onErrorContainer,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -179,7 +182,7 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                             painter = painterResource(id = R.drawable.password),
                             contentDescription = "Password Icon",
                             modifier = Modifier.size(20.dp),
-                            tint = Color(0xFF6366F1)
+                            tint = colorScheme.primary
                         )
                     },
                     trailingIcon = {
@@ -188,15 +191,15 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                                 painter = painterResource(id = R.drawable.eye),
                                 contentDescription = if (passwordVisible) "Hide Password" else "Show Password",
                                 modifier = Modifier.size(20.dp),
-                                tint = Color.Gray
+                                tint = colorScheme.onSurfaceVariant
                             )
                         }
                     },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFF6366F1),
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                        focusedLabelColor = Color(0xFF6366F1),
-                        unfocusedLabelColor = Color.Gray
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        focusedLabelColor = colorScheme.primary,
+                        unfocusedLabelColor = colorScheme.onSurfaceVariant
                     )
                 )
 
@@ -219,7 +222,7 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                             painter = painterResource(id = R.drawable.password),
                             contentDescription = "Password Icon",
                             modifier = Modifier.size(20.dp),
-                            tint = Color(0xFF6366F1)
+                            tint = colorScheme.primary
                         )
                     },
                     trailingIcon = {
@@ -228,15 +231,15 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                                 painter = painterResource(id = R.drawable.eye),
                                 contentDescription = if (confirmPasswordVisible) "Hide Password" else "Show Password",
                                 modifier = Modifier.size(20.dp),
-                                tint = Color.Gray
+                                tint = colorScheme.onSurfaceVariant
                             )
                         }
                     },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFF6366F1),
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                        focusedLabelColor = Color(0xFF6366F1),
-                        unfocusedLabelColor = Color.Gray
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        focusedLabelColor = colorScheme.primary,
+                        unfocusedLabelColor = colorScheme.onSurfaceVariant
                     )
                 )
 
@@ -245,13 +248,13 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                     Spacer(modifier = Modifier.height(16.dp))
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2))
+                        colors = CardDefaults.cardColors(containerColor = colorScheme.errorContainer)
                     ) {
                         Text(
                             text = errorMessage ?: "",
                             modifier = Modifier.padding(16.dp),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFFDC2626),
+                            color = colorScheme.onErrorContainer,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -290,8 +293,8 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6366F1),
-                        contentColor = Color.White
+                        containerColor = colorScheme.primary,
+                        contentColor = colorScheme.onPrimary
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -312,25 +315,25 @@ fun AddEmailScreen(navController: NavHostController, authViewModel: AuthViewMode
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.5f)),
+                .background(colorScheme.scrim.copy(alpha = 0.5f)),
             contentAlignment = Alignment.Center
         ) {
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier.padding(32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     CircularProgressIndicator(
-                        color = Color(0xFF6366F1),
+                        color = colorScheme.primary,
                         strokeWidth = 4.dp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Creating your account...",
-                        color = Color.Black,
+                        color = colorScheme.onSurface,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium
                     )

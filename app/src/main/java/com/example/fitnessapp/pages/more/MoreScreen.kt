@@ -22,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,7 +49,7 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
         bottomBar = {
             com.example.fitnessapp.pages.home.ModernBottomNavigation(navController = navController)
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.surface
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -57,9 +58,9 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF6366F1),
-                            Color(0xFF8B5CF6),
-                            Color(0xFFA855F7)
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.extendedColors.chartAltitude,
+                            MaterialTheme.extendedColors.gradientAccent
                         )
                     )
                 )
@@ -76,7 +77,7 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
                     text = "More",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
@@ -84,7 +85,7 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
             Card(
                 modifier = Modifier.fillMaxSize(),
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(
@@ -110,12 +111,12 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
                             text = "Lucas Scott",
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1F2937)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "@lucasscott3",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF6B7280)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
@@ -172,12 +173,12 @@ fun ModernSection(title: String, content: @Composable ColumnScope.() -> Unit) {
             text = title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1F2937),
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 12.dp)
         )
         Card(
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -198,13 +199,13 @@ fun ModernSectionItem(title: String, onClick: () -> Unit) {
         Text(
             text = title,
             style = MaterialTheme.typography.bodyLarge,
-            color = Color(0xFF374151),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(1f)
         )
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = null,
-            tint = Color(0xFF6B7280),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)
         )
     }

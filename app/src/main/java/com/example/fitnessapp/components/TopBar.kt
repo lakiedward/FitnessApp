@@ -52,7 +52,7 @@ fun TopBar(
                         contentDescription = "Profile",
                         modifier = Modifier
                             .size(40.dp)
-                            .background(Color.Gray, CircleShape)
+                            .background(MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
                     )
                 }
             }

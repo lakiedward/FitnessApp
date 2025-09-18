@@ -20,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -111,9 +112,9 @@ fun ChangeSportMetricsScreen(
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                Color(0xFF6366F1),
-                                Color(0xFF8B5CF6),
-                                Color(0xFFA855F7)
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.extendedColors.chartAltitude,
+                                MaterialTheme.extendedColors.gradientAccent
                             )
                         )
                     )
@@ -125,14 +126,14 @@ fun ChangeSportMetricsScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
 
                 Text(
                     text = "Change Sport Metrics",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -161,8 +162,8 @@ fun ChangeSportMetricsScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF6366F1),
-                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
                     )
                 }
@@ -183,8 +184,8 @@ fun ChangeSportMetricsScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF6366F1),
-                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
                     )
                 }
@@ -295,8 +296,8 @@ fun ChangeSportMetricsScreen(
                         .height(56.dp)
                         .padding(horizontal = 16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6366F1),
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {

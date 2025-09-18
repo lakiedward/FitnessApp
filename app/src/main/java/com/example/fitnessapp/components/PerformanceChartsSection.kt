@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,7 +60,7 @@ fun PerformanceChartsSection(
                 contentDescription = "Performance charts section showing activity analysis"
             },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -106,7 +107,7 @@ fun PowerCurveSection(
     ) {
         androidx.compose.material3.HorizontalDivider(
             thickness = 1.dp,
-            color = Color(0xFFE5E7EB)
+            color = MaterialTheme.extendedColors.chartGrid
         )
         PowerCurveComponent(
             activityId = activityId,

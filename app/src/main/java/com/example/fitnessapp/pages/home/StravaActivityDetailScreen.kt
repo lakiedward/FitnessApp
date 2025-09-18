@@ -53,6 +53,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
@@ -88,6 +89,7 @@ import com.example.fitnessapp.components.PerformanceChartsSection
 import com.example.fitnessapp.components.PowerCurveComponent
 import com.example.fitnessapp.components.PowerCurveSection
 import com.example.fitnessapp.components.RouteMapSection
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.model.ActivityStreamsResponse
 import com.example.fitnessapp.model.StravaActivity
 import com.example.fitnessapp.viewmodel.StravaViewModel
@@ -119,6 +121,8 @@ import androidx.compose.ui.draw.shadow
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ShimmerPlaceholder(modifier: Modifier = Modifier, height: Int = 32) {
+    val extendedColors = MaterialTheme.extendedColors
+
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0.3f, targetValue = 1f,
@@ -150,9 +154,9 @@ private fun ShimmerPlaceholder(modifier: Modifier = Modifier, height: Int = 32) 
                 .background(
                     Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFFF1F5F9),
-                            Color(0xFFE2E8F0),
-                            Color(0xFFF1F5F9)
+                            extendedColors.surfaceMuted,
+                            extendedColors.borderStrong,
+                            extendedColors.surfaceMuted
                         ),
                         startX = shimmerTranslate - 100f,
                         endX = shimmerTranslate + 100f
@@ -170,6 +174,8 @@ fun SectionHeader(
     title: String, 
     modifier: Modifier = Modifier
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.padding(bottom = 8.dp)
@@ -177,7 +183,7 @@ fun SectionHeader(
         Icon(
             icon,
             contentDescription = null,
-            tint = Color(0xFF6366F1),
+            tint = colorScheme.primary,
             modifier = Modifier.size(20.dp)
         )
         Spacer(Modifier.width(6.dp))
@@ -194,7 +200,9 @@ fun SectionHeader(
 @Preview(showBackground = true)
 @Composable
 fun StravaActivityDetailScreenPreview() {
-    StravaActivityDetailScreen(navController = rememberNavController(), activityId = 123456L)
+    FitnessAppTheme {
+        StravaActivityDetailScreen(navController = rememberNavController(), activityId = 123456L)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -205,6 +213,9 @@ fun StravaActivityDetailScreen(
 ) {
     val context = LocalContext.current
     val stravaViewModel: StravaViewModel = viewModel(factory = StravaViewModelFactory(context))
+
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
 
     var activity by remember { mutableStateOf<StravaActivity?>(null) }
     var mapViewData by remember { mutableStateOf<Map<String, String>?>(null) }
@@ -286,9 +297,9 @@ fun StravaActivityDetailScreen(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        colorScheme.primary,
+                        colorScheme.secondary,
+                        extendedColors.gradientAccent
                     )
                 )
             )
@@ -313,7 +324,7 @@ fun StravaActivityDetailScreen(
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "Navigate back to previous screen",
-                        tint = Color.White
+                        tint = colorScheme.onPrimary
                     )
                 }
                 Row(
@@ -338,13 +349,13 @@ fun StravaActivityDetailScreen(
                             else -> Icons.Default.Speed
                         },
                         contentDescription = "Activity type: ${activity?.type}",
-                        tint = Color.White,
+                        tint = colorScheme.onPrimary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = activity?.name ?: "Activity Details",
-                        color = Color.White,
+                        color = colorScheme.onPrimary,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleLarge,
                         maxLines = 2,
@@ -359,9 +370,9 @@ fun StravaActivityDetailScreen(
             Card(
                 modifier = Modifier
                     .fillMaxSize()
-                    .border(BorderStroke(1.dp, Color(0xFFE5EAF2)), RoundedCornerShape(20.dp)),
+                    .border(BorderStroke(1.dp, extendedColors.borderSubtle), RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 when {
@@ -424,7 +435,7 @@ fun StravaActivityDetailScreen(
                                         .shadow(elevation = 8.dp, shape = CircleShape),
                                     shape = CircleShape,
                                     colors = CardDefaults.cardColors(
-                                        containerColor = Color(0xFFFEF2F2)
+                                        containerColor = colorScheme.errorContainer
                                     ),
                                     elevation = CardDefaults.cardElevation(0.dp)
                                 ) {
@@ -436,13 +447,13 @@ fun StravaActivityDetailScreen(
                                         Icon(
                                             imageVector = Icons.Filled.Warning,
                                             contentDescription = "Error illustration",
-                                            tint = Color(0xFFEF4444),
+                                            tint = colorScheme.error,
                                             modifier = Modifier.size(48.dp)
                                         )
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Text(
                                             text = "!",
-                                            color = Color(0xFFEF4444),
+                                            color = colorScheme.error,
                                             style = MaterialTheme.typography.headlineSmall.copy(
                                                 fontWeight = FontWeight.ExtraBold
                                             )
@@ -454,14 +465,14 @@ fun StravaActivityDetailScreen(
                                     text = "Oops! Activity Not Found",
                                     style = MaterialTheme.typography.headlineMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF1F2937),
+                                    color = colorScheme.onSurface,
                                     textAlign = TextAlign.Center
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
                                     text = "We couldn't load this activity. Please check your connection and try again.",
                                     style = MaterialTheme.typography.bodyLarge,
-                                    color = Color(0xFF6B7280),
+                                    color = colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center,
                                     lineHeight = 24.dp.value.em
                                 )
@@ -469,7 +480,7 @@ fun StravaActivityDetailScreen(
                                 Button(
                                     onClick = { /* TODO: Add retry functionality */ },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF6366F1)
+                                        containerColor = colorScheme.primary
                                     ),
                                     shape = RoundedCornerShape(12.dp),
                                     elevation = ButtonDefaults.buttonElevation(4.dp)
@@ -478,14 +489,14 @@ fun StravaActivityDetailScreen(
                                         Icons.Default.Refresh,
                                         contentDescription = null,
                                         modifier = Modifier.size(20.dp),
-                                        tint = Color.White
+                                        tint = colorScheme.onPrimary
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         "Try Again",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Medium,
-                                        color = Color.White
+                                        color = colorScheme.onPrimary
                                     )
                                 }
                             }
@@ -513,11 +524,11 @@ fun StravaActivityDetailScreen(
                                             .shadow(
                                                 elevation = 8.dp,
                                                 shape = RoundedCornerShape(20.dp),
-                                                ambientColor = Color(0xFF6366F1).copy(alpha = 0.1f),
-                                                spotColor = Color(0xFF6366F1).copy(alpha = 0.1f)
+                                                ambientColor = colorScheme.primary.copy(alpha = 0.1f),
+                                                spotColor = colorScheme.primary.copy(alpha = 0.1f)
                                             )
                                             .border(
-                                                BorderStroke(1.dp, Color(0xFFE5EAF2)),
+                                                BorderStroke(1.dp, extendedColors.borderSubtle),
                                                 RoundedCornerShape(20.dp)
                                             ),
                                         shape = RoundedCornerShape(20.dp),
@@ -622,7 +633,7 @@ fun StravaActivityDetailScreen(
                                                     shape = RoundedCornerShape(20.dp)
                                                 ),
                                             shape = RoundedCornerShape(20.dp),
-                                            border = BorderStroke(1.dp, Color(0xFFE5EAF2)),
+                                            border = BorderStroke(1.dp, extendedColors.borderSubtle),
                                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                                             elevation = CardDefaults.cardElevation(0.dp)
                                         ) {
@@ -716,7 +727,7 @@ fun StravaActivityDetailScreen(
                                                     .height(56.dp)
                                                     .graphicsLayer(scaleX = scale, scaleY = scale),
                                                 colors = ButtonDefaults.buttonColors(
-                                                    containerColor = Color(0xFF6366F1)
+                                                    containerColor = colorScheme.primary
                                                 ),
                                                 elevation = ButtonDefaults.buttonElevation(12.dp),
                                                 shape = RoundedCornerShape(16.dp)
@@ -762,10 +773,12 @@ fun StravaActivityDetailScreen(
 
 @Composable
 private fun ActivityStatsCard(activity: StravaActivity) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
@@ -773,7 +786,7 @@ private fun ActivityStatsCard(activity: StravaActivity) {
                 text = "Activity Statistics",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF1F2937)
+                color = colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -852,11 +865,13 @@ private fun ActivityStatsCard(activity: StravaActivity) {
 
 @Composable
 private fun StatRow(icon: ImageVector, label: String, value: String) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = Color(0xFF6366F1),
+            tint = colorScheme.primary,
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
@@ -864,13 +879,13 @@ private fun StatRow(icon: ImageVector, label: String, value: String) {
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF6B7280)
+                color = colorScheme.onSurfaceVariant
             )
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF374151)
+                color = colorScheme.onSurfaceVariant
             )
         }
     }
@@ -878,10 +893,12 @@ private fun StatRow(icon: ImageVector, label: String, value: String) {
 
 @Composable
 private fun ActivityStatsGrid(activity: StravaActivity) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
@@ -889,7 +906,7 @@ private fun ActivityStatsGrid(activity: StravaActivity) {
                 text = "Activity Statistics",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF1F2937)
+                color = colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -919,13 +936,13 @@ private fun ActivityStatsGrid(activity: StravaActivity) {
                             Text(
                                 text = label,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF6B7280)
+                                color = colorScheme.onSurfaceVariant
                             )
                             Text(
                                 text = value,
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF374151)
+                                color = colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -1010,6 +1027,9 @@ private fun ActivityStatsGridContent(activity: StravaActivity) {
 // Enhanced FullInteractiveWebViewMapContent with zoom controls, error handling, and fullscreen toggle
 @Composable
 private fun FullInteractiveWebViewMapContent(htmlMapUrl: String) {
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     var isMapLoading by remember { mutableStateOf(true) }
     var hasError by remember { mutableStateOf(false) }
     var webView by remember { mutableStateOf<WebView?>(null) }
@@ -1059,7 +1079,7 @@ private fun FullInteractiveWebViewMapContent(htmlMapUrl: String) {
         if (isMapLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
-                color = Color(0xFF6366F1)
+                color = colorScheme.primary
             )
         }
 
@@ -1071,7 +1091,7 @@ private fun FullInteractiveWebViewMapContent(htmlMapUrl: String) {
                     .padding(16.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.White.copy(alpha = 0.95f)
+                    containerColor = colorScheme.surface.copy(alpha = 0.95f)
                 ),
                 elevation = CardDefaults.cardElevation(8.dp)
             ) {
@@ -1082,7 +1102,7 @@ private fun FullInteractiveWebViewMapContent(htmlMapUrl: String) {
                     Icon(
                         imageVector = Icons.Filled.Warning,
                         contentDescription = "Map loading error",
-                        tint = Color(0xFFFF9800),
+                        tint = extendedColors.warning,
                         modifier = Modifier.size(32.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -1090,13 +1110,13 @@ private fun FullInteractiveWebViewMapContent(htmlMapUrl: String) {
                         text = "Failed to load map",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF374151)
+                        color = colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Check your connection",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF6B7280)
+                        color = colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(
@@ -1106,7 +1126,7 @@ private fun FullInteractiveWebViewMapContent(htmlMapUrl: String) {
                             webView?.reload()
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF6366F1)
+                            containerColor = colorScheme.primary
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
@@ -1136,14 +1156,14 @@ private fun FullInteractiveWebViewMapContent(htmlMapUrl: String) {
                     modifier = Modifier
                         .size(36.dp)
                         .background(
-                            Color.White.copy(alpha = 0.9f),
+                            colorScheme.surface.copy(alpha = 0.9f),
                             RoundedCornerShape(6.dp)
                         )
                 ) {
                     Icon(
                         Icons.Filled.ZoomIn,
                         contentDescription = "Zoom in on map",
-                        tint = Color(0xFF374151),
+                        tint = colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -1154,14 +1174,14 @@ private fun FullInteractiveWebViewMapContent(htmlMapUrl: String) {
                     modifier = Modifier
                         .size(36.dp)
                         .background(
-                            Color.White.copy(alpha = 0.9f),
+                            colorScheme.surface.copy(alpha = 0.9f),
                             RoundedCornerShape(6.dp)
                         )
                 ) {
                     Icon(
                         Icons.Filled.ZoomOut,
                         contentDescription = "Zoom out on map",
-                        tint = Color(0xFF374151),
+                        tint = colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -1175,14 +1195,14 @@ private fun FullInteractiveWebViewMapContent(htmlMapUrl: String) {
                     modifier = Modifier
                         .size(36.dp)
                         .background(
-                            Color.White.copy(alpha = 0.9f),
+                            colorScheme.surface.copy(alpha = 0.9f),
                             RoundedCornerShape(6.dp)
                         )
                 ) {
                     Icon(
                         Icons.Filled.Fullscreen,
                         contentDescription = "View map in fullscreen",
-                        tint = Color(0xFF374151),
+                        tint = colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -1199,6 +1219,9 @@ private fun HeartRateZoneDistribution(
     maxBpm: Int,
     heartRateData: List<Int>? = null
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         // Redesigned HR Metrics Header (Suggestion 2 & 8)
         Row(
@@ -1218,7 +1241,7 @@ private fun HeartRateZoneDistribution(
                 text = "Heart Rate Zones Distribution",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF374151)
+                color = colorScheme.onSurfaceVariant
             )
 
             // Calculate correct zones based on user's maxBPM
@@ -1313,12 +1336,12 @@ private fun HeartRateZoneDistribution(
                                     text = zoneInfo.name,
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Medium,
-                                    color = Color(0xFF374151)
+                                    color = colorScheme.onSurfaceVariant
                                 )
                                 Text(
                                     text = "${zoneInfo.range} bpm",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF6B7280)
+                                    color = colorScheme.onSurfaceVariant
                                 )
                             }
                             Column(horizontalAlignment = Alignment.End) {
@@ -1331,7 +1354,7 @@ private fun HeartRateZoneDistribution(
                                     },
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF374151)
+                                    color = colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -1343,7 +1366,7 @@ private fun HeartRateZoneDistribution(
                                 .height(6.dp)
                                 .clip(RoundedCornerShape(3.dp)),
                             color = getZoneColor(index + 1),
-                            trackColor = Color(0xFFE5E7EB)
+                            trackColor = extendedColors.chartGrid
                         )
                     }
                 }
@@ -1356,7 +1379,7 @@ private fun HeartRateZoneDistribution(
                         .fillMaxWidth()
                         .padding(top = 8.dp),
                     shape = RoundedCornerShape(8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF3C7)),
+                    colors = CardDefaults.cardColors(containerColor = extendedColors.warningContainer),
                     elevation = CardDefaults.cardElevation(1.dp)
                 ) {
                     Row(
@@ -1366,14 +1389,14 @@ private fun HeartRateZoneDistribution(
                         Icon(
                             Icons.Default.Warning,
                             contentDescription = null,
-                            tint = Color(0xFFD97706),
+                            tint = extendedColors.warning,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "Zone distribution is an estimate. For accurate results, sync activities with detailed heart rate data.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF92400E),
+                            color = extendedColors.warning,
                             lineHeight = 16.dp.value.em
                         )
                     }
@@ -1384,7 +1407,7 @@ private fun HeartRateZoneDistribution(
                         .fillMaxWidth()
                         .padding(top = 8.dp),
                     shape = RoundedCornerShape(8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFECFDF5)),
+                    colors = CardDefaults.cardColors(containerColor = extendedColors.successContainer),
                     elevation = CardDefaults.cardElevation(1.dp)
                 ) {
                     Row(
@@ -1394,14 +1417,14 @@ private fun HeartRateZoneDistribution(
                         Icon(
                             Icons.Default.Favorite,
                             contentDescription = null,
-                            tint = Color(0xFF059669),
+                            tint = extendedColors.success,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "Zones calculated from ${heartRateData.size} heart rate data points",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF065F46)
+                            color = extendedColors.success.copy(alpha = 0.9f)
                         )
                     }
                 }
@@ -1412,19 +1435,21 @@ private fun HeartRateZoneDistribution(
 
 @Composable
 private fun HrStat(label: String, value: String, unit: String) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row {
             Text(
                 text = value,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF374151)
+                color = colorScheme.onSurfaceVariant
             )
             if (unit.isNotEmpty()) {
                 Text(
                     text = unit,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF6B7280),
+                    color = colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 4.dp, top = 8.dp)
                 )
             }
@@ -1432,7 +1457,7 @@ private fun HrStat(label: String, value: String, unit: String) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = Color(0xFF6B7280)
+            color = colorScheme.onSurfaceVariant
         )
     }
 }
@@ -1579,13 +1604,15 @@ private fun formatSecondsToTime(seconds: Int): String {
 }
 
 // Helper for zone colors (from TrainingDetailScreen)
+@Composable
 private fun getZoneColor(zone: Int): Color {
+    val extendedColors = MaterialTheme.extendedColors
     return when (zone) {
-        1 -> Color(0xFF6EE7B7)
-        2 -> Color(0xFF34D399)
-        3 -> Color(0xFF10B981)
-        4 -> Color(0xFF059669)
-        else -> Color(0xFF047857)
+        1 -> extendedColors.hrZone1
+        2 -> extendedColors.hrZone2
+        3 -> extendedColors.success
+        4 -> extendedColors.hrZone4
+        else -> extendedColors.hrZone5
     }
 }
 
@@ -1599,12 +1626,14 @@ private fun formatMovingTime(movingTime: Int): String {
 
 @Composable
 private fun FullInteractiveWebViewMapCard(htmlMapUrl: String) {
+    val colorScheme = MaterialTheme.colorScheme
+
     var isMapLoading by remember { mutableStateOf(true) }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -1633,7 +1662,7 @@ private fun FullInteractiveWebViewMapCard(htmlMapUrl: String) {
             if (isMapLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
-                    color = Color(0xFF6366F1)
+                    color = colorScheme.primary
                 )
             }
         }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -235,15 +236,18 @@ fun StravaAuthScreen(
     val currentStravaState = stravaState
 
     // UI
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        extendedColors.gradientPrimary,
+                        extendedColors.gradientSecondary,
+                        extendedColors.gradientAccent
                     )
                 )
             )
@@ -259,7 +263,7 @@ fun StravaAuthScreen(
             Text(
                 text = "Connect Strava",
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.White,
+                color = colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -270,7 +274,7 @@ fun StravaAuthScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Column(
@@ -299,7 +303,7 @@ fun StravaAuthScreen(
                         Text(
                             text = "Integrare Strava",
                             style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = colorScheme.onSurface,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -313,14 +317,14 @@ fun StravaAuthScreen(
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_check_circle),
                                     contentDescription = "Conectat",
-                                    tint = Color(0xFF10B981),
+                                    tint = extendedColors.success,
                                     modifier = Modifier.size(48.dp)
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
                                     text = "✓ Conectat cu succes",
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = Color(0xFF10B981),
+                                    color = extendedColors.success,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Spacer(modifier = Modifier.height(24.dp))
@@ -328,7 +332,7 @@ fun StravaAuthScreen(
                                 // Activity Sync
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                                    colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceVariant),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Column(
@@ -337,7 +341,7 @@ fun StravaAuthScreen(
                                         Text(
                                             text = "Sincronizare activități",
                                             style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.onSurface,
+                                            color = colorScheme.onSurface,
                                             fontWeight = FontWeight.Bold
                                         )
                                         Spacer(modifier = Modifier.height(8.dp))
@@ -345,7 +349,7 @@ fun StravaAuthScreen(
                                             Text(
                                                 text = syncMessage!!,
                                                 style = MaterialTheme.typography.bodyMedium,
-                                                color = if (syncMessage!!.startsWith("✓")) Color(0xFF10B981) else MaterialTheme.colorScheme.onSurfaceVariant
+                                                color = if (syncMessage!!.startsWith("✓")) extendedColors.success else colorScheme.onSurfaceVariant
                                             )
                                             Spacer(modifier = Modifier.height(8.dp))
                                         }
@@ -367,14 +371,14 @@ fun StravaAuthScreen(
                                             enabled = !isSyncing,
                                             modifier = Modifier.fillMaxWidth(),
                                             colors = ButtonDefaults.buttonColors(
-                                                containerColor = MaterialTheme.colorScheme.primary
+                                                containerColor = colorScheme.primary
                                             ),
                                             shape = RoundedCornerShape(8.dp)
                                         ) {
                                             if (isSyncing) {
                                                 CircularProgressIndicator(
                                                     modifier = Modifier.size(16.dp),
-                                                    color = MaterialTheme.colorScheme.onPrimary,
+                                                    color = colorScheme.onPrimary,
                                                     strokeWidth = 2.dp
                                                 )
                                                 Spacer(modifier = Modifier.width(8.dp))
@@ -393,7 +397,7 @@ fun StravaAuthScreen(
                                             },
                                             modifier = Modifier.fillMaxWidth(),
                                             colors = ButtonDefaults.outlinedButtonColors(
-                                                contentColor = MaterialTheme.colorScheme.error
+                                                contentColor = colorScheme.error
                                             ),
                                             shape = RoundedCornerShape(8.dp)
                                         ) {
@@ -408,7 +412,7 @@ fun StravaAuthScreen(
                                     Text(
                                         text = "Metrici de performanță",
                                         style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.onSurface,
+                                        color = colorScheme.onSurface,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.fillMaxWidth()
                                     )
@@ -424,18 +428,18 @@ fun StravaAuthScreen(
                                                 Text(
                                                     text = "FTP (Putere prag funcțional)",
                                                     style = MaterialTheme.typography.bodyMedium,
-                                                    color = MaterialTheme.colorScheme.onSurface
+                                                    color = colorScheme.onSurface
                                                 )
                                                 Text(
                                                     text = "Prag de putere pentru antrenament",
                                                     style = MaterialTheme.typography.bodySmall,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                    color = colorScheme.onSurfaceVariant
                                                 )
                                             }
                                             Text(
                                                 text = "${currentFtp!!.toInt()} W",
                                                 style = MaterialTheme.typography.bodyMedium,
-                                                color = Color(0xFF2563EB),
+                                                color = extendedColors.info,
                                                 fontWeight = FontWeight.Bold
                                             )
                                         }
@@ -450,18 +454,18 @@ fun StravaAuthScreen(
                                             Text(
                                                 text = "FTHR (Frecvență cardiacă prag funcțional)",
                                                 style = MaterialTheme.typography.bodyMedium,
-                                                color = MaterialTheme.colorScheme.onSurface
+                                                color = colorScheme.onSurface
                                             )
                                             Text(
                                                 text = "Prag de frecvență cardiacă",
                                                 style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                color = colorScheme.onSurfaceVariant
                                             )
                                         }
                                         Text(
                                             text = if (fthrEstimate != null) "${fthrEstimate} bpm" else "Indisponibil",
                                             style = MaterialTheme.typography.bodyMedium,
-                                            color = Color(0xFFD97706),
+                                            color = extendedColors.warning,
                                             fontWeight = if (fthrEstimate != null) FontWeight.Bold else FontWeight.Medium
                                         )
                                     }
@@ -475,20 +479,20 @@ fun StravaAuthScreen(
                             ) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(48.dp),
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = colorScheme.primary,
                                     strokeWidth = 4.dp
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Text(
                                     text = "Conectare în curs...",
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = colorScheme.primary,
                                     fontWeight = FontWeight.Medium
                                 )
                                 Text(
                                     text = "Vă rugăm să completați autorizarea în browser",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
                                 )
                             }
@@ -501,7 +505,7 @@ fun StravaAuthScreen(
                                 Text(
                                     text = "Sincronizează activitățile și obține detalii despre performanță",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
                                 )
                                 Spacer(modifier = Modifier.height(24.dp))
@@ -510,7 +514,7 @@ fun StravaAuthScreen(
                                         connectToStrava()
                                     },
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC4C02)),
+                                    colors = ButtonDefaults.buttonColors(containerColor = extendedColors.strava),
                                     shape = RoundedCornerShape(8.dp)
                                 ) {
                                     Text("Conectare la Strava")
@@ -524,13 +528,13 @@ fun StravaAuthScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2))
+                            colors = CardDefaults.cardColors(containerColor = colorScheme.errorContainer)
                         ) {
                             Text(
                                 text = errorMessage!!,
                                 modifier = Modifier.padding(12.dp),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFFDC2626)
+                                color = colorScheme.onErrorContainer
                             )
                         }
                     }
@@ -545,7 +549,7 @@ fun StravaAuthScreen(
                         Button(
                             onClick = onContinue,
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
+                            colors = ButtonDefaults.buttonColors(containerColor = extendedColors.success),
                             shape = RoundedCornerShape(8.dp)
                         ) {
                             Text("Continuă")
@@ -577,3 +581,7 @@ fun StravaAuthScreenPreview() {
         )
     }
 }
+
+
+
+

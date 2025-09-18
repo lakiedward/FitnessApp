@@ -1,4 +1,4 @@
-﻿package com.example.fitnessapp.pages.strava
+package com.example.fitnessapp.pages.strava
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -125,7 +126,7 @@ fun StravaSyncLoadingScreen(
     val context = LocalContext.current
     val cancelFlag = remember { java.util.concurrent.atomic.AtomicBoolean(false) }
     var syncProgress by remember { mutableFloatStateOf(0f) }
-    var currentStep by remember { mutableStateOf("PregÄƒtire sincronizare...") }
+    var currentStep by remember { mutableStateOf("Pregătire sincronizare...") }
     var activitiesSynced by remember { mutableIntStateOf(0) }
     var isCompleted by remember { mutableStateOf(false) }
     var ftpEstimate by remember { mutableStateOf<Float?>(null) }
@@ -149,7 +150,7 @@ fun StravaSyncLoadingScreen(
         Log.d("StravaSyncLoading", "Starting SSE streaming sync with /strava/sync-live?fast=true")
         
         try {
-            // Etapa 1: PregÄƒtire
+            // Etapa 1: Pregătire
             currentStep = "Conectare la Strava..."
             syncProgress = 0.1f
             delay(500)
@@ -161,20 +162,20 @@ fun StravaSyncLoadingScreen(
             Log.d("StravaSyncLoading", "Current stravaState: $stravaState")
             if (stravaState !is com.example.fitnessapp.viewmodel.StravaState.Connected) {
                 Log.e("StravaSyncLoading", "Not connected to Strava. Current state: $stravaState")
-                throw Exception("Nu sunteÈ›i conectat la Strava. Starea curentÄƒ: $stravaState")
+                throw Exception("Nu sunteți conectat la Strava. Starea curentă: $stravaState")
             }
             
             delay(500)
             
             // Etapa 3: Pornire sincronizare SSE
-            currentStep = "Pornire sincronizare Ã®n timp real..."
+            currentStep = "Pornire sincronizare în timp real..."
             syncProgress = 0.3f
             
             val jwtToken = authViewModel.getToken()
             Log.d("StravaSyncLoading", "JWT token exists: ${!jwtToken.isNullOrEmpty()}")
             if (jwtToken.isNullOrEmpty()) {
                 Log.e("StravaSyncLoading", "JWT token is null or empty")
-                throw Exception("Token de autentificare lipsÄƒ")
+                throw Exception("Token de autentificare lipsă")
             }
             
             Log.d("StravaSyncLoading", "Starting SSE sync with /strava/sync-live?fast=true")
@@ -195,7 +196,7 @@ fun StravaSyncLoadingScreen(
                 if (currentRetry > 0) {
                     Log.d("StravaSyncLoading", "Reconnection attempt $currentRetry/$maxRetries")
                     withContext(Dispatchers.Main) {
-                        currentStep = "Reconectare... (Ã®ncercarea $currentRetry/$maxRetries)"
+                        currentStep = "Reconectare... (încercarea $currentRetry/$maxRetries)"
                         syncProgress = 0.3f + (currentRetry * 0.1f)
                     }
                     delay(2000) // Wait before reconnecting
@@ -229,7 +230,7 @@ fun StravaSyncLoadingScreen(
                             val errorBody = errorStream?.bufferedReader()?.use { it.readText() }
                             Log.e("StravaSyncLoading", "SSE request failed: ${connection.responseCode}")
                             Log.e("StravaSyncLoading", "Error body: $errorBody")
-                            throw Exception("Sincronizare eÈ™uatÄƒ: ${connection.responseCode} - $errorBody")
+                            throw Exception("Sincronizare eșuată: ${connection.responseCode} - $errorBody")
                         }
                         
                         val inputStream = connection.inputStream
@@ -244,7 +245,7 @@ fun StravaSyncLoadingScreen(
                             if (cancelFlag.get()) {
                                 withContext(Dispatchers.Main) {
                                     syncError = "Anulat de utilizator"
-                                    currentStep = "Sincronizare anulatÄƒ"
+                                    currentStep = "Sincronizare anulată"
                                 }
                                 break
                             }
@@ -265,7 +266,7 @@ fun StravaSyncLoadingScreen(
                                             currentStep = "Finalizare sincronizare..."
                                             syncProgress = 1.0f
                                             isCompleted = true
-                                            currentStep = "Sincronizare completÄƒ!"
+                                            currentStep = "Sincronizare completă!"
                                             activitiesSynced = totalActivitiesSynced + activitiesCount
                                         }
                                         isSyncCompleted = true
@@ -362,7 +363,7 @@ fun StravaSyncLoadingScreen(
                             currentRetry++
                             
                             withContext(Dispatchers.Main) {
-                                currentStep = "Conexiunea s-a Ã®ntrerupt. Reconectare..."
+                                currentStep = "Conexiunea s-a întrerupt. Reconectare..."
                                 syncProgress = 0.3f + (currentRetry * 0.1f)
                             }
                         }
@@ -393,7 +394,7 @@ fun StravaSyncLoadingScreen(
             
             // If we've exhausted retries without completion
             if (!isSyncCompleted) {
-                throw Exception("Sincronizarea s-a Ã®ntrerupt dupÄƒ $maxRetries Ã®ncercÄƒri. $totalActivitiesSynced activitÄƒÈ›i sincronizate.")
+                throw Exception("Sincronizarea s-a întrerupt după $maxRetries încercări. $totalActivitiesSynced activități sincronizate.")
             }
             
             Log.d("StravaSyncLoading", "SSE stream completed")
@@ -401,7 +402,7 @@ fun StravaSyncLoadingScreen(
             // Estimate FTHR after successful sync
             Log.d("StravaSyncLoading", "Estimating FTHR after successful sync...")
             withContext(Dispatchers.Main) {
-                currentStep = "Estimare FTHR din activitÄƒÈ›i recente..."
+                currentStep = "Estimare FTHR din activități recente..."
                 syncProgress = 0.95f
             }
             
@@ -466,7 +467,7 @@ fun StravaSyncLoadingScreen(
             // Call /running/pace-prediction to generate running pace predictions
             try {
                 withContext(Dispatchers.Main) {
-                    currentStep = "Generare predicÈ›ii vitezÄƒ alergare..."
+                    currentStep = "Generare predicții viteză alergare..."
                     syncProgress = 0.97f
                 }
                 
@@ -515,7 +516,7 @@ fun StravaSyncLoadingScreen(
                 if (runningPaceResponse != null) {
                     Log.d("StravaSyncLoading", "Running pace predictions completed successfully")
                     withContext(Dispatchers.Main) {
-                        currentStep = "PredicÈ›ii vitezÄƒ alergare generate"
+                        currentStep = "Predicții viteză alergare generate"
                     }
                 } else {
                     Log.w("StravaSyncLoading", "Running pace prediction failed, but sync was successful")
@@ -528,7 +529,7 @@ fun StravaSyncLoadingScreen(
             // Call /swim/best-time-prediction to generate swimming best time predictions
             try {
                 withContext(Dispatchers.Main) {
-                    currentStep = "Generare predicÈ›ii timp Ã®not..."
+                    currentStep = "Generare predicții timp înot..."
                     syncProgress = 0.975f
                 }
                 
@@ -574,7 +575,7 @@ fun StravaSyncLoadingScreen(
                 if (swimBestTimeResponse != null) {
                     Log.d("StravaSyncLoading", "Swimming best time predictions completed successfully")
                     withContext(Dispatchers.Main) {
-                        currentStep = "PredicÈ›ii timp Ã®not generate"
+                        currentStep = "Predicții timp înot generate"
                     }
                 } else {
                     Log.w("StravaSyncLoading", "Swimming best time prediction failed, but sync was successful")
@@ -628,21 +629,21 @@ fun StravaSyncLoadingScreen(
             Log.e("StravaSyncLoading", "Error during SSE sync", e)
             Log.e("StravaSyncLoading", "Error message: ${e.message}")
             Log.e("StravaSyncLoading", "Error cause: ${e.cause}")
-            syncError = e.message ?: "Eroare necunoscutÄƒ"
+            syncError = e.message ?: "Eroare necunoscută"
             currentStep = "Eroare: $syncError"
         }
     }
     
-    // UI cu aceleaÈ™i culori ca StravaAuthScreen
+    // UI cu aceleași culori ca StravaAuthScreen
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.extendedColors.chartAltitude,
+                        MaterialTheme.extendedColors.gradientAccent
                     )
                 )
             )
@@ -662,7 +663,7 @@ fun StravaSyncLoadingScreen(
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
             
@@ -680,7 +681,7 @@ fun StravaSyncLoadingScreen(
                 Text(
                     text = "Sync Live",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -693,7 +694,7 @@ fun StravaSyncLoadingScreen(
                 },
                 enabled = !isCompleted && syncError == null
             ) {
-                Text("Cancel", color = Color.White)
+                Text("Cancel", color = MaterialTheme.colorScheme.onPrimary)
             }
         }
 
@@ -703,7 +704,7 @@ fun StravaSyncLoadingScreen(
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -718,7 +719,7 @@ fun StravaSyncLoadingScreen(
                     Icon(
                         imageVector = Icons.Default.Error,
                         contentDescription = "Error",
-                        tint = Color(0xFFEF4444),
+                        tint = MaterialTheme.extendedColors.chartHeartRate,
                         modifier = Modifier.size(72.dp)
                     )
                     
@@ -726,9 +727,9 @@ fun StravaSyncLoadingScreen(
                     /*
                     
                     Text(
-                        text = "âœ— Eroare sincronizare",
+                        text = "✗ Eroare sincronizare",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = Color(0xFFEF4444),
+                        color = MaterialTheme.extendedColors.chartHeartRate,
                         fontWeight = FontWeight.Bold
                     )
                     
@@ -736,7 +737,7 @@ fun StravaSyncLoadingScreen(
                     Text(
                         text = "Eroare sincronizare",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = Color(0xFFEF4444),
+                        color = MaterialTheme.extendedColors.chartHeartRate,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -744,7 +745,7 @@ fun StravaSyncLoadingScreen(
                     Text(
                         text = syncError!!,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
                     
@@ -753,16 +754,16 @@ fun StravaSyncLoadingScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_check_circle),
                         contentDescription = "Success",
-                        tint = Color(0xFF10B981),
+                        tint = MaterialTheme.extendedColors.success,
                         modifier = Modifier.size(72.dp)
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     Text(
-                        text = "âœ“ Sincronizare completÄƒ!",
+                        text = "✓ Sincronizare completă!",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = Color(0xFF10B981),
+                        color = MaterialTheme.extendedColors.success,
                         fontWeight = FontWeight.Bold
                     )
                     
@@ -771,7 +772,7 @@ fun StravaSyncLoadingScreen(
                     Text(
                         text = "$activitiesSynced activities synchronized",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
@@ -783,8 +784,8 @@ fun StravaSyncLoadingScreen(
                             onClick = onViewActivities,
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF6366F1),
-                                contentColor = Color.White
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             shape = RoundedCornerShape(8.dp)
                         ) {
@@ -803,17 +804,17 @@ fun StravaSyncLoadingScreen(
                     // Loading State
                     CircularProgressIndicator(
                         modifier = Modifier.size(72.dp),
-                        color = Color(0xFF6366F1),
+                        color = MaterialTheme.colorScheme.primary,
                         strokeWidth = 6.dp,
-                        trackColor = Color(0xFF6366F1).copy(alpha = 0.2f)
+                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                     )
                     
                     Spacer(modifier = Modifier.height(24.dp))
                     
                     Text(
-                        text = "Sincronizare Ã®n timp real...",
+                        text = "Sincronizare în timp real...",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = Color(0xFF6366F1),
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
                     )
                     
@@ -822,7 +823,7 @@ fun StravaSyncLoadingScreen(
                     Text(
                         text = currentStep,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -831,16 +832,16 @@ fun StravaSyncLoadingScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
-                        color = Color(0xFF6366F1)
+                        color = MaterialTheme.colorScheme.primary
                     )
                     
                     if (currentActivityName != null) {
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         Text(
-                            text = "Activitate curentÄƒ: $currentActivityName",
+                            text = "Activitate curentă: $currentActivityName",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF6366F1),
+                            color = MaterialTheme.colorScheme.primary,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -851,7 +852,7 @@ fun StravaSyncLoadingScreen(
                         Text(
                             text = "FTHR estimat: ${fthrEstimate} bpm",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFFD97706),
+                            color = MaterialTheme.extendedColors.warning,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Bold
                         )
@@ -862,7 +863,7 @@ fun StravaSyncLoadingScreen(
                     // Progress info without progress bar (hidden to avoid duplicate info)
                     if (false) Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC))
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.extendedColors.surfaceSubtle)
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp)
@@ -883,7 +884,7 @@ fun StravaSyncLoadingScreen(
                                     Text(
                                         text = "Synced Activities",
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.Gray
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
                                         text = "$activitiesSynced",
@@ -898,9 +899,9 @@ fun StravaSyncLoadingScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     
                     Text(
-                        text = "Sincronizare Ã®n timp real cu Strava...",
+                        text = "Sincronizare în timp real cu Strava...",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
                 }

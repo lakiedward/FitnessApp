@@ -30,6 +30,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -45,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -97,15 +97,18 @@ fun ChooseSportsScreen(
         hasSelectedSports && hasSelectedDays && hasRequiredSport
     }
 
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        extendedColors.gradientPrimary,
+                        extendedColors.gradientSecondary,
+                        extendedColors.gradientAccent
                     )
                 )
             )
@@ -122,14 +125,14 @@ fun ChooseSportsScreen(
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = colorScheme.onPrimary
                 )
             }
 
             Text(
                 text = "Sports & Schedule",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                color = colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
 
@@ -143,7 +146,7 @@ fun ChooseSportsScreen(
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -155,7 +158,7 @@ fun ChooseSportsScreen(
                     text = "Choose Your Sports",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
 
@@ -166,7 +169,7 @@ fun ChooseSportsScreen(
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFFF6B6B).copy(alpha = 0.1f)
+                            containerColor = colorScheme.errorContainer.copy(alpha = 0.1f)
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
@@ -179,7 +182,7 @@ fun ChooseSportsScreen(
                             Text(
                                 text = message,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFFD32F2F),
+                                color = colorScheme.error,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -229,7 +232,7 @@ fun ChooseSportsScreen(
                     text = "Choose Your Availability",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -315,9 +318,9 @@ fun ChooseSportsScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6366F1),
-                        contentColor = Color.White,
-                        disabledContainerColor = Color.Gray.copy(alpha = 0.6f)
+                        containerColor = colorScheme.primary,
+                        contentColor = colorScheme.onPrimary,
+                        disabledContainerColor = colorScheme.surfaceVariant
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -325,7 +328,7 @@ fun ChooseSportsScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(20.dp),
-                                color = Color.White,
+                                color = colorScheme.onPrimary,
                                 strokeWidth = 2.dp
                             )
                             Spacer(modifier = Modifier.width(8.dp))
@@ -343,7 +346,7 @@ fun ChooseSportsScreen(
                 submitError?.let {
                     Text(
                         text = it,
-                        color = Color.Red,
+                        color = colorScheme.error,
                         modifier = Modifier.padding(8.dp)
                     )
                 }
@@ -363,6 +366,9 @@ fun SportsIcon(
     onSelectionChanged: (Boolean) -> Unit,
     modifier: Modifier
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Card(
         modifier = modifier
             .size(100.dp)
@@ -372,16 +378,16 @@ fun SportsIcon(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = when {
-                isSelected -> Color(0xFF6366F1)
-                isRequired -> Color(0xFFFF6B6B).copy(alpha = 0.1f)
-                else -> Color(0xFFF8FAFC)
+                isSelected -> colorScheme.primary
+                isRequired -> colorScheme.errorContainer.copy(alpha = 0.1f)
+                else -> extendedColors.surfaceSubtle
             }
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (isSelected) 8.dp else 4.dp
         ),
         border = if (isRequired && !isSelected) {
-            BorderStroke(2.dp, Color(0xFFFF6B6B))
+            BorderStroke(2.dp, colorScheme.errorContainer)
         } else null
     ) {
         Box(
@@ -398,9 +404,9 @@ fun SportsIcon(
                     contentDescription = label,
                     colorFilter = ColorFilter.tint(
                         when {
-                            isSelected -> Color.White
-                            isRequired -> Color(0xFFFF6B6B)
-                            else -> Color.Gray
+                            isSelected -> colorScheme.onPrimary
+                            isRequired -> colorScheme.errorContainer
+                            else -> colorScheme.onSurfaceVariant
                         }
                     ),
                     modifier = Modifier.size(48.dp)
@@ -411,7 +417,7 @@ fun SportsIcon(
                     Text(
                         text = "Required",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFFFF6B6B),
+                        color = colorScheme.errorContainer,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -431,10 +437,13 @@ fun AvailabilityRow(
     onMinuteChange: (String) -> Unit,
     isInputEnabled: Boolean
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFF6366F1).copy(alpha = 0.1f) else Color(0xFFF8FAFC)
+            containerColor = if (isSelected) colorScheme.primary.copy(alpha = 0.1f) else extendedColors.surfaceSubtle
         ),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -452,8 +461,8 @@ fun AvailabilityRow(
                     selected = isSelected,
                     onClick = onDaySelected,
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = Color(0xFF6366F1),
-                        unselectedColor = Color.Gray
+                        selectedColor = colorScheme.primary,
+                        unselectedColor = colorScheme.onSurfaceVariant
                     )
                 )
                 Spacer(modifier = Modifier.width(12.dp))
@@ -461,7 +470,7 @@ fun AvailabilityRow(
                     text = day,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
-                    color = if (isSelected) Color(0xFF6366F1) else Color.Black,
+                    color = if (isSelected) colorScheme.primary else colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -483,9 +492,9 @@ fun AvailabilityRow(
                         enabled = isInputEnabled,
                         shape = RoundedCornerShape(8.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color(0xFF6366F1),
-                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                            disabledBorderColor = Color.Gray.copy(alpha = 0.3f)
+                            focusedBorderColor = colorScheme.primary,
+                            unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                            disabledBorderColor = colorScheme.outline.copy(alpha = 0.3f)
                         )
                     )
                     OutlinedTextField(
@@ -498,9 +507,9 @@ fun AvailabilityRow(
                         enabled = isInputEnabled,
                         shape = RoundedCornerShape(8.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color(0xFF6366F1),
-                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                            disabledBorderColor = Color.Gray.copy(alpha = 0.3f)
+                            focusedBorderColor = colorScheme.primary,
+                            unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                            disabledBorderColor = colorScheme.outline.copy(alpha = 0.3f)
                         )
                     )
                 }
@@ -519,3 +528,4 @@ fun ChooseSportsScreenPreview() {
         userDetalis = remember { mutableStateOf(UserDetalis(0, 0f, 0f, "", "")) }
     )
 }
+

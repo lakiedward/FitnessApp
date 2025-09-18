@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -23,16 +22,17 @@ import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.mock.SharedPreferencesMock
 import com.example.fitnessapp.components.TopBar
 import com.example.fitnessapp.components.BottomNavigationBar
+import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 @Composable
 fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
     val races = authViewModel.races.observeAsState(emptyList())
 
     Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
-        color = Color.White
+        modifier = Modifier.fillMaxSize(),
+        color = colorScheme.surface
     ) {
         Column(
             modifier = Modifier
@@ -42,7 +42,7 @@ fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(36.dp)
-                    .background(Color.White) // was Color.Black
+                    .background(colorScheme.surface) // was MaterialTheme.colorScheme.onSurface
             )
             TopBar("Season", navController)
 
@@ -80,11 +80,15 @@ fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorScheme.primary,
+                        contentColor = colorScheme.onPrimary
+                    )
                 ) {
                     Text(
                         text = "Add Race",
-                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
+                        style = typography.bodyLarge.copy(color = colorScheme.onPrimary),
                         textAlign = TextAlign.Center
                     )
                 }
@@ -97,62 +101,66 @@ fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
 
 @Composable
 fun CurrentTrainingPhase() {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = "Current Training Phase",
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            style = typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "Build Phase",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+            style = typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "Ends on Dec 13, 2024",
-            style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
+            style = typography.bodySmall.copy(color = colorScheme.onSurfaceVariant),
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(16.dp))
         CircularProgressIndicator(
             progress = 0.8f,
             modifier = Modifier.size(100.dp),
-            color = Color.Black,
+            color = colorScheme.primary,
             strokeWidth = 8.dp
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "80%",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+            style = typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
         )
     }
 }
 
 @Composable
 fun FitnessScoreGraph() {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White) // was light violet
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface) // was light violet
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
                 text = "Fitness Score",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                style = typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
             Spacer(modifier = Modifier.height(8.dp))
             GraphPlaceholder()
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "30% Your Fitness Score is 30% worse compared to last month",
-                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
+                style = typography.bodySmall.copy(color = colorScheme.onSurfaceVariant),
                 textAlign = TextAlign.Center
             )
         }
@@ -161,11 +169,12 @@ fun FitnessScoreGraph() {
 
 @Composable
 fun GraphPlaceholder() {
+    val colorScheme = MaterialTheme.colorScheme
     Canvas(modifier = Modifier
         .fillMaxWidth()
         .height(120.dp)) {
         drawLine(
-            color = Color.Blue,
+            color = colorScheme.primary,
             start = center.copy(x = 0f),
             end = center.copy(x = size.width),
             strokeWidth = 4f
@@ -175,10 +184,12 @@ fun GraphPlaceholder() {
 
 @Composable
 fun RaceRow(race: RaceModel) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White) // was light violet
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface) // was light violet
     ) {
         Row(
             modifier = Modifier
@@ -191,7 +202,7 @@ fun RaceRow(race: RaceModel) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = race.race_date,
-                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
+                    style = typography.bodySmall.copy(color = colorScheme.onSurfaceVariant)
                 )
             }
         }
@@ -201,8 +212,12 @@ fun RaceRow(race: RaceModel) {
 @Preview(showBackground = true)
 @Composable
 fun SeasonScreenPreview() {
-    SeasonScreen(
-        navController = rememberNavController(),
-        authViewModel = AuthViewModel(SharedPreferencesMock())
-    )
+    FitnessAppTheme {
+        SeasonScreen(
+            navController = rememberNavController(),
+            authViewModel = AuthViewModel(SharedPreferencesMock())
+        )
+    }
 }
+
+

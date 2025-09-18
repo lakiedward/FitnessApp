@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -18,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -45,15 +45,18 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
         "5 Km Running"
     )
 
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        extendedColors.gradientPrimary,
+                        extendedColors.gradientSecondary,
+                        extendedColors.gradientAccent
                     )
                 )
             )
@@ -71,14 +74,14 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
                     // TODO: Update to Icons.AutoMirrored.Filled.ArrowBack when available
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = colorScheme.onPrimary
                 )
             }
             
             Text(
                 text = "Training Goal",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                color = colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
             
@@ -92,7 +95,7 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -104,7 +107,7 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
                     text = "What Are You Training For?",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -122,15 +125,15 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
                                 .clickable { selectedRaceType = raceType }
                                 .border(
                                     width = if (selectedRaceType == raceType) 2.dp else 1.dp,
-                                    color = if (selectedRaceType == raceType) Color(0xFF6366F1) else Color.Gray.copy(alpha = 0.3f),
+                                    color = if (selectedRaceType == raceType) colorScheme.primary else colorScheme.outline.copy(alpha = 0.3f),
                                     shape = RoundedCornerShape(12.dp)
                                 ),
                             shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (selectedRaceType == raceType) 
-                                    Color(0xFF6366F1).copy(alpha = 0.1f) 
+                                    colorScheme.primary.copy(alpha = 0.1f) 
                                 else 
-                                    Color.White
+                                    colorScheme.onPrimary
                             ),
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
@@ -145,14 +148,14 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
                                     text = raceType,
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontWeight = if (selectedRaceType == raceType) FontWeight.SemiBold else FontWeight.Normal,
-                                    color = if (selectedRaceType == raceType) Color(0xFF6366F1) else Color.Black
+                                    color = if (selectedRaceType == raceType) colorScheme.primary else colorScheme.onSurface
                                 )
                                 
                                 if (selectedRaceType == raceType) {
                                     Icon(
                                         imageVector = Icons.Default.Check,
                                         contentDescription = "Selected",
-                                        tint = Color(0xFF6366F1),
+                                        tint = colorScheme.primary,
                                         modifier = Modifier.size(24.dp)
                                     )
                                 }
@@ -182,9 +185,9 @@ fun ChooseDisciplineScreen(navController: NavHostController, authViewModel: Auth
                     .fillMaxWidth()
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF6366F1),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color.Gray.copy(alpha = 0.6f)
+                    containerColor = colorScheme.primary,
+                    contentColor = colorScheme.onPrimary,
+                    disabledContainerColor = colorScheme.surfaceVariant
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -210,4 +213,5 @@ fun ChooseDisciplineScreenPreview() {
         userDetalis = remember { mutableStateOf(UserDetalis(0, 0f, 0f, "", "")) }
     )
 }
+
 

@@ -80,7 +80,7 @@ fun SetNewPasswordScreen(navController: NavHostController) {
                 Text(
                     text = "Create a new password. Ensure it differs from previous ones",
                     fontSize = 16.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 32.dp),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
@@ -157,8 +157,8 @@ fun SetNewPasswordScreen(navController: NavHostController) {
                         .fillMaxWidth(0.6f)
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (newPassword.isNotEmpty() && confirmedNewPassword.isNotEmpty()) Color.Black else Color.Gray,
-                        contentColor = Color.White
+                        containerColor = if (newPassword.isNotEmpty() && confirmedNewPassword.isNotEmpty()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Text(text = "Update Password")
@@ -172,8 +172,8 @@ fun SetNewPasswordScreen(navController: NavHostController) {
                         .fillMaxWidth(0.6f)
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (newPassword.isNotEmpty() && confirmedNewPassword.isNotEmpty()) Color.Black else Color.Gray,
-                        contentColor = Color.White
+                        containerColor = if (newPassword.isNotEmpty() && confirmedNewPassword.isNotEmpty()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Text(text = "Update Password")

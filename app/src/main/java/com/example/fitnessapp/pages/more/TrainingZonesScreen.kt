@@ -29,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -69,9 +70,9 @@ fun TrainingZonesScreen(
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                Color(0xFF6366F1),
-                                Color(0xFF8B5CF6),
-                                Color(0xFFA855F7)
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.extendedColors.chartAltitude,
+                                MaterialTheme.extendedColors.gradientAccent
                             )
                         )
                     )
@@ -83,14 +84,14 @@ fun TrainingZonesScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
 
                 Text(
                     text = "Training Zones",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -205,7 +206,7 @@ fun CurrentMetricCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = value,
@@ -216,7 +217,7 @@ fun CurrentMetricCard(
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -230,13 +231,13 @@ fun CyclingZonesSection(userFtp: Int) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val zones = listOf(
-                ZoneInfo("Zone 1", "Recovery", "< 56%", "< ${(userFtp * 0.56).toInt()}W", Color(0xFF10B981)),
-                ZoneInfo("Zone 2", "Endurance", "56-75%", "${(userFtp * 0.56).toInt()}-${(userFtp * 0.75).toInt()}W", Color(0xFF3B82F6)),
-                ZoneInfo("Zone 3", "Tempo", "76-90%", "${(userFtp * 0.76).toInt()}-${(userFtp * 0.90).toInt()}W", Color(0xFF8B5CF6)),
-                ZoneInfo("Zone 4", "Threshold", "91-105%", "${(userFtp * 0.91).toInt()}-${(userFtp * 1.05).toInt()}W", Color(0xFFF59E0B)),
-                ZoneInfo("Zone 5", "VO2 Max", "106-120%", "${(userFtp * 1.06).toInt()}-${(userFtp * 1.20).toInt()}W", Color(0xFFEF4444)),
-                ZoneInfo("Zone 6", "Anaerobic", "121-150%", "${(userFtp * 1.21).toInt()}-${(userFtp * 1.50).toInt()}W", Color(0xFFDC2626)),
-                ZoneInfo("Zone 7", "Neuromuscular", "> 150%", "> ${(userFtp * 1.50).toInt()}W", Color(0xFF991B1B))
+                ZoneInfo("Zone 1", "Recovery", "< 56%", "< ${(userFtp * 0.56).toInt()}W", MaterialTheme.extendedColors.success),
+                ZoneInfo("Zone 2", "Endurance", "56-75%", "${(userFtp * 0.56).toInt()}-${(userFtp * 0.75).toInt()}W", MaterialTheme.extendedColors.chartSpeed),
+                ZoneInfo("Zone 3", "Tempo", "76-90%", "${(userFtp * 0.76).toInt()}-${(userFtp * 0.90).toInt()}W", MaterialTheme.extendedColors.chartAltitude),
+                ZoneInfo("Zone 4", "Threshold", "91-105%", "${(userFtp * 0.91).toInt()}-${(userFtp * 1.05).toInt()}W", MaterialTheme.extendedColors.warning),
+                ZoneInfo("Zone 5", "VO2 Max", "106-120%", "${(userFtp * 1.06).toInt()}-${(userFtp * 1.20).toInt()}W", MaterialTheme.extendedColors.chartHeartRate),
+                ZoneInfo("Zone 6", "Anaerobic", "121-150%", "${(userFtp * 1.21).toInt()}-${(userFtp * 1.50).toInt()}W", MaterialTheme.colorScheme.error),
+                ZoneInfo("Zone 7", "Neuromuscular", "> 150%", "> ${(userFtp * 1.50).toInt()}W", MaterialTheme.colorScheme.error)
             )
 
             zones.forEach { zone ->
@@ -254,11 +255,11 @@ fun RunningZonesSection(userMaxBpm: Int) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val zones = listOf(
-                ZoneInfo("Zone 1", "Recovery", "< 60%", "< ${(userMaxBpm * 0.60).toInt()} BPM", Color(0xFF10B981)),
-                ZoneInfo("Zone 2", "Extensive Endurance", "60-70%", "${(userMaxBpm * 0.60).toInt()}-${(userMaxBpm * 0.70).toInt()} BPM", Color(0xFF3B82F6)),
-                ZoneInfo("Zone 3", "Aerobic", "70-80%", "${(userMaxBpm * 0.70).toInt()}-${(userMaxBpm * 0.80).toInt()} BPM", Color(0xFF8B5CF6)),
-                ZoneInfo("Zone 4", "Lactate Threshold", "80-90%", "${(userMaxBpm * 0.80).toInt()}-${(userMaxBpm * 0.90).toInt()} BPM", Color(0xFFF59E0B)),
-                ZoneInfo("Zone 5", "Neuromuscular", "> 90%", "> ${(userMaxBpm * 0.90).toInt()} BPM", Color(0xFFEF4444))
+                ZoneInfo("Zone 1", "Recovery", "< 60%", "< ${(userMaxBpm * 0.60).toInt()} BPM", MaterialTheme.extendedColors.success),
+                ZoneInfo("Zone 2", "Extensive Endurance", "60-70%", "${(userMaxBpm * 0.60).toInt()}-${(userMaxBpm * 0.70).toInt()} BPM", MaterialTheme.extendedColors.chartSpeed),
+                ZoneInfo("Zone 3", "Aerobic", "70-80%", "${(userMaxBpm * 0.70).toInt()}-${(userMaxBpm * 0.80).toInt()} BPM", MaterialTheme.extendedColors.chartAltitude),
+                ZoneInfo("Zone 4", "Lactate Threshold", "80-90%", "${(userMaxBpm * 0.80).toInt()}-${(userMaxBpm * 0.90).toInt()} BPM", MaterialTheme.extendedColors.warning),
+                ZoneInfo("Zone 5", "Neuromuscular", "> 90%", "> ${(userMaxBpm * 0.90).toInt()} BPM", MaterialTheme.extendedColors.chartHeartRate)
             )
 
             zones.forEach { zone ->
@@ -276,11 +277,11 @@ fun SwimmingZonesSection() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val zones = listOf(
-                ZoneInfo("EN1", "Aerobic Base", "Easy", "Conversational pace", Color(0xFF10B981)),
-                ZoneInfo("EN2", "Aerobic Threshold", "Moderate", "Comfortably hard", Color(0xFF3B82F6)),
-                ZoneInfo("EN3", "Lactate Threshold", "Hard", "Sustainable effort", Color(0xFF8B5CF6)),
-                ZoneInfo("SP1", "Lactate Production", "Very Hard", "Short intervals", Color(0xFFF59E0B)),
-                ZoneInfo("SP2", "Neuromuscular", "Maximum", "Sprint pace", Color(0xFFEF4444))
+                ZoneInfo("EN1", "Aerobic Base", "Easy", "Conversational pace", MaterialTheme.extendedColors.success),
+                ZoneInfo("EN2", "Aerobic Threshold", "Moderate", "Comfortably hard", MaterialTheme.extendedColors.chartSpeed),
+                ZoneInfo("EN3", "Lactate Threshold", "Hard", "Sustainable effort", MaterialTheme.extendedColors.chartAltitude),
+                ZoneInfo("SP1", "Lactate Production", "Very Hard", "Short intervals", MaterialTheme.extendedColors.warning),
+                ZoneInfo("SP2", "Neuromuscular", "Maximum", "Sprint pace", MaterialTheme.extendedColors.chartHeartRate)
             )
 
             zones.forEach { zone ->
@@ -320,7 +321,7 @@ fun ZoneCard(zone: ZoneInfo, icon: ImageVector) {
                 Text(
                     text = zone.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Text(
@@ -366,27 +367,29 @@ private fun calculateHeartRateZone(currentHR: Int, maxBPM: Int): String {
     }
 }
 
+@Composable
 private fun getPowerZoneColor(power: Double, ftp: Double): Color {
     val percentage = (power / ftp) * 100
     return when {
-        percentage >= 150 -> Color(0xFF991B1B)
-        percentage >= 120 -> Color(0xFFDC2626)
-        percentage >= 105 -> Color(0xFFEF4444)
-        percentage >= 90 -> Color(0xFFF59E0B)
-        percentage >= 76 -> Color(0xFF8B5CF6)
-        percentage >= 56 -> Color(0xFF3B82F6)
-        else -> Color(0xFF10B981)
+        percentage >= 150 -> MaterialTheme.colorScheme.error
+        percentage >= 120 -> MaterialTheme.colorScheme.error
+        percentage >= 105 -> MaterialTheme.extendedColors.chartHeartRate
+        percentage >= 90 -> MaterialTheme.extendedColors.warning
+        percentage >= 76 -> MaterialTheme.extendedColors.chartAltitude
+        percentage >= 56 -> MaterialTheme.extendedColors.chartSpeed
+        else -> MaterialTheme.extendedColors.success
     }
 }
 
+@Composable
 private fun getHeartRateZoneColor(currentHR: Int, maxBPM: Int): Color {
     val percentage = (currentHR.toDouble() / maxBPM) * 100
     return when {
-        percentage >= 90 -> Color(0xFFEF4444)
-        percentage >= 80 -> Color(0xFFF59E0B)
-        percentage >= 70 -> Color(0xFF8B5CF6)
-        percentage >= 60 -> Color(0xFF3B82F6)
-        else -> Color(0xFF10B981)
+        percentage >= 90 -> MaterialTheme.extendedColors.chartHeartRate
+        percentage >= 80 -> MaterialTheme.extendedColors.warning
+        percentage >= 70 -> MaterialTheme.extendedColors.chartAltitude
+        percentage >= 60 -> MaterialTheme.extendedColors.chartSpeed
+        else -> MaterialTheme.extendedColors.success
     }
 }
 
@@ -397,12 +400,12 @@ fun TrainingSection(title: String, content: @Composable ColumnScope.() -> Unit) 
             text = title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1F2937),
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 12.dp)
         )
         Card(
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -419,3 +422,5 @@ fun TrainingZonesScreenPreview() {
         authViewModel = AuthViewModel(SharedPreferencesMock())
     )
 }
+
+

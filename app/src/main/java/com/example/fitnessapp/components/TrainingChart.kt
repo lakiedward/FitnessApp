@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,8 +45,22 @@ fun TrainingChart(
     var touchPosition by remember { mutableStateOf<Offset?>(null) }
 
     val density = LocalDensity.current
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
+    val chartColors = TrainingChartColors(
+        steadyState = colorScheme.primary,
+        intervalWork = extendedColors.chartPower,
+        intervalRest = colorScheme.surfaceVariant,
+        ramp = extendedColors.chartSpeed,
+        freeRide = extendedColors.warning,
+        powerIntervalWork = extendedColors.chartHeartRate,
+        powerIntervalRest = extendedColors.surfaceMuted,
+        pyramid = extendedColors.chartAltitude
+    )
+
     val totalDuration = calculateTotalDuration(steps)
-    val segments = createSegments(steps, totalDuration)
+    val segments = createSegments(steps, totalDuration, chartColors)
 
     Box(modifier = Modifier.fillMaxWidth()) {
         // Chart
@@ -96,7 +111,7 @@ fun TrainingChart(
                         )
                         .width(120.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.Black.copy(alpha = 0.9f)
+                        containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                     shape = RoundedCornerShape(8.dp)
@@ -108,7 +123,7 @@ fun TrainingChart(
                         Text(
                             text = formatDuration(segment.duration),
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Medium
                         )
 
@@ -123,14 +138,14 @@ fun TrainingChart(
                         Text(
                             text = sportValue,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold
                         )
 
                         Text(
                             text = "${(segment.intensity * 100).toInt()}%",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray
+                            color = chartColors.intervalRest
                         )
                     }
                 }
@@ -152,7 +167,11 @@ private fun calculateTotalDuration(steps: List<WorkoutStep>): Float {
     }.toFloat()
 }
 
-private fun createSegments(steps: List<WorkoutStep>, totalDuration: Float): List<SegmentInfo> {
+private fun createSegments(
+    steps: List<WorkoutStep>,
+    totalDuration: Float,
+    colors: TrainingChartColors
+): List<SegmentInfo> {
     val segments = mutableListOf<SegmentInfo>()
 
     steps.forEach { step ->
@@ -163,7 +182,7 @@ private fun createSegments(steps: List<WorkoutStep>, totalDuration: Float): List
                         duration = step.duration,
                         intensity = step.power,
                         weight = step.duration / totalDuration,
-                        color = Color.Blue,
+                        color = colors.steadyState,
                         type = "Steady"
                     )
                 )
@@ -176,7 +195,7 @@ private fun createSegments(steps: List<WorkoutStep>, totalDuration: Float): List
                             duration = step.on_duration,
                             intensity = step.on_power,
                             weight = step.on_duration / totalDuration,
-                            color = Color.Red,
+                            color = colors.intervalWork,
                             type = "Work"
                         )
                     )
@@ -185,7 +204,7 @@ private fun createSegments(steps: List<WorkoutStep>, totalDuration: Float): List
                             duration = step.off_duration,
                             intensity = step.off_power,
                             weight = step.off_duration / totalDuration,
-                            color = Color.Gray,
+                            color = colors.intervalRest,
                             type = "Rest"
                         )
                     )
@@ -200,7 +219,7 @@ private fun createSegments(steps: List<WorkoutStep>, totalDuration: Float): List
                         duration = step.duration,
                         intensity = avgIntensity,
                         weight = step.duration / totalDuration,
-                        color = Color.Green,
+                        color = colors.ramp,
                         type = "Ramp"
                     )
                 )
@@ -213,7 +232,7 @@ private fun createSegments(steps: List<WorkoutStep>, totalDuration: Float): List
                         duration = step.duration,
                         intensity = avgIntensity,
                         weight = step.duration / totalDuration,
-                        color = Color.Yellow,
+                        color = colors.freeRide,
                         type = "Free"
                     )
                 )
@@ -226,7 +245,7 @@ private fun createSegments(steps: List<WorkoutStep>, totalDuration: Float): List
                             duration = step.on_duration,
                             intensity = step.on_power,
                             weight = step.on_duration / totalDuration,
-                            color = Color.Magenta,
+                            color = colors.powerIntervalWork,
                             type = "Work"
                         )
                     )
@@ -235,7 +254,7 @@ private fun createSegments(steps: List<WorkoutStep>, totalDuration: Float): List
                             duration = step.off_duration,
                             intensity = step.off_power,
                             weight = step.off_duration / totalDuration,
-                            color = Color.LightGray,
+                            color = colors.powerIntervalRest,
                             type = "Rest"
                         )
                     )
@@ -249,7 +268,7 @@ private fun createSegments(steps: List<WorkoutStep>, totalDuration: Float): List
                             duration = step.step_duration,
                             intensity = step.peak_power,
                             weight = step.step_duration / totalDuration,
-                            color = Color.Cyan,
+                            color = colors.pyramid,
                             type = "Up"
                         )
                     )
@@ -258,7 +277,7 @@ private fun createSegments(steps: List<WorkoutStep>, totalDuration: Float): List
                             duration = step.step_duration,
                             intensity = step.end_power,
                             weight = step.step_duration / totalDuration,
-                            color = Color.Cyan,
+                            color = colors.pyramid,
                             type = "Down"
                         )
                     )
@@ -344,6 +363,16 @@ private fun formatDuration(seconds: Int): String {
     return "${minutes}:${String.format("%02d", remainingSeconds)}"
 }
 
+private data class TrainingChartColors(
+    val steadyState: Color,
+    val intervalWork: Color,
+    val intervalRest: Color,
+    val ramp: Color,
+    val freeRide: Color,
+    val powerIntervalWork: Color,
+    val powerIntervalRest: Color,
+    val pyramid: Color
+)
 data class SegmentInfo(
     val duration: Int,
     val intensity: Float,
@@ -351,3 +380,5 @@ data class SegmentInfo(
     val color: Color,
     val type: String
 )
+
+

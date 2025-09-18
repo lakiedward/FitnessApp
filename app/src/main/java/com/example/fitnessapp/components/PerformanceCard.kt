@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,8 +69,8 @@ fun getPerformanceColor(
 ): Color {
     return thresholds?.let { 
         when {
-            value >= it.maxThreshold -> Color(0xFF4CAF50) // Green
-            value <= it.minThreshold -> Color(0xFFF44336) // Red
+            value >= it.maxThreshold -> MaterialTheme.extendedColors.success // Green
+            value <= it.minThreshold -> MaterialTheme.colorScheme.error // Red
             else -> MaterialTheme.colorScheme.primary
         }
     } ?: MaterialTheme.colorScheme.primary
@@ -228,16 +229,16 @@ fun PerformanceCard(
 
     // Animate color changes (motion-reduce support can be added later with system settings)
     val animatedColor by animateFloatAsState(
-        targetValue = if (performanceColor == Color(0xFF4CAF50)) 1f 
-                     else if (performanceColor == Color(0xFFF44336)) -1f 
+        targetValue = if (performanceColor == MaterialTheme.extendedColors.success) 1f 
+                     else if (performanceColor == MaterialTheme.colorScheme.error) -1f 
                      else 0f,
         animationSpec = tween(300),
         label = "colorAnimation"
     )
 
     val finalColor = when {
-        animatedColor > 0.5f -> Color(0xFF4CAF50)
-        animatedColor < -0.5f -> Color(0xFFF44336)
+        animatedColor > 0.5f -> MaterialTheme.extendedColors.success
+        animatedColor < -0.5f -> MaterialTheme.colorScheme.error
         else -> MaterialTheme.colorScheme.primary
     }
 
@@ -410,8 +411,8 @@ private fun PerformanceContent(
                     contentDescription = "Trend ${trend.direction.name.lowercase()}",
                     modifier = Modifier.size(16.dp),
                     tint = when (trend.direction) {
-                        TrendDirection.UP -> Color(0xFF4CAF50)
-                        TrendDirection.DOWN -> Color(0xFFF44336)
+                        TrendDirection.UP -> MaterialTheme.extendedColors.success
+                        TrendDirection.DOWN -> MaterialTheme.colorScheme.error
                         TrendDirection.STABLE -> MaterialTheme.colorScheme.onSurface
                     }
                 )

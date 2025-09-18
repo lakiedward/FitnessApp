@@ -10,12 +10,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -51,15 +51,18 @@ fun AddFtpScreen(
         }
     }
     
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        extendedColors.gradientPrimary,
+                        extendedColors.gradientSecondary,
+                        extendedColors.gradientAccent
                     )
                 )
             )
@@ -76,14 +79,14 @@ fun AddFtpScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = colorScheme.onPrimary
                 )
             }
             
             Text(
                 text = "Add Your FTP",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                color = colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
             
@@ -97,7 +100,7 @@ fun AddFtpScreen(
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -110,7 +113,7 @@ fun AddFtpScreen(
                     text = "Functional Threshold Power",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = colorScheme.onSurface
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -118,7 +121,7 @@ fun AddFtpScreen(
                 Text(
                     text = "Enter your FTP (Functional Threshold Power) to help us create personalized training zones for your cycling workouts.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
+                    color = colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
 
@@ -134,8 +137,8 @@ fun AddFtpScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF6366F1),
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     )
                 )
 
@@ -148,14 +151,14 @@ fun AddFtpScreen(
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFFF6B6B).copy(alpha = 0.1f)
+                            containerColor = colorScheme.errorContainer.copy(alpha = 0.1f)
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
                             text = it,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFFD32F2F),
+                            color = colorScheme.error,
                             modifier = Modifier.padding(16.dp)
                         )
                     }
@@ -178,9 +181,9 @@ fun AddFtpScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6366F1),
-                        contentColor = Color.White,
-                        disabledContainerColor = Color.Gray.copy(alpha = 0.6f)
+                        containerColor = colorScheme.primary,
+                        contentColor = colorScheme.onPrimary,
+                        disabledContainerColor = colorScheme.surfaceVariant
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -188,7 +191,7 @@ fun AddFtpScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(20.dp),
-                                color = Color.White,
+                                color = colorScheme.onPrimary,
                                 strokeWidth = 2.dp
                             )
                             Spacer(modifier = Modifier.width(8.dp))

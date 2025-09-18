@@ -18,6 +18,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 
+import com.example.fitnessapp.ui.theme.extendedColors
 import com.example.fitnessapp.api.ApiConfig
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -40,6 +41,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -75,6 +77,8 @@ import androidx.compose.material.icons.filled.Sports
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
@@ -237,6 +241,8 @@ fun InfiniteCalendarPage(
     val requestedWindows = remember { mutableSetOf<String>() }
     var isActivitiesLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
 
     // Sync live state
     var isSyncingLive by remember { mutableStateOf(false) }
@@ -855,9 +861,9 @@ fun InfiniteCalendarPage(
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                Color(0xFF6366F1),
-                                Color(0xFF8B55F6),
-                                Color(0xFFA855F7)
+                                extendedColors.gradientPrimary,
+                                extendedColors.gradientSecondary,
+                                extendedColors.gradientAccent
                             )
                         )
                     )
@@ -1034,6 +1040,7 @@ fun StravaMapDialog(
     activityId: Long,
     onDismiss: () -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     val context = LocalContext.current
     val stravaViewModel: StravaViewModel = viewModel(factory = StravaViewModelFactory(context))
     var mapUrl by remember { mutableStateOf<String?>(null) }
@@ -1082,7 +1089,7 @@ fun StravaMapDialog(
                         modifier = Modifier
                             .size(24.dp)
                             .clickable { onDismiss() },
-                        tint = Color(0xFF6366F1)
+                        tint = colorScheme.primary
                     )
                 }
 
@@ -1117,7 +1124,7 @@ fun StravaMapDialog(
                             Text(
                                 text = "Loading map...",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF6B7280)
+                                color = colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -1135,6 +1142,7 @@ private fun CalendarHeader(
     todayIndex: Int,
     onRefresh: () -> Unit = {}
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     var isRefreshing by remember { mutableStateOf(false) }
 
     Column(
@@ -1180,13 +1188,13 @@ private fun CalendarHeader(
                         androidx.compose.material3.CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
                             strokeWidth = 2.dp,
-                            color = Color(0xFF6366F1)
+                            color = colorScheme.primary
                         )
                     } else {
                         Icon(
                             imageVector = Icons.Filled.Refresh,
                             contentDescription = "Refresh activities",
-                            tint = Color(0xFF6366F1),
+                            tint = colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -1217,7 +1225,7 @@ private fun CalendarHeader(
                 Icon(
                     imageVector = Icons.Filled.Today,
                     contentDescription = null,
-                    tint = Color(0xFF6366F1),
+                    tint = colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -1225,7 +1233,7 @@ private fun CalendarHeader(
                     text = "Go to Today",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF1F2937)
+                    color = colorScheme.onSurface
                 )
             }
         }
@@ -1248,21 +1256,27 @@ private fun ModernCalendarDayItem(
 ) {
     Log.d("CalendarChart", "trainings = $trainings")
 
+    val colorScheme = MaterialTheme.colorScheme
+    val isDarkTheme = isSystemInDarkTheme()
+    val extendedColors = MaterialTheme.extendedColors
     val calendar = Calendar.getInstance().apply { time = day }
     val dayOfWeekFormat = SimpleDateFormat("EEE", Locale.getDefault())
     val dayFormat = SimpleDateFormat("d", Locale.getDefault())
     val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
 
+    val dayCardColors = CardDefaults.cardColors(
+        containerColor = if (isToday) colorScheme.surfaceVariant else colorScheme.surface
+    )
+    val entryCardColor = if (isDarkTheme) colorScheme.surface else colorScheme.surfaceVariant
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isToday) Color(0xFFF0FFF) else Color.White
-        ),
+        colors = dayCardColors,
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (trainings.isNotEmpty()) 6.dp else 2.dp
         ),
-        border = if (isToday) BorderStroke(2.dp, Color(0xFF6366F1)) else null
+        border = if (isToday) BorderStroke(2.dp, colorScheme.primary) else null
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -1279,14 +1293,14 @@ private fun ModernCalendarDayItem(
                         Text(
                             text = dayOfWeekFormat.format(day),
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF6B7280),
+                            color = colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Medium
                         )
                         Text(
                             text = dayFormat.format(day),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = if (isToday) Color(0xFF6366F1) else Color(0xFF1F2937)
+                            color = if (isToday) colorScheme.primary else colorScheme.onSurface
                         )
                     }
 
@@ -1295,23 +1309,25 @@ private fun ModernCalendarDayItem(
                     Text(
                         text = monthFormat.format(day),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF9CA3AF)
+                        color = colorScheme.outline
                     )
                 }
 
                 if (isToday) {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF6366F1)),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = "Today",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    AssistChip(
+                        onClick = {},
+                        label = {
+                            Text(
+                                text = "Today",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = if (isDarkTheme) colorScheme.surface else colorScheme.primaryContainer,
+                            labelColor = if (isDarkTheme) colorScheme.onSurface else colorScheme.onPrimaryContainer
                         )
-                    }
+                    )
                 }
             }
 
@@ -1324,14 +1340,14 @@ private fun ModernCalendarDayItem(
                     Icon(
                         imageVector = Icons.Filled.SelfImprovement,
                         contentDescription = null,
-                        tint = Color(0xFF9CA3AF),
+                        tint = colorScheme.outline,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Rest day - No training planned",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF9CA3AF),
+                        color = colorScheme.outline,
                         fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                     )
                 }
@@ -1343,7 +1359,7 @@ private fun ModernCalendarDayItem(
                             .fillMaxWidth()
                             .clickable { onTrainingClick(training) }
                             .padding(bottom = 8.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
+                        colors = CardDefaults.cardColors(containerColor = entryCardColor),
                         shape = RoundedCornerShape(12.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
@@ -1359,7 +1375,7 @@ private fun ModernCalendarDayItem(
                                     Icon(
                                         imageVector = Icons.Filled.FitnessCenter,
                                         contentDescription = null,
-                                        tint = Color(0xFF6366F1),
+                                        tint = colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
@@ -1367,13 +1383,13 @@ private fun ModernCalendarDayItem(
                                         text = training.workout_name ?: "Training Session",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = Color(0xFF1F2937)
+                                        color = colorScheme.onSurface
                                     )
                                 }
                                 Icon(
                                     imageVector = Icons.Filled.Edit,
                                     contentDescription = "Edit date",
-                                    tint = Color(0xFF6366F1),
+                                    tint = colorScheme.primary,
                                     modifier = Modifier
                                         .size(20.dp)
                                         .clickable { onDateClick(training) }
@@ -1385,7 +1401,7 @@ private fun ModernCalendarDayItem(
                             Text(
                                 text = training.description,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF6B7280),
+                                color = colorScheme.onSurfaceVariant,
                                 maxLines = 2
                             )
 
@@ -1397,7 +1413,7 @@ private fun ModernCalendarDayItem(
                                     Text(
                                         text = "Workout Preview",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF6B7280),
+                                        color = colorScheme.onSurfaceVariant,
                                         fontWeight = FontWeight.Medium
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
@@ -1423,7 +1439,7 @@ private fun ModernCalendarDayItem(
                                 navController.navigate("strava_activity_detail/${stravaActivity.id?.toLong() ?: 0}")
                             }
                             .padding(bottom = 8.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC)),
+                        colors = CardDefaults.cardColors(containerColor = entryCardColor),
                         shape = RoundedCornerShape(12.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
@@ -1439,42 +1455,42 @@ private fun ModernCalendarDayItem(
                                     "Run" -> Icon(
                                         imageVector = Icons.Filled.DirectionsRun,
                                         contentDescription = null,
-                                        tint = Color(0xFF6366F1),
+                                        tint = colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
 
                                     "Ride" -> Icon(
                                         imageVector = Icons.Filled.DirectionsBike,
                                         contentDescription = null,
-                                        tint = Color(0xFF6366F1),
+                                        tint = colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
 
                                     "Swim" -> Icon(
                                         imageVector = Icons.Filled.Pool,
                                         contentDescription = null,
-                                        tint = Color(0xFF6366F1),
+                                        tint = colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
 
                                     "Walk" -> Icon(
                                         imageVector = Icons.Filled.SelfImprovement,
                                         contentDescription = null,
-                                        tint = Color(0xFF6366F1),
+                                        tint = colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
 
                                     "WeightTraining" -> Icon(
                                         imageVector = Icons.Filled.FitnessCenter,
                                         contentDescription = null,
-                                        tint = Color(0xFF6366F1),
+                                        tint = colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
 
                                     else -> Icon(
                                         imageVector = Icons.Filled.SportsHandball,
                                         contentDescription = null,
-                                        tint = Color(0xFF6366F1),
+                                        tint = colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
@@ -1485,17 +1501,15 @@ private fun ModernCalendarDayItem(
                                     text = stravaActivity.name,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF1F2937),
+                                    color = colorScheme.onSurface,
                                     modifier = Modifier.weight(1f)
                                 )
 
                                 // Source badge
                                 Text(
-                                    text = if (stravaActivity.manual == true) "📱 App" else "🟠 Strava",
+                                    text = if (stravaActivity.manual == true) "App" else "Strava",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = if (stravaActivity.manual == true) Color(0xFF10B981) else Color(
-                                        0xFFFFA500
-                                    ),
+                                    color = if (stravaActivity.manual == true) colorScheme.tertiary else extendedColors.warning,
                                     modifier = Modifier.padding(start = 8.dp)
                                 )
 
@@ -1504,7 +1518,7 @@ private fun ModernCalendarDayItem(
                                     Icon(
                                         imageVector = Icons.Filled.Map,
                                         contentDescription = "View Map",
-                                        tint = Color(0xFF6366F1),
+                                        tint = colorScheme.primary,
                                         modifier = Modifier
                                             .size(20.dp)
                                             .clickable {
@@ -1517,7 +1531,7 @@ private fun ModernCalendarDayItem(
                                 Icon(
                                     imageVector = Icons.Filled.Delete,
                                     contentDescription = "Delete Activity",
-                                    tint = Color.Red,
+                                    tint = colorScheme.error,
                                     modifier = Modifier
                                         .size(20.dp)
                                         .clickable {
@@ -1538,7 +1552,7 @@ private fun ModernCalendarDayItem(
                             Text(
                                 text = "Logged on ${if (stravaActivity.manual == true) "App" else "Strava"}",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF6B7280),
+                                color = colorScheme.onSurfaceVariant,
                                 maxLines = 2
                             )
 
@@ -1554,13 +1568,13 @@ private fun ModernCalendarDayItem(
                                     Text(
                                         text = formatDuration(stravaActivity.movingTime ?: 0),
                                         style = MaterialTheme.typography.titleMedium,
-                                        color = Color(0xFF1F2937),
+                                        color = colorScheme.onSurface,
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
                                         text = "Moving time",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF6B7280)
+                                        color = colorScheme.onSurfaceVariant
                                     )
                                 }
 
@@ -1570,13 +1584,13 @@ private fun ModernCalendarDayItem(
                                         Text(
                                             text = formatDistance(stravaActivity.distance),
                                             style = MaterialTheme.typography.titleMedium,
-                                            color = Color(0xFF1F2937),
+                                            color = colorScheme.onSurface,
                                             fontWeight = FontWeight.Bold
                                         )
                                         Text(
                                             text = "Distance",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = Color(0xFF6B7280)
+                                            color = colorScheme.onSurfaceVariant
                                         )
                                     }
                                 }
@@ -1592,13 +1606,13 @@ private fun ModernCalendarDayItem(
                                                 Text(
                                                     text = "${stravaActivity.averageHeartrate} bpm",
                                                     style = MaterialTheme.typography.titleMedium,
-                                                    color = Color(0xFF1F2937),
+                                                    color = colorScheme.onSurface,
                                                     fontWeight = FontWeight.Bold
                                                 )
                                                 Text(
                                                     text = "Avg HR",
                                                     style = MaterialTheme.typography.bodySmall,
-                                                    color = Color(0xFF6B7280)
+                                                    color = colorScheme.onSurfaceVariant
                                                 )
                                             }
                                         }
@@ -1646,6 +1660,7 @@ fun RoutePreview(
     stravaViewModel: StravaViewModel,
     modifier: Modifier = Modifier
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     var routePoints by remember { mutableStateOf<List<Offset>?>(null) }
     var mapTileUrl by remember { mutableStateOf<String?>(null) }
     var hasRouteData by remember { mutableStateOf(false) }
@@ -1748,7 +1763,7 @@ fun RoutePreview(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color(0xFFF8FAFC)),
+                        .background(colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -1758,7 +1773,7 @@ fun RoutePreview(
                             modifier = Modifier
                                 .size(24.dp)
                                 .background(
-                                    Color(0xFFE5E7EB),
+                                    colorScheme.surfaceVariant,
                                     RoundedCornerShape(12.dp)
                                 )
                         )
@@ -1766,7 +1781,7 @@ fun RoutePreview(
                         Text(
                             text = "Loading route...",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF9CA3AF),
+                            color = colorScheme.outline,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -1845,7 +1860,7 @@ fun RoutePreview(
                         // Main route in vibrant brand color
                         drawPath(
                             path = path,
-                            color = Color(0xFF6366F1), // Brand color instead of red
+                            color = colorScheme.primary, // Brand color instead of red
                             style = Stroke(width = 4f, cap = StrokeCap.Round)
                         )
 
@@ -1868,7 +1883,7 @@ fun RoutePreview(
                             )
                             // Green center
                             drawCircle(
-                                color = Color(0xFF10B981),
+                                color = colorScheme.tertiary,
                                 radius = 5f,
                                 center = scaledPoints.first()
                             )
@@ -1893,7 +1908,7 @@ fun RoutePreview(
                             )
                             // Red center
                             drawCircle(
-                                color = Color(0xFFEF4444),
+                                color = colorScheme.error,
                                 radius = 5f,
                                 center = scaledPoints.last()
                             )
@@ -2047,6 +2062,7 @@ fun SimpleTrainingChart(
     steps: List<WorkoutStep>,
     modifier: Modifier = Modifier
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     // Calculate total duration and create segments
     val totalDuration = steps.sumOf {
         when (it) {
@@ -2062,13 +2078,13 @@ fun SimpleTrainingChart(
 
     if (totalDuration == 0f) {
         Box(
-            modifier = modifier.background(Color(0xFFF8FAFC), RoundedCornerShape(4.dp)),
+            modifier = modifier.background(colorScheme.surfaceVariant, RoundedCornerShape(4.dp)),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "No data",
                 style = MaterialTheme.typography.bodySmall,
-                color = Color(0xFF9CA3AF)
+                color = colorScheme.outline
             )
         }
         return
@@ -2077,7 +2093,7 @@ fun SimpleTrainingChart(
     // Simple chart with bars
     Row(
         modifier = modifier
-            .background(Color(0xFFF8FAFC), RoundedCornerShape(4.dp))
+            .background(colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
             .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(1.dp)
     ) {
@@ -2089,7 +2105,7 @@ fun SimpleTrainingChart(
                     SimpleBar(
                         weight = weight,
                         intensity = height,
-                        color = Color(0xFF6366F1)
+                        color = colorScheme.primary
                     )
                 }
 
@@ -2101,7 +2117,7 @@ fun SimpleTrainingChart(
                         SimpleBar(
                             weight = workWeight,
                             intensity = workHeight,
-                            color = Color(0xFFDC2626)
+                            color = colorScheme.error
                         )
                         // Rest interval
                         val restWeight = step.off_duration / totalDuration
@@ -2109,7 +2125,7 @@ fun SimpleTrainingChart(
                         SimpleBar(
                             weight = restWeight,
                             intensity = restHeight,
-                            color = Color(0xFF9CA3AF)
+                            color = colorScheme.outline
                         )
                     }
                 }
@@ -2122,7 +2138,7 @@ fun SimpleTrainingChart(
                         SimpleBar(
                             weight = workWeight,
                             intensity = workHeight,
-                            color = Color(0xFFDC2626)
+                            color = colorScheme.error
                         )
                         // Rest interval
                         val restWeight = step.off_duration / totalDuration
@@ -2130,7 +2146,7 @@ fun SimpleTrainingChart(
                         SimpleBar(
                             weight = restWeight,
                             intensity = restHeight,
-                            color = Color(0xFF9CA3AF)
+                            color = colorScheme.outline
                         )
                     }
                 }
@@ -2142,7 +2158,7 @@ fun SimpleTrainingChart(
                     SimpleBar(
                         weight = weight,
                         intensity = avgIntensity,
-                        color = Color(0xFF10B981)
+                        color = colorScheme.tertiary
                     )
                 }
 
@@ -2152,7 +2168,7 @@ fun SimpleTrainingChart(
                     SimpleBar(
                         weight = weight,
                         intensity = height,
-                        color = Color(0xFF10B981)
+                        color = colorScheme.tertiary
                     )
                 }
 
@@ -2162,7 +2178,7 @@ fun SimpleTrainingChart(
                     SimpleBar(
                         weight = weight,
                         intensity = height,
-                        color = Color(0xFF8B55F7)
+                        color = colorScheme.secondary
                     )
                 }
 
@@ -2171,7 +2187,7 @@ fun SimpleTrainingChart(
                     SimpleBar(
                         weight = 0.1f,
                         intensity = 0.5f,
-                        color = Color(0xFF8B55F7)
+                        color = colorScheme.secondary
                     )
                 }
             }
@@ -2263,5 +2279,3 @@ fun InfiniteCalendarPagePreview() {
         )
     }
 }
-
-

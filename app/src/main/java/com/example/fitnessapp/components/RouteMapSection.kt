@@ -32,6 +32,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -300,19 +301,19 @@ private fun InteractiveWebViewMap(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFF8FAFC)),
+                    .background(MaterialTheme.extendedColors.surfaceSubtle),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     CircularProgressIndicator(
-                        color = Color(0xFF6366F1),
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(32.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Loading map...",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF6B7280)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -326,7 +327,7 @@ private fun InteractiveWebViewMap(
                     .padding(16.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.White.copy(alpha = 0.95f)
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
                 ),
                 elevation = CardDefaults.cardElevation(8.dp)
             ) {
@@ -337,7 +338,7 @@ private fun InteractiveWebViewMap(
                     Icon(
                         imageVector = Icons.Filled.Warning,
                         contentDescription = "Map loading error",
-                        tint = Color(0xFFFF9800),
+                        tint = MaterialTheme.extendedColors.warning,
                         modifier = Modifier.size(32.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -345,13 +346,13 @@ private fun InteractiveWebViewMap(
                         text = "Failed to load map",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF374151)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Check your connection",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF6B7280)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(
@@ -361,7 +362,7 @@ private fun InteractiveWebViewMap(
                             webView?.reload()
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF6366F1)
+                            containerColor = MaterialTheme.colorScheme.primary
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
@@ -391,14 +392,14 @@ private fun InteractiveWebViewMap(
                     modifier = Modifier
                         .size(36.dp)
                         .background(
-                            Color.White.copy(alpha = 0.9f),
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
                             RoundedCornerShape(6.dp)
                         )
                 ) {
                     Icon(
                         Icons.Filled.ZoomIn,
                         contentDescription = "Zoom in on map",
-                        tint = Color(0xFF374151),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -409,14 +410,14 @@ private fun InteractiveWebViewMap(
                     modifier = Modifier
                         .size(36.dp)
                         .background(
-                            Color.White.copy(alpha = 0.9f),
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
                             RoundedCornerShape(6.dp)
                         )
                 ) {
                     Icon(
                         Icons.Filled.ZoomOut,
                         contentDescription = "Zoom out on map",
-                        tint = Color(0xFF374151),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -430,14 +431,14 @@ private fun InteractiveWebViewMap(
                     modifier = Modifier
                         .size(36.dp)
                         .background(
-                            Color.White.copy(alpha = 0.9f),
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
                             RoundedCornerShape(6.dp)
                         )
                 ) {
                     Icon(
                         Icons.Filled.Fullscreen,
                         contentDescription = "View map in fullscreen",
-                        tint = Color(0xFF374151),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -474,7 +475,7 @@ private fun InteractiveWebViewMapFromPolyline(
             Text(
                 text = "Invalid route data",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF6B7280)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     } else {
@@ -620,7 +621,7 @@ private fun InteractiveWebViewMapFromGpx(
             Text(
                 text = "Invalid GPS data",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF6B7280)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     } else {

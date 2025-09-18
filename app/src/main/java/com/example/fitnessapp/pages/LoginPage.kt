@@ -38,10 +38,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,7 +53,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
@@ -73,13 +71,6 @@ import com.example.fitnessapp.R
 import com.example.fitnessapp.viewmodel.AuthViewModel
 import com.example.fitnessapp.mock.SharedPreferencesMock
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
-import com.example.fitnessapp.ui.theme.GradientEnd
-import com.example.fitnessapp.ui.theme.GradientStart
-import com.example.fitnessapp.ui.theme.GradientCenter
-import com.example.fitnessapp.ui.theme.PrimaryPurple
-import com.example.fitnessapp.ui.theme.ErrorRed
-import com.example.fitnessapp.ui.theme.ErrorBackground
-import com.example.fitnessapp.ui.theme.SocialButtonBackground
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,6 +85,9 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
     var passwordVisible by remember { mutableStateOf(false) }
     val authState = authViewModel.authState.observeAsState()
     val haptic = LocalHapticFeedback.current
+
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
 
     // Handle authentication state
     LaunchedEffect(authState.value) {
@@ -130,9 +124,9 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            GradientStart,
-                            GradientCenter,
-                            GradientEnd
+                            extendedColors.gradientPrimary,
+                            extendedColors.gradientSecondary,
+                            extendedColors.gradientAccent
                         )
                     )
                 )
@@ -143,7 +137,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     .fillMaxSize()
                     .padding(horizontal = 24.dp, vertical = 32.dp),
                 shape = MaterialTheme.shapes.large,
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier
@@ -164,7 +158,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     // Loading indicator
                     CircularProgressIndicator(
                         modifier = Modifier.size(48.dp),
-                        color = PrimaryPurple,
+                        color = colorScheme.primary,
                         strokeWidth = 4.dp
                     )
 
@@ -174,7 +168,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     Text(
                         text = "Logging in...",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = PrimaryPurple,
+                        color = colorScheme.primary,
                         fontWeight = FontWeight.Bold
                     )
 
@@ -183,7 +177,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     Text(
                         text = "Please wait while we authenticate your account",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
+                        color = colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -197,9 +191,9 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            GradientStart,
-                            GradientCenter,
-                            GradientEnd
+                            extendedColors.gradientPrimary,
+                            extendedColors.gradientSecondary,
+                            extendedColors.gradientAccent
                         )
                     )
                 )
@@ -215,7 +209,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 Text(
                     text = "Welcome back",
                     style = MaterialTheme.typography.headlineLarge,
-                    color = Color.White,
+                    color = colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
@@ -223,7 +217,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 Text(
                     text = "Sign in to continue",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White.copy(alpha = 0.9f),
+                    color = colorScheme.onPrimary.copy(alpha = 0.9f),
                     textAlign = TextAlign.Center
                 )
             }
@@ -236,7 +230,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     .padding(horizontal = 24.dp)
                     .align(Alignment.CenterHorizontally),
                 shape = MaterialTheme.shapes.large,
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier
@@ -258,13 +252,13 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     if (errorMessage != null) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = ErrorBackground)
+                            colors = CardDefaults.cardColors(containerColor = colorScheme.errorContainer)
                         ) {
                             Text(
                                 text = errorMessage!!,
                                 modifier = Modifier.padding(16.dp),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = ErrorRed,
+                                color = colorScheme.onErrorContainer,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -291,10 +285,10 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         keyboardActions = KeyboardActions(onNext = { /* move to password */ }),
                         shape = MaterialTheme.shapes.medium,
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = PrimaryPurple,
-                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                            focusedLabelColor = PrimaryPurple,
-                            unfocusedLabelColor = Color.Gray
+                            focusedBorderColor = colorScheme.primary,
+                            unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                            focusedLabelColor = colorScheme.primary,
+                            unfocusedLabelColor = colorScheme.onSurfaceVariant
                         )
                     )
                     if (emailError != null) {
@@ -302,7 +296,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         Text(
                             text = emailError!!,
                             style = MaterialTheme.typography.bodySmall,
-                            color = ErrorRed,
+                            color = colorScheme.onErrorContainer,
                             modifier = Modifier.align(Alignment.Start)
                         )
                     }
@@ -344,10 +338,10 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         }),
                         shape = MaterialTheme.shapes.medium,
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = PrimaryPurple,
-                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-                            focusedLabelColor = PrimaryPurple,
-                            unfocusedLabelColor = Color.Gray
+                            focusedBorderColor = colorScheme.primary,
+                            unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                            focusedLabelColor = colorScheme.primary,
+                            unfocusedLabelColor = colorScheme.onSurfaceVariant
                         )
                     )
                     if (passwordError != null) {
@@ -355,7 +349,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         Text(
                             text = passwordError!!,
                             style = MaterialTheme.typography.bodySmall,
-                            color = ErrorRed,
+                            color = colorScheme.onErrorContainer,
                             modifier = Modifier.align(Alignment.Start)
                         )
                     }
@@ -385,16 +379,16 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                             .fillMaxWidth()
                             .height(56.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryPurple,
-                            contentColor = Color.White,
-                            disabledContainerColor = Color.Gray.copy(alpha = 0.6f)
+                            containerColor = colorScheme.primary,
+                            contentColor = colorScheme.onPrimary,
+                            disabledContainerColor = colorScheme.surfaceVariant
                         ),
                         shape = MaterialTheme.shapes.medium
                     ) {
                         if (showLoading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(22.dp),
-                                color = Color.White,
+                                color = colorScheme.onPrimary,
                                 strokeWidth = 2.5.dp
                             )
                         } else {
@@ -414,7 +408,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     }) {
                         Text(
                             text = "Forgot password?",
-                            color = PrimaryPurple,
+                            color = colorScheme.primary,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -429,20 +423,20 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         HorizontalDivider(
                             modifier = Modifier.weight(1f),
                             thickness = 1.dp,
-                            color = Color.Gray.copy(alpha = 0.3f)
+                            color = colorScheme.outline.copy(alpha = 0.3f)
                         )
 
                         Text(
                             text = "or",
                             modifier = Modifier.padding(horizontal = 16.dp),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
+                            color = colorScheme.onSurfaceVariant
                         )
                         
                         HorizontalDivider(
                             modifier = Modifier.weight(1f),
                             thickness = 1.dp,
-                            color = Color.Gray.copy(alpha = 0.3f)
+                            color = colorScheme.outline.copy(alpha = 0.3f)
                         )
                     }
 
@@ -456,7 +450,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         Card(
                             modifier = Modifier.size(56.dp),
                             shape = MaterialTheme.shapes.medium,
-                            colors = CardDefaults.cardColors(containerColor = SocialButtonBackground)
+                            colors = CardDefaults.cardColors(containerColor = extendedColors.surfaceSubtle)
                         ) {
                             IconButton(
                                 onClick = { /* Facebook Login */ },
@@ -475,7 +469,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         Card(
                             modifier = Modifier.size(56.dp),
                             shape = MaterialTheme.shapes.medium,
-                            colors = CardDefaults.cardColors(containerColor = SocialButtonBackground)
+                            colors = CardDefaults.cardColors(containerColor = extendedColors.surfaceSubtle)
                         ) {
                             IconButton(
                                 onClick = { /* Google Login */ },
@@ -494,7 +488,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         Card(
                             modifier = Modifier.size(56.dp),
                             shape = MaterialTheme.shapes.medium,
-                            colors = CardDefaults.cardColors(containerColor = SocialButtonBackground)
+                            colors = CardDefaults.cardColors(containerColor = extendedColors.surfaceSubtle)
                         ) {
                             IconButton(
                                 onClick = { /* Apple Login */ },
@@ -521,7 +515,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                         Text(
                             "Don't have an account?",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
+                            color = colorScheme.onSurfaceVariant
                         )
                         TextButton(
                             onClick = {
@@ -531,7 +525,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                             Text(
                                 "Create account",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = PrimaryPurple,
+                                color = colorScheme.primary,
                                 fontWeight = FontWeight.Medium
                             )
                         }

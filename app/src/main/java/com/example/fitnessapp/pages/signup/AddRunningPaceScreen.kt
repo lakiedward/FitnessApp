@@ -13,12 +13,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -77,15 +77,18 @@ fun AddRunningPaceScreen(
         }
     }
     
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        extendedColors.gradientPrimary,
+                        extendedColors.gradientSecondary,
+                        extendedColors.gradientAccent
                     )
                 )
             )
@@ -102,14 +105,14 @@ fun AddRunningPaceScreen(
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = colorScheme.onPrimary
                 )
             }
             
             Text(
                 text = "Running Times",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                color = colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
             
@@ -123,7 +126,7 @@ fun AddRunningPaceScreen(
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -134,7 +137,7 @@ fun AddRunningPaceScreen(
                     text = "Personal Best Times",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = colorScheme.onSurface
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -142,7 +145,7 @@ fun AddRunningPaceScreen(
                 Text(
                     text = "Enter your personal best times for different distances. We'll use these to create your running pace predictions.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
+                    color = colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -154,14 +157,14 @@ fun AddRunningPaceScreen(
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFFF6B6B).copy(alpha = 0.1f)
+                            containerColor = colorScheme.errorContainer.copy(alpha = 0.1f)
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
                             text = it,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFFD32F2F),
+                            color = colorScheme.error,
                             modifier = Modifier.padding(16.dp)
                         )
                     }
@@ -218,9 +221,9 @@ fun AddRunningPaceScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6366F1),
-                        contentColor = Color.White,
-                        disabledContainerColor = Color.Gray.copy(alpha = 0.6f)
+                        containerColor = colorScheme.primary,
+                        contentColor = colorScheme.onPrimary,
+                        disabledContainerColor = colorScheme.surfaceVariant
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -228,7 +231,7 @@ fun AddRunningPaceScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(20.dp),
-                                color = Color.White,
+                                color = colorScheme.onPrimary,
                                 strokeWidth = 2.dp
                             )
                             Spacer(modifier = Modifier.width(8.dp))
@@ -260,10 +263,13 @@ fun RunningPaceEntryCard(
     entry: RunningPaceData,
     onEntryChange: (RunningPaceData) -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF8FAFC)
+            containerColor = extendedColors.surfaceSubtle
         ),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -276,7 +282,7 @@ fun RunningPaceEntryCard(
                 text = entry.distance.displayName,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black
+                color = colorScheme.onSurface
             )
             
             Spacer(modifier = Modifier.height(12.dp))
@@ -296,8 +302,8 @@ fun RunningPaceEntryCard(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     shape = RoundedCornerShape(8.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFF6366F1),
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     )
                 )
                 
@@ -312,8 +318,8 @@ fun RunningPaceEntryCard(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     shape = RoundedCornerShape(8.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFF6366F1),
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     )
                 )
             }

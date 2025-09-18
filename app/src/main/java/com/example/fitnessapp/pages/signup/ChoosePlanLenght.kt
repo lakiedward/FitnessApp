@@ -12,13 +12,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
+import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
@@ -41,15 +41,18 @@ fun PlanLengthScreen(
 ) {
     var raceDate by remember { mutableStateOf("") }
 
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6366F1),
-                        Color(0xFF8B5CF6),
-                        Color(0xFFA855F7)
+                        extendedColors.gradientPrimary,
+                        extendedColors.gradientSecondary,
+                        extendedColors.gradientAccent
                     )
                 )
             )
@@ -66,14 +69,14 @@ fun PlanLengthScreen(
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint = colorScheme.onPrimary
                 )
             }
 
             Text(
                 text = "Plan Length",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                color = colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
             
@@ -87,7 +90,7 @@ fun PlanLengthScreen(
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier
@@ -99,7 +102,7 @@ fun PlanLengthScreen(
                     text = "Choose Plan Length",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -107,7 +110,7 @@ fun PlanLengthScreen(
                 Text(
                     text = "Select the end date of your training plan",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray,
+                    color = colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -133,9 +136,9 @@ fun PlanLengthScreen(
                         .fillMaxWidth()
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6366F1),
-                        contentColor = Color.White,
-                        disabledContainerColor = Color.Gray.copy(alpha = 0.6f)
+                        containerColor = colorScheme.primary,
+                        contentColor = colorScheme.onPrimary,
+                        disabledContainerColor = colorScheme.surfaceVariant
                     ),
                     shape = RoundedCornerShape(12.dp)
             ) {
@@ -155,6 +158,8 @@ fun PlanLengthScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerFieldToModal(modifier: Modifier = Modifier, onDateSelected: (String) -> Unit) {
+    val colorScheme = MaterialTheme.colorScheme
+
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
@@ -167,16 +172,16 @@ fun DatePickerFieldToModal(modifier: Modifier = Modifier, onDateSelected: (Strin
             Icon(
                 Icons.Default.DateRange, 
                 contentDescription = "Select date",
-                tint = Color(0xFF6366F1)
+                tint = colorScheme.primary
             )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color(0xFF6366F1),
-            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
-            focusedLabelColor = Color(0xFF6366F1),
-            unfocusedLabelColor = Color.Gray,
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black
+            focusedBorderColor = colorScheme.primary,
+            unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+            focusedLabelColor = colorScheme.primary,
+            unfocusedLabelColor = colorScheme.onSurfaceVariant,
+            focusedTextColor = colorScheme.onSurface,
+            unfocusedTextColor = colorScheme.onSurface
         ),
         textStyle = MaterialTheme.typography.bodyMedium,
         shape = RoundedCornerShape(12.dp),
@@ -215,6 +220,8 @@ fun DatePickerModal(
     onDateSelected: (Long?) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+
     val datePickerState = rememberDatePickerState()
 
     DatePickerDialog(
@@ -226,7 +233,7 @@ fun DatePickerModal(
                 onDismiss()
                 },
                 colors = ButtonDefaults.textButtonColors(
-                    contentColor = Color(0xFF6366F1)
+                    contentColor = colorScheme.primary
                 )
             ) {
                 Text("OK")
@@ -236,7 +243,7 @@ fun DatePickerModal(
             TextButton(
                 onClick = onDismiss,
                 colors = ButtonDefaults.textButtonColors(
-                    contentColor = Color.Gray
+                    contentColor = colorScheme.onSurfaceVariant
                 )
             ) {
                 Text("Cancel")
@@ -246,9 +253,9 @@ fun DatePickerModal(
         DatePicker(
             state = datePickerState,
             colors = DatePickerDefaults.colors(
-                selectedDayContainerColor = Color(0xFF6366F1),
-                todayContentColor = Color(0xFF6366F1),
-                todayDateBorderColor = Color(0xFF6366F1)
+                selectedDayContainerColor = colorScheme.primary,
+                todayContentColor = colorScheme.primary,
+                todayDateBorderColor = colorScheme.primary
             )
         )
     }
