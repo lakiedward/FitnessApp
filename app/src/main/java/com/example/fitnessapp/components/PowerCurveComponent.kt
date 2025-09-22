@@ -63,6 +63,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -90,7 +91,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import kotlin.math.roundToInt
 
 data class PowerCurveMarker(
@@ -331,6 +334,7 @@ private fun PowerCurveChart(
 ) {
     val density = LocalDensity.current
     val chartPadding = 24.dp
+    val chartPaddingPx = with(density) { chartPadding.toPx() }
     val animatedProgress by animateFloatAsState(
         targetValue = 1f,
         animationSpec = tween(durationMillis = 1500, easing = EaseInOutCubic),
@@ -344,10 +348,24 @@ private fun PowerCurveChart(
     var scale by remember { mutableStateOf(1f) }
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
+    var canvasSize by remember { mutableStateOf(IntSize.Zero) }
     val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
-        scale = (scale * zoomChange).coerceIn(1f, 5f)
-        offsetX += panChange.x
-        offsetY += panChange.y
+        val newScale = (scale * zoomChange).coerceIn(1f, 5f)
+        scale = newScale
+
+        val maxOffsetX = if (canvasSize.width > 0) (canvasSize.width * (scale - 1f)) else 0f
+        val maxOffsetY = if (canvasSize.height > 0) (canvasSize.height * (scale - 1f)) else 0f
+
+        val proposedOffsetX = offsetX + panChange.x
+        val proposedOffsetY = offsetY + panChange.y
+
+        offsetX = proposedOffsetX.coerceIn(-maxOffsetX, 0f)
+        offsetY = proposedOffsetY.coerceIn(-maxOffsetY, 0f)
+
+        if (scale == 1f) {
+            offsetX = 0f
+            offsetY = 0f
+        }
     }
     Box(
         modifier = Modifier
@@ -358,15 +376,24 @@ private fun PowerCurveChart(
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
+                .onSizeChanged { canvasSize = it }
                 .transformable(transformableState)
-                .pointerInput(powerCurveData) {
+                .pointerInput(powerCurveData, scale, offsetX, offsetY) {
                     detectTapGestures(
                         onTap = { offset ->
-                            val paddingPx = with(density) { chartPadding.toPx() }
-                            val chartWidth = size.width - 2 * paddingPx
+                            val chartWidth = size.width - 2 * chartPaddingPx
+                            if (chartWidth <= 0f || powerCurveData.powerCurve.intervals.isEmpty()) {
+                                onMarkerSelected(null)
+                                return@detectTapGestures
+                            }
+
+                            val adjustedX = ((offset.x - offsetX) / scale)
+                            val clampedX = adjustedX.coerceIn(
+                                chartPaddingPx,
+                                size.width - chartPaddingPx
+                            )
+                            val progress = ((clampedX - chartPaddingPx) / chartWidth).coerceIn(0f, 1f)
                             if (powerCurveData.powerCurve.intervals.isNotEmpty()) {
-                                val progress =
-                                    ((offset.x - paddingPx) / chartWidth).coerceIn(0f, 1f)
                                 val logMin =
                                     log10(powerCurveData.powerCurve.intervals.first().toDouble())
                                 val logMax =
@@ -381,6 +408,9 @@ private fun PowerCurveChart(
                                 val power = powerCurveData.powerCurve.powerValues[index]
                                 val hr = powerCurveData.powerCurve.hrValues.getOrNull(index)
                                 val label = powerCurveData.powerCurve.labels[index]
+                                val selectedLog = log10(interval.toDouble())
+                                val xProgress = ((selectedLog - logMin) / (logMax - logMin)).toFloat()
+                                val markerX = chartPaddingPx + xProgress * chartWidth
                                 val zone = powerCurveData.referenceData.userFtp?.let { ftp ->
                                     calculatePowerZone(power, ftp)
                                 }
@@ -390,7 +420,7 @@ private fun PowerCurveChart(
                                         power = "${power.toInt()} W",
                                         hr = hr?.let { "${it.toInt()} bpm" },
                                         zone = zone,
-                                        xPosition = offset.x
+                                        xPosition = markerX
                                     )
                                 )
                             }
@@ -403,14 +433,20 @@ private fun PowerCurveChart(
                     )
                 }
         ) {
-            drawEnhancedPowerCurveChart(
-                powerCurveData = powerCurveData,
-                selectedMarker = selectedMarker,
-                chartPadding = with(density) { chartPadding.toPx() },
-                animatedProgress = animatedProgress,
-                showFtpLine = showFtpLine,
-                showComparisonLine = showComparisonLine
-            )
+            withTransform({
+                scale(scaleX = scale, scaleY = scale, pivot = Offset.Zero)
+                translate(left = offsetX, top = offsetY)
+            }) {
+                drawEnhancedPowerCurveChart(
+                    powerCurveData = powerCurveData,
+                    selectedMarker = selectedMarker,
+                    markerAlpha = markerAlpha,
+                    chartPadding = chartPaddingPx,
+                    animatedProgress = animatedProgress,
+                    showFtpLine = showFtpLine,
+                    showComparisonLine = showComparisonLine
+                )
+            }
         }
         // No floating tooltip; selection is shown below chart as an info bar
     }
@@ -788,6 +824,7 @@ private fun PowerCurveStats(powerCurveData: PowerCurveResponse, fthr: Int? = nul
 private fun DrawScope.drawEnhancedPowerCurveChart(
     powerCurveData: PowerCurveResponse,
     selectedMarker: PowerCurveMarker?,
+    markerAlpha: Float,
     chartPadding: Float,
     animatedProgress: Float,
     showFtpLine: Boolean,
@@ -942,15 +979,17 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
             )
         }
 
-        selectedMarker?.let { marker ->
-            val x = marker.xPosition.coerceIn(chartPadding, size.width - chartPadding)
-            drawLine(
-                color = Color(0xFF6366F1).copy(alpha = 0.8f),
-                start = Offset(x, chartPadding),
-                end = Offset(x, size.height - chartPadding),
-                strokeWidth = 2.5f,
-                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 6f), 0f)
-            )
+        if (markerAlpha > 0f) {
+            selectedMarker?.let { marker ->
+                val x = marker.xPosition.coerceIn(chartPadding, size.width - chartPadding)
+                drawLine(
+                    color = Color(0xFF6366F1).copy(alpha = 0.8f * markerAlpha),
+                    start = Offset(x, chartPadding),
+                    end = Offset(x, size.height - chartPadding),
+                    strokeWidth = 2.5f,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 6f), 0f)
+                )
+            }
         }
 
         if (intervals.isNotEmpty() && powerCurveData.powerCurve.powerValues.isNotEmpty()) {
