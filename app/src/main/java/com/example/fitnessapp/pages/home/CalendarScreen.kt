@@ -878,12 +878,12 @@ fun InfiniteCalendarPage(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        androidx.compose.material3.CircularProgressIndicator(color = Color.White)
+                        androidx.compose.material3.CircularProgressIndicator(color = colorScheme.onPrimary)
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Loading calendar activities...",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = Color.White
+                            color = colorScheme.onPrimary
                         )
                     }
                 } else {
@@ -901,7 +901,7 @@ fun InfiniteCalendarPage(
                         Card(
                             modifier = Modifier.fillMaxSize(),
                             shape = RoundedCornerShape(24.dp, 24.dp, 0.dp, 0.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
                             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
                             LazyColumn(
@@ -1108,7 +1108,7 @@ fun StravaMapDialog(
                 .fillMaxWidth()
                 .height(400.dp),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
             Column(
@@ -1204,7 +1204,7 @@ private fun CalendarHeader(
                 text = "Training Calendar",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = colorScheme.onPrimary
             )
 
             // Refresh button
@@ -1221,7 +1221,7 @@ private fun CalendarHeader(
                         }
                     },
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f)),
+                colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceVariant),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Box(
@@ -1258,7 +1258,7 @@ private fun CalendarHeader(
                     }
                 },
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f)),
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceVariant),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Row(
@@ -1803,7 +1803,7 @@ fun RoutePreview(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
