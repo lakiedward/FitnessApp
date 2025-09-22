@@ -67,6 +67,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -119,6 +120,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.ui.draw.shadow
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -231,69 +233,61 @@ fun StravaActivityDetailScreen(
     var isLoading by remember { mutableStateOf(true) }
     var maxBpm by remember { mutableStateOf<Int?>(null) }
 
+    val coroutineScope = rememberCoroutineScope()
+
     // Pull-to-refresh state
     val pullToRefreshState = rememberPullToRefreshState()
 
-    // Handle pull-to-refresh
-    if (pullToRefreshState.isRefreshing) {
-        LaunchedEffect(Unit) {
-            // Reload activity data
-            try {
-                Log.d("StravaActivityDetail", "Refreshing activity $activityId")
-
-                val activityDetails = stravaViewModel.getActivityById(activityId)
-                activity = activityDetails
-
-                // Load map view data
-                if (activityDetails != null) {
-                    val mapResponse = stravaViewModel.getActivityMapView(activityId)
-                    mapViewData = mapResponse
-                    Log.d("StravaActivityDetail", "Map view data on refresh: $mapResponse")
-                }
-
-                val streamsData = stravaViewModel.getActivityStreamsFromDB(activityId)
-                streamsFromDB = streamsData
-
-                val legacyStreamsData = stravaViewModel.getActivityStreams(activityId)
-                streams = legacyStreamsData
-
-                // Load max BPM
-                val maxBpmData = stravaViewModel.getMaxBpm()
-                maxBpm = maxBpmData["max_bpm"] as? Int
-
-                Log.d("StravaActivityDetail", "Refresh completed")
-            } catch (e: Exception) {
-                Log.e("StravaActivityDetail", "Error during refresh", e)
-            }
-            pullToRefreshState.endRefresh()
+    suspend fun loadActivityData(showLoading: Boolean) {
+        if (showLoading) {
+            isLoading = true
         }
-    }
-
-    // Load activity details
-    LaunchedEffect(activityId) {
         try {
             val activityDetails = stravaViewModel.getActivityById(activityId)
             activity = activityDetails
 
-            // Load map view data
-            if (activityDetails != null) {
-                val mapResponse = stravaViewModel.getActivityMapView(activityId)
-                mapViewData = mapResponse
+            mapViewData = if (activityDetails != null) {
+                stravaViewModel.getActivityMapView(activityId)
+            } else {
+                null
             }
-            val streamsData = stravaViewModel.getActivityStreamsFromDB(activityId)
-            streamsFromDB = streamsData
 
-            val legacyStreamsData = stravaViewModel.getActivityStreams(activityId)
-            streams = legacyStreamsData
+            if (activityDetails != null) {
+                streamsFromDB = stravaViewModel.getActivityStreamsFromDB(activityId)
+                streams = stravaViewModel.getActivityStreams(activityId)
+            } else {
+                streamsFromDB = null
+                streams = null
+            }
 
-            // Load max BPM
             val maxBpmData = stravaViewModel.getMaxBpm()
             maxBpm = maxBpmData["max_bpm"] as? Int
             Log.d("StravaActivityDetail", "Max BPM loaded: $maxBpm")
-
-            isLoading = false
         } catch (e: Exception) {
+            Log.e("StravaActivityDetail", "Error loading activity $activityId", e)
+            if (activity == null) {
+                mapViewData = null
+                streamsFromDB = null
+                streams = null
+                maxBpm = null
+            }
+        } finally {
             isLoading = false
+            if (pullToRefreshState.isRefreshing) {
+                pullToRefreshState.endRefresh()
+            }
+        }
+    }
+
+    // Load activity details when the screen opens or the activity ID changes
+    LaunchedEffect(activityId) {
+        loadActivityData(showLoading = true)
+    }
+
+    // Handle pull-to-refresh gestures
+    LaunchedEffect(pullToRefreshState.isRefreshing) {
+        if (pullToRefreshState.isRefreshing) {
+            loadActivityData(showLoading = false)
         }
     }
 
@@ -488,7 +482,11 @@ fun StravaActivityDetailScreen(
                                 )
                                 Spacer(modifier = Modifier.height(32.dp))
                                 Button(
-                                    onClick = { /* TODO: Add retry functionality */ },
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            loadActivityData(showLoading = true)
+                                        }
+                                    },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = colorScheme.primary
                                     ),
