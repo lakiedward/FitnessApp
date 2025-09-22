@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -60,22 +59,18 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import com.example.fitnessapp.ui.theme.extendedColors
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -107,25 +102,20 @@ import java.util.TimeZone
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.background
-import androidx.compose.runtime.getValue
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.em
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.em
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -724,15 +714,15 @@ fun StravaActivityDetailScreen(
                                 ) {
                                     Column {
                                         Spacer(modifier = Modifier.height(8.dp))
-                                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                            val interactionSource = remember { MutableInteractionSource() }
-                                            val isPressed by interactionSource.collectIsPressedAsState()
-                                            val scale by animateFloatAsState(
-                                                targetValue = if (isPressed) 0.95f else 1f,
-                                                animationSpec = tween(100),
-                                                label = "stravaButtonScale"
-                                            )
+                                        val stravaButtonInteractionSource = remember { MutableInteractionSource() }
+                                        val isStravaButtonPressed by stravaButtonInteractionSource.collectIsPressedAsState()
+                                        val stravaButtonScale by animateFloatAsState(
+                                            targetValue = if (isStravaButtonPressed) 0.95f else 1f,
+                                            animationSpec = tween(durationMillis = 100),
+                                            label = "stravaButtonScale"
+                                        )
 
+                                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                                             Button(
                                                 onClick = {
                                                     val stravaUri = Uri.parse("strava://activities/$activityId")
@@ -779,13 +769,16 @@ fun StravaActivityDetailScreen(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .height(56.dp)
-                                                    .graphicsLayer(scaleX = scale, scaleY = scale),
+                                                    .graphicsLayer(
+                                                        scaleX = stravaButtonScale,
+                                                        scaleY = stravaButtonScale
+                                                    ),
                                                 colors = ButtonDefaults.buttonColors(
                                                     containerColor = colorScheme.primary
                                                 ),
                                                 elevation = ButtonDefaults.buttonElevation(12.dp),
                                                 shape = RoundedCornerShape(16.dp),
-                                                interactionSource = interactionSource
+                                                interactionSource = stravaButtonInteractionSource
                                             ) {
                                                 Icon(
                                                     Icons.Default.Link,
