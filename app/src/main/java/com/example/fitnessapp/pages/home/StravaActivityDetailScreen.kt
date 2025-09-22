@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,6 +52,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import com.example.fitnessapp.ui.theme.extendedColors
@@ -216,6 +218,11 @@ fun StravaActivityDetailScreen(
 
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
+    val gradientContentColor = if (isSystemInDarkTheme()) {
+        colorScheme.onSurface
+    } else {
+        colorScheme.onPrimary
+    }
 
     var activity by remember { mutableStateOf<StravaActivity?>(null) }
     var mapViewData by remember { mutableStateOf<Map<String, String>?>(null) }
@@ -319,12 +326,15 @@ fun StravaActivityDetailScreen(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
-                        .background(Color.Transparent)
+                        .background(Color.Transparent),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = gradientContentColor
+                    )
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "Navigate back to previous screen",
-                        tint = colorScheme.onPrimary
+                        tint = gradientContentColor
                     )
                 }
                 Row(
@@ -349,13 +359,13 @@ fun StravaActivityDetailScreen(
                             else -> Icons.Default.Speed
                         },
                         contentDescription = "Activity type: ${activity?.type}",
-                        tint = colorScheme.onPrimary,
+                        tint = gradientContentColor,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = activity?.name ?: "Activity Details",
-                        color = colorScheme.onPrimary,
+                        color = gradientContentColor,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleLarge,
                         maxLines = 2,
