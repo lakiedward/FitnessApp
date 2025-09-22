@@ -3,6 +3,7 @@ package com.example.fitnessapp.pages.signup
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -43,6 +44,7 @@ fun PlanLengthScreen(
 
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
+    val gradientContentColor = if (isSystemInDarkTheme()) colorScheme.onSurface else colorScheme.onPrimary
 
     Column(
         modifier = Modifier
@@ -69,14 +71,14 @@ fun PlanLengthScreen(
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = colorScheme.onPrimary
+                    tint = gradientContentColor
                 )
             }
 
             Text(
                 text = "Plan Length",
                 style = MaterialTheme.typography.headlineSmall,
-                color = colorScheme.onPrimary,
+                color = gradientContentColor,
                 fontWeight = FontWeight.Bold
             )
             

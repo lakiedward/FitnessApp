@@ -30,6 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.fitnessapp.api.ApiService
 import com.example.fitnessapp.api.RetrofitClient
 import com.example.fitnessapp.model.ChoosedSports
@@ -41,6 +42,7 @@ import com.example.fitnessapp.pages.home.SeasonScreen
 import com.example.fitnessapp.pages.home.StravaActivityDetailScreen
 import com.example.fitnessapp.pages.home.TrainingDetailScreen
 import com.example.fitnessapp.pages.home.WorkoutScreen
+import com.example.fitnessapp.pages.home.QuickCreateTrainingPlanScreen
 import com.example.fitnessapp.pages.loading.LoadingScreen
 import com.example.fitnessapp.pages.loading.LoadingTrainingScreen
 import com.example.fitnessapp.pages.more.AppIntegrationsScreen
@@ -66,6 +68,9 @@ import com.example.fitnessapp.viewmodel.HealthConnectViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModel
 import kotlinx.coroutines.launch
 import com.example.fitnessapp.navigation.Routes
+
+import java.time.LocalDate
+
 import com.example.fitnessapp.utils.AuthEvent
 import com.example.fitnessapp.utils.AuthEventBus
 
@@ -263,6 +268,17 @@ fun AppNavigation(
         composable(Routes.CALENDAR){
             InfiniteCalendarPage(navController, authViewModel)
         }
+        composable(
+            route = Routes.TRAINING_CREATE,
+            arguments = listOf(navArgument("date") { nullable = true })
+        ) { backStackEntry ->
+            val date = backStackEntry.arguments?.getString("date")
+            QuickCreateTrainingPlanScreen(
+                navController = navController,
+                authViewModel = authViewModel,
+                defaultDate = date ?: LocalDate.now().toString()
+            )
+        }
         composable(Routes.SEASON) {
             SeasonScreen(navController, authViewModel)
         }
@@ -348,3 +364,4 @@ fun AppNavigation(
         }
     }
 }
+

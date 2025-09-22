@@ -2,6 +2,7 @@ package com.example.fitnessapp.pages.signup
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -238,6 +239,7 @@ fun StravaAuthScreen(
     // UI
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
+    val gradientContentColor = if (isSystemInDarkTheme()) colorScheme.onSurface else colorScheme.onPrimary
 
     Column(
         modifier = Modifier
@@ -263,7 +265,7 @@ fun StravaAuthScreen(
             Text(
                 text = "Connect Strava",
                 style = MaterialTheme.typography.titleLarge,
-                color = colorScheme.onPrimary,
+                color = gradientContentColor,
                 fontWeight = FontWeight.Bold
             )
         }

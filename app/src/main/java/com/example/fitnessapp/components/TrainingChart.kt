@@ -1,6 +1,7 @@
-package com.example.fitnessapp.components
+﻿package com.example.fitnessapp.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,9 +62,27 @@ fun TrainingChart(
 
     val totalDuration = calculateTotalDuration(steps)
     val segments = createSegments(steps, totalDuration, chartColors)
+    val gridLineColor = colorScheme.outlineVariant.copy(alpha = 0.35f)
 
     Box(modifier = Modifier.fillMaxWidth()) {
-        // Chart
+        Canvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp)
+                .padding(horizontal = 8.dp)
+        ) {
+            val levels = listOf(0.55f, 0.75f, 0.90f, 1.05f)
+            levels.forEach { level ->
+                val y = size.height * (1f - level.coerceIn(0f, 1f))
+                drawLine(
+                    color = gridLineColor,
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
+                    strokeWidth = 1.dp.toPx()
+                )
+            }
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -93,7 +112,7 @@ fun TrainingChart(
                                 segment.color.copy(
                                     alpha = segment.intensity.coerceIn(0.3f, 1f)
                                 ),
-                                shape = RoundedCornerShape(2.dp)
+                                shape = RoundedCornerShape(4.dp)
                             )
                     )
                 }
@@ -323,9 +342,9 @@ private fun calculateSportSpecificValue(
 
         "running" -> {
             val ftpSpeed = runningFtp ?: 4.0f // m/s (already converted from decimal minutes)
-            // Pentru running, intensitatea mai mică înseamnă pace mai lent
+            // Pentru running, intensitatea mai micÄƒ Ã®nseamnÄƒ pace mai lent
             val targetSpeed =
-                ftpSpeed * intensity // La intensitate mai mică = viteză mai mică = pace mai lent
+                ftpSpeed * intensity // La intensitate mai micÄƒ = vitezÄƒ mai micÄƒ = pace mai lent
             val targetPaceSeconds = 1000f / targetSpeed // secunde per km
             val paceMin = (targetPaceSeconds / 60).toInt()
             val paceSec = (targetPaceSeconds % 60).toInt()

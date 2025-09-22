@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -88,6 +89,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
 
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
+    val gradientContentColor = if (isSystemInDarkTheme()) colorScheme.onSurface else colorScheme.onPrimary
 
     // Handle authentication state
     LaunchedEffect(authState.value) {
@@ -209,7 +211,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 Text(
                     text = "Welcome back",
                     style = MaterialTheme.typography.headlineLarge,
-                    color = colorScheme.onPrimary,
+                    color = gradientContentColor,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
@@ -217,7 +219,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 Text(
                     text = "Sign in to continue",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = colorScheme.onPrimary.copy(alpha = 0.9f),
+                    color = gradientContentColor.copy(alpha = 0.9f),
                     textAlign = TextAlign.Center
                 )
             }
@@ -545,3 +547,4 @@ fun LoginScreenPreview() {
         LoginScreen(navController = navController, authViewModel = authViewModel)
     }
 }
+

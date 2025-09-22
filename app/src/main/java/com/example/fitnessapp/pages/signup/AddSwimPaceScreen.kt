@@ -1,6 +1,7 @@
 package com.example.fitnessapp.pages.signup
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -76,6 +77,7 @@ fun AddSwimPaceScreen(
     
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
+    val gradientContentColor = if (isSystemInDarkTheme()) colorScheme.onSurface else colorScheme.onPrimary
 
     Column(
         modifier = Modifier
@@ -102,14 +104,14 @@ fun AddSwimPaceScreen(
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = colorScheme.onPrimary
+                    tint = gradientContentColor
                 )
             }
             
             Text(
                 text = "Swimming Times",
                 style = MaterialTheme.typography.headlineSmall,
-                color = colorScheme.onPrimary,
+                color = gradientContentColor,
                 fontWeight = FontWeight.Bold
             )
             

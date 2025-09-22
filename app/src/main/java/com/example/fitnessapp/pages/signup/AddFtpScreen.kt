@@ -1,6 +1,7 @@
 package com.example.fitnessapp.pages.signup
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -53,6 +54,7 @@ fun AddFtpScreen(
     
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
+    val gradientContentColor = if (isSystemInDarkTheme()) colorScheme.onSurface else colorScheme.onPrimary
 
     Column(
         modifier = Modifier
@@ -79,14 +81,14 @@ fun AddFtpScreen(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = colorScheme.onPrimary
+                    tint = gradientContentColor
                 )
             }
             
             Text(
                 text = "Add Your FTP",
                 style = MaterialTheme.typography.headlineSmall,
-                color = colorScheme.onPrimary,
+                color = gradientContentColor,
                 fontWeight = FontWeight.Bold
             )
             

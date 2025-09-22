@@ -1,4 +1,6 @@
 package com.example.fitnessapp.viewmodel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 import android.content.SharedPreferences
 import android.util.Log
@@ -14,6 +16,7 @@ import com.example.fitnessapp.model.RacesModelResponse
 import com.example.fitnessapp.model.SportsSelectionRequest
 import com.example.fitnessapp.model.TrainingDateUpdate
 import com.example.fitnessapp.model.TrainingPlan
+import com.example.fitnessapp.model.TrainingPlanCreateRequest
 import com.example.fitnessapp.model.User
 import com.example.fitnessapp.model.UserDetalis
 import com.example.fitnessapp.model.UserRaces
@@ -188,6 +191,55 @@ class AuthViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Error updating training plan date: ${e.message}")
                 _authState.value = AuthState.Error("Error updating training plan date: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun deleteTrainingPlanEntry(planId: Int): Boolean = withContext(Dispatchers.IO) {
+        val token = getToken() ?: return@withContext false
+        try {
+            val response = apiService.deleteTrainingPlanEntry(planId, "Bearer $token")
+            if (response.isSuccessful) {
+                getTrainingPlans()
+                true
+            } else {
+                val message = "Failed to delete training plan: ${response.message()}"
+                Log.e("AuthViewModel", message)
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("AuthViewModel", "Error deleting training plan: ${e.message}")
+            false
+        }
+    }
+    fun quickCreateTrainingPlan(
+        request: TrainingPlanCreateRequest,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        val token = getToken()
+        if (token == null) {
+            val message = "Token is missing."
+            Log.e("AuthViewModel", message)
+            _authState.value = AuthState.Error(message)
+            onResult(false, message)
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val response = apiService.createTrainingPlan("Bearer $token", request)
+                if (response.isSuccessful) {
+                    getTrainingPlans()
+                    onResult(true, null)
+                } else {
+                    val message = "Failed to create training plan: ${response.message()}"
+                    Log.e("AuthViewModel", message)
+                    onResult(false, message)
+                }
+            } catch (e: Exception) {
+                val message = "Error creating training plan: ${e.message}"
+                Log.e("AuthViewModel", message)
+                onResult(false, message)
             }
         }
     }
@@ -432,3 +484,11 @@ sealed class AuthState {
     data class Authenticated(val jwtToken: String) : AuthState()
     data class Error(val message: String) : AuthState()
 }
+
+
+
+
+
+
+
+

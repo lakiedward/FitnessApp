@@ -2,6 +2,7 @@ package com.example.fitnessapp.pages.home
 
 import android.os.Build
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -178,6 +179,9 @@ fun HomeScreen(
 
 @Composable
 private fun WelcomeHeader() {
+    val colorScheme = MaterialTheme.colorScheme
+    val gradientContentColor = if (isSystemInDarkTheme()) colorScheme.onSurface else colorScheme.onPrimary
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
@@ -186,12 +190,12 @@ private fun WelcomeHeader() {
             text = "Welcome back!",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimary
+            color = gradientContentColor
         )
         Text(
             text = "Ready for today's training?",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+            color = gradientContentColor.copy(alpha = 0.8f)
         )
     }
 }
@@ -274,12 +278,15 @@ private fun TodayTrainingCard(todayWorkout: Any?) {
 
 @Composable
 private fun SectionHeader(title: String, modifier: Modifier = Modifier) {
+    val colorScheme = MaterialTheme.colorScheme
+    val headerColor = if (isSystemInDarkTheme()) colorScheme.onSurface else colorScheme.onPrimary
+
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimary
+            color = headerColor
         )
         Spacer(modifier = Modifier.height(8.dp))
     }

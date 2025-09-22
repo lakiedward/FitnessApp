@@ -1,73 +1,62 @@
 package com.example.fitnessapp.ui.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
+val Purple40 = Color(0xFF6650A4)
+val PurpleGrey40 = Color(0xFF625B71)
 val Pink40 = Color(0xFF7D5260)
 
-//grey
 val Grey50 = Color(0xFFF8F9FA)
-//black
 val Grey900 = Color(0xFF202124)
-//white
 val White = Color(0xFFFFFFFF)
-//green
 val Green500 = Color(0xFF4CAF50)
 
-// Login Page Gradient Colors
 val GradientStart = Color(0xFF6366F1)
 val GradientCenter = Color(0xFF8B5CF6)
 val GradientEnd = Color(0xFFA855F7)
 
-// Button and Input Colors
 val PrimaryPurple = Color(0xFF6366F1)
 val ErrorRed = Color(0xFFDC2626)
 val ErrorBackground = Color(0xFFFEF2F2)
 val SocialButtonBackground = Color(0xFFF8FAFC)
 
-// Workout Colors Object for centralized sport-specific theming
 object WorkoutColors {
-    // Cycling colors
-    val cyclingBg = Color(0xFFF0F9FF)
-    val cyclingText = Color(0xFF2563EB)
-
-    // Running colors
-    val runningBg = Color(0xFFF0FDF4)
-    val runningText = Color(0xFF059669)
-
-    // Swimming colors
-    val swimmingBg = Color(0xFFFFF7ED)
-    val swimmingText = Color(0xFFD97706)
-
-    // Default colors
-    val defaultBg = Color(0xFFF8FAFC)
-    val defaultText = Color(0xFF1F2937)
-
-    // Common colors
-    val primaryPurple = Color(0xFF6366F1)
-    val textSecondary = Color(0xFF6B7280)
-    val errorRed = Color(0xFFEF4444)
-
+    @Composable
     fun getBackgroundColor(workoutType: String?): Color {
+        val extended = MaterialTheme.extendedColors
+        val surface = MaterialTheme.colorScheme.surfaceVariant
+        val accent = when (workoutType?.lowercase()) {
+            "cycling" -> extended.chartSpeed
+            "running" -> MaterialTheme.colorScheme.tertiary
+            "swimming" -> extended.warning
+            else -> MaterialTheme.colorScheme.primary
+        }
+        return accent.copy(alpha = 0.08f).compositeOver(surface)
+    }
+
+    @Composable
+    fun getTextColor(workoutType: String?): Color {
+        val extended = MaterialTheme.extendedColors
         return when (workoutType?.lowercase()) {
-            "cycling" -> cyclingBg
-            "running" -> runningBg
-            "swimming" -> swimmingBg
-            else -> defaultBg
+            "cycling" -> extended.chartSpeed
+            "running" -> MaterialTheme.colorScheme.tertiary
+            "swimming" -> extended.warning
+            else -> MaterialTheme.colorScheme.onSurface
         }
     }
 
-    fun getTextColor(workoutType: String?): Color {
-        return when (workoutType?.lowercase()) {
-            "cycling" -> cyclingText
-            "running" -> runningText
-            "swimming" -> swimmingText
-            else -> defaultText
-        }
-    }
+    @Composable
+    fun secondaryText(): Color = MaterialTheme.colorScheme.onSurfaceVariant
+
+    @Composable
+    fun error(): Color = MaterialTheme.colorScheme.error
 }
+
+

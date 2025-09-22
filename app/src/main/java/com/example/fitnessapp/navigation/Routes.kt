@@ -39,11 +39,14 @@ object Routes {
     const val LOADING_TRAINING = "loading_training/{trainingId}"
     const val WORKOUT_EXECUTION = "workout_execution/{trainingId}"
     const val STRAVA_ACTIVITY_DETAIL = "strava_activity_detail/{activityId}"
+    const val TRAINING_CREATE = "training_detail/new?date={date}"
 
     // Builders
     fun trainingDetail(id: Int) = "training_detail/$id"
     fun loadingTraining(id: Int) = "loading_training/$id"
     fun workoutExecution(id: Int) = "workout_execution/$id"
     fun stravaActivityDetail(id: Long) = "strava_activity_detail/$id"
+    fun trainingCreate(date: String) = "training_detail/new?date=$date"
 }
+
 

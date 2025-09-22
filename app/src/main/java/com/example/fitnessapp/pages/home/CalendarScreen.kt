@@ -83,6 +83,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -303,6 +304,9 @@ fun InfiniteCalendarPage(
     }
 
     var showDatePicker by remember { mutableStateOf(false) }
+    var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+    var pendingDeleteId by remember { mutableStateOf<Long?>(null) }
+    var pendingDeleteType by remember { mutableStateOf<PendingDeleteType?>(null) }
     var selectedTrainingPlan by remember { mutableStateOf<TrainingPlan?>(null) }
     var showMapDialog by remember { mutableStateOf(false) }
     var selectedActivityId by remember { mutableStateOf<Long?>(null) }
@@ -954,29 +958,10 @@ fun InfiniteCalendarPage(
                                             selectedActivityId = activityId
                                             showMapDialog = true
                                         },
-                                        onDeleteStravaActivity = { activityId ->
-                                            coroutineScope.launch {
-                                                val success = stravaViewModel.deleteStravaActivity(activityId)
-                                                if (success) {
-                                                    Log.d("CalendarScreen", "Strava activity $activityId deleted successfully")
-                                                    // Refresh activities after deletion
-                                                    loadActivitiesForDateRange(false)
-                                                } else {
-                                                    Log.e("CalendarScreen", "Failed to delete Strava activity $activityId")
-                                                }
-                                            }
-                                        },
-                                        onDeleteAppWorkout = { workoutId ->
-                                            coroutineScope.launch {
-                                                val success = stravaViewModel.deleteAppWorkout(workoutId)
-                                                if (success) {
-                                                    Log.d("CalendarScreen", "App workout $workoutId deleted successfully")
-                                                    // Refresh activities after deletion
-                                                    loadActivitiesForDateRange(false)
-                                                } else {
-                                                    Log.e("CalendarScreen", "Failed to delete app workout $workoutId")
-                                                }
-                                            }
+                                        onRequestDelete = { id, type ->
+                                            pendingDeleteId = id
+                                            pendingDeleteType = type
+                                            showDeleteConfirmDialog = true
                                         }
                                     )
                                 }
@@ -989,6 +974,65 @@ fun InfiniteCalendarPage(
 
     }
 
+    if (showDeleteConfirmDialog && pendingDeleteId != null && pendingDeleteType != null) {
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteConfirmDialog = false
+                pendingDeleteId = null
+                pendingDeleteType = null
+            },
+            title = { Text(text = "Stergi activitatea?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    val id = pendingDeleteId
+                    val type = pendingDeleteType
+                    if (id != null && type != null) {
+                        coroutineScope.launch {
+                            val success = when (type) {
+                                PendingDeleteType.STRAVA -> stravaViewModel.deleteStravaActivity(id)
+                                PendingDeleteType.APP_WORKOUT -> stravaViewModel.deleteAppWorkout(id.toInt())
+                                PendingDeleteType.TRAINING_PLAN -> authViewModel.deleteTrainingPlanEntry(id.toInt())
+                            }
+                            val message = if (success) {
+                                when (type) {
+                                    PendingDeleteType.STRAVA -> "Activitate Strava stearsa"
+                                    PendingDeleteType.APP_WORKOUT -> "Sesiune manuala stearsa"
+                                    PendingDeleteType.TRAINING_PLAN -> "Antrenament din plan sters"
+                                }
+                            } else {
+                                "Nu s-a putut sterge activitatea"
+                            }
+                            snackbarHostState.showSnackbar(
+                                message = message,
+                                duration = SnackbarDuration.Short
+                            )
+                            if (success) {
+                                loadActivitiesForDateRange(false)
+                            }
+                            showDeleteConfirmDialog = false
+                            pendingDeleteId = null
+                            pendingDeleteType = null
+                        }
+                    } else {
+                        showDeleteConfirmDialog = false
+                        pendingDeleteId = null
+                        pendingDeleteType = null
+                    }
+                }) {
+                    Text(text = "Confirma")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeleteConfirmDialog = false
+                    pendingDeleteId = null
+                    pendingDeleteType = null
+                }) {
+                    Text(text = "Anuleaza")
+                }
+            },
+        )
+    }
     if (showDatePicker && selectedTrainingPlan != null) {
         val datePickerState = rememberDatePickerState()
         DatePickerDialog(
@@ -1251,8 +1295,7 @@ private fun ModernCalendarDayItem(
     onDateClick: (TrainingPlan) -> Unit,
     onTrainingClick: (TrainingPlan) -> Unit,
     onMapClick: (Long) -> Unit,
-    onDeleteStravaActivity: (Long) -> Unit,
-    onDeleteAppWorkout: (Int) -> Unit
+    onRequestDelete: (Long, PendingDeleteType) -> Unit
 ) {
     Log.d("CalendarChart", "trainings = $trainings")
 
@@ -1386,14 +1429,24 @@ private fun ModernCalendarDayItem(
                                         color = colorScheme.onSurface
                                     )
                                 }
-                                Icon(
-                                    imageVector = Icons.Filled.Edit,
-                                    contentDescription = "Edit date",
-                                    tint = colorScheme.primary,
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .clickable { onDateClick(training) }
-                                )
+                                Row {
+                                    IconButton(onClick = { onDateClick(training) }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Edit,
+                                            contentDescription = "Edit date",
+                                            tint = colorScheme.primary
+                                        )
+                                    }
+                                    IconButton(onClick = {
+                                        onRequestDelete(training.id.toLong(), PendingDeleteType.TRAINING_PLAN)
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Delete,
+                                            contentDescription = "Delete training",
+                                            tint = colorScheme.error
+                                        )
+                                    }
+                                }
                             }
 
                             Spacer(modifier = Modifier.height(8.dp))
@@ -1528,23 +1581,23 @@ private fun ModernCalendarDayItem(
                                 }
 
                                 // Delete icon for all activities
-                                Icon(
-                                    imageVector = Icons.Filled.Delete,
-                                    contentDescription = "Delete Activity",
-                                    tint = colorScheme.error,
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .clickable {
-                                            // Handle delete based on activity type
-                                            if (stravaActivity.manual == true) {
-                                                // Delete app workout using workout ID
-                                                onDeleteAppWorkout(stravaActivity.id?.toInt() ?: 0)
-                                            } else {
-                                                // Delete Strava activity using Strava ID  
-                                                onDeleteStravaActivity(stravaActivity.id?.toLong() ?: 0)
-                                            }
+                                IconButton(
+                                    onClick = {
+                                        val activityId = stravaActivity.id?.toLong() ?: 0L
+                                        if (stravaActivity.manual == true) {
+                                            onRequestDelete(activityId, PendingDeleteType.APP_WORKOUT)
+                                        } else {
+                                            onRequestDelete(activityId, PendingDeleteType.STRAVA)
                                         }
-                                )
+                                    },
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Delete,
+                                        contentDescription = "Delete Activity",
+                                        tint = colorScheme.error
+                                    )
+                                }
                             }
 
                             Spacer(modifier = Modifier.height(8.dp))
@@ -1640,6 +1693,12 @@ private fun ModernCalendarDayItem(
 }
 
 // ... existing code ...
+private enum class PendingDeleteType {
+    STRAVA,
+    APP_WORKOUT,
+    TRAINING_PLAN
+}
+
 @Composable
 private fun formatDuration(seconds: Int): String {
     val hours = seconds / 3600

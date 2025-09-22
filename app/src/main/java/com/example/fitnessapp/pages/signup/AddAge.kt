@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -64,6 +65,7 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
 
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
+    val gradientContentColor = if (isSystemInDarkTheme()) colorScheme.onSurface else colorScheme.onPrimary
 
     Column(
         modifier = Modifier
@@ -90,14 +92,14 @@ fun AddAgeScreen(navController: NavHostController, userDetalis: MutableState<Use
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = colorScheme.onPrimary
+                    tint = gradientContentColor
                 )
             }
             
             Text(
                 text = "Personal Details",
                 style = MaterialTheme.typography.headlineSmall,
-                color = colorScheme.onPrimary,
+                color = gradientContentColor,
                 fontWeight = FontWeight.Bold
             )
             

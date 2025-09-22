@@ -25,6 +25,7 @@ import com.example.fitnessapp.model.SwimPacePredictions
 import com.example.fitnessapp.model.SwimmingPaceResponse
 import com.example.fitnessapp.model.TrainingDateUpdate
 import com.example.fitnessapp.model.TrainingPlan
+import com.example.fitnessapp.model.TrainingPlanCreateRequest
 import com.example.fitnessapp.model.TrainingPlanGenerate
 import com.example.fitnessapp.model.TrainingStats
 import com.example.fitnessapp.model.User
@@ -155,6 +156,18 @@ interface ApiService {
         @Body trainingDateUpdate: TrainingDateUpdate
     ): Response<Map<String, String>>
 
+    @POST("training/training_plan")
+    suspend fun createTrainingPlan(
+        @Header("Authorization") token: String,
+        @Body request: TrainingPlanCreateRequest
+    ): Response<TrainingPlan>
+
+    @DELETE("training/training_plan/{plan_id}")
+    suspend fun deleteTrainingPlanEntry(
+        @Path("plan_id") planId: Int,
+        @Header("Authorization") token: String
+    ): Response<Map<String, String>>
+
     // Health Connect endpoints
     @POST("health-connect/sync-activities")
     suspend fun syncHealthConnectActivities(
@@ -240,3 +253,5 @@ interface ApiService {
         @Query("days") days: Int = 30
     ): Response<TrainingStats>
 }
+
+

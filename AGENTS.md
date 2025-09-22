@@ -1,0 +1,51 @@
+﻿# AGENTS
+
+## Scop
+Acest ghid aliniaza agentii AI care lucreaza in ecosistemul FitSense pentru a evita conflictele intre backend, aplicatia Android, interfata web si baza de date. Fiecare profil de agent listeaza responsabilitatile, contextul tehnic si resursele esentiale.
+
+## Profiluri de agent
+
+### Agent Android UI
+- Domeniu: Kotlin + Jetpack Compose, arhitectura MVVM, integrarea cu Health Connect si serviciile FitSense.
+- Repo: `c:\Users\lakie\StudioProjects\FitnessApp` (acest proiect).
+- Directoare cheie: `app/src/main/java/com/example/fitnessapp/api|model|pages|viewmodel`, `app/src/main/res`.
+- Sarcini tipice: implementare de ecrane Compose, actualizare ViewModel-uri si use case-uri, configurarea Retrofit/OkHttp, mapari ale modelelor API, integrarea cu senzori sau Health Connect.
+- Comenzi utile: `./gradlew assembleDevDebug`, `./gradlew testDevDebugUnitTest`, `./gradlew lintDevDebug`.
+- Semnale de handoff: orice modificare de contract API, schimbari in `BuildConfig.BASE_URL`, sau actualizari de scheme de date trebuie comunicate catre Agent Backend, Agent Database si Agent Web UI.
+
+### Agent Backend API
+- Domeniu: FastAPI, SQLAlchemy, orchestrarea datelor de antrenament, integrari Strava.
+- Repo: `c:\Users\lakie\PycharmProjects\Fitness_app` (serviciul Python).
+- Directoare cheie: `app/main.py`, `app/routers/`, `app/services/`, `app/models/`.
+- Sarcini tipice: definirea de endpoint-uri, validare si serializare Pydantic, scrierea de servicii pentru Strava si Health Connect, autentificare si autorizare, mentinerea testelor.
+- Comenzi utile: `pip install -r requirements.txt`, `uvicorn app.main:app --reload`, `pytest`.
+- Semnale de handoff: modificari de schema JSON, noi rute sau schimbari de status code trebuie propagate catre Agent Android UI, Agent Database si Agent Web UI; ajustarile de autorizare trebuie comunicate catre toti agentii.
+
+### Agent Database
+- Domeniu: Migrari de schema MySQL, administrarea datelor istorice si sincronizarea cu serviciile FitSense.
+- Repo: `c:\Users\lakie\PycharmProjects\db-migrate` (runner dedicat migrarilor).
+- Directoare cheie: `migrations/`, `migrate_runner.py`, fisierele de configurare `.env`.
+- Sarcini tipice: creare si aplicare de migrari, validarea integritatii datelor, coordonarea cu backend-ul pentru schimbari de modele, actualizarea documentatiei privind structura bazei de date.
+- Comenzi utile: `python -m venv .venv && .venv\Scripts\activate`, `pip install -r requirements.txt`, `python migrate_runner.py` cu variabilele MYSQL setate.
+- Semnale de handoff: orice modificare de schema trebuie comunicata proactiv catre Agent Backend si Agent Web UI; migration scripts care afecteaza datele consumate de client trebuie anuntate Agent Android UI.
+
+### Agent Web UI
+- Domeniu: Angular, TypeScript, UI responsive pentru portalul FitSense.
+- Repo: `c:\Users\lakie\IdeaProjects\fitsense`.
+- Directoare cheie: `src/app/services/`, `src/app/pages/`, `src/app/components/`.
+- Sarcini tipice: implementare de fluxuri web pentru antrenamente si rapoarte, conectarea la API prin servicii Angular, actualizarea temelor si routing-ului.
+- Comenzi utile: `npm install`, `ng serve`, `ng test`.
+- Semnale de handoff: cerinte noi de date sau schimbari de contract API trebuie sincronizate cu Agent Backend; modificarile de UX care impacteaza logica comuna se comunica Agent Android UI.
+
+## Reguli de colaborare
+- Porniti discutiile de schema in jurul fisierelor sursa relevante (`ApiService.kt`, `app/routers/*.py`, migrari din `db-migrate`, servicii Angular) si blocati modificarile pana cand toti agentii confirma.
+- Documentati contractele API si schimbarile de schema fie in `README.md`, fie in fisiere dedicate din backend si repo-ul de migrari, si notificati ceilalti agenti in rezumatul PR-ului.
+- Sincronizati planificarile de release: Android foloseste flavors `dev/prod`, backend expune configuratii separate, web ajusteaza environment-urile Angular, iar migrarile trebuie aplicate inainte de lansarea backend-ului.
+- Inainte de a fuziona PR-uri majore, rulati testele recomandate pentru fiecare agent si adaugati rezultatele in descriere.
+
+## Resurse cheie
+- `PROJECT_MAP.md` - vedere de ansamblu a componentelor.
+- `.ai-assistant-guide.md` - bune practici pentru asistentii AI in repo.
+- `README.md` (Android) si `README_DB.md` - context operational actual.
+- Documentatia Health Connect si Strava (link extern) pentru fluxurile de sincronizare.
+- Ghidurile interne de migrare din `db-migrate` pentru proceduri SQL.
