@@ -244,6 +244,11 @@ fun InfiniteCalendarPage(
     val coroutineScope = rememberCoroutineScope()
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
+    val gradientContentColor = if (isSystemInDarkTheme()) {
+        colorScheme.onSurface
+    } else {
+        colorScheme.onPrimary
+    }
 
     // Sync live state
     var isSyncingLive by remember { mutableStateOf(false) }
@@ -878,12 +883,12 @@ fun InfiniteCalendarPage(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        androidx.compose.material3.CircularProgressIndicator(color = colorScheme.onPrimary)
+                        androidx.compose.material3.CircularProgressIndicator(color = gradientContentColor)
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Loading calendar activities...",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = colorScheme.onPrimary
+                            color = gradientContentColor
                         )
                     }
                 } else {
@@ -896,6 +901,7 @@ fun InfiniteCalendarPage(
                             listState = listState,
                             coroutineScope = coroutineScope,
                             todayIndex = todayIndex,
+                            gradientContentColor = gradientContentColor,
                             onRefresh = { performSyncLive() })
                         // Calendar Content
                         Card(
@@ -1184,6 +1190,7 @@ private fun CalendarHeader(
     listState: LazyListState,
     coroutineScope: CoroutineScope,
     todayIndex: Int,
+    gradientContentColor: Color,
     onRefresh: () -> Unit = {}
 ) {
     val colorScheme = MaterialTheme.colorScheme
@@ -1204,7 +1211,7 @@ private fun CalendarHeader(
                 text = "Training Calendar",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = colorScheme.onPrimary
+                color = gradientContentColor
             )
 
             // Refresh button
