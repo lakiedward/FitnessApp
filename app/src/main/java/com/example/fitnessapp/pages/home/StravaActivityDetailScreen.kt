@@ -1,8 +1,12 @@
 package com.example.fitnessapp.pages.home
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -117,7 +121,9 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.em
 import androidx.compose.foundation.clickable
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.ui.draw.shadow
 import kotlinx.coroutines.launch
@@ -719,16 +725,56 @@ fun StravaActivityDetailScreen(
                                     Column {
                                         Spacer(modifier = Modifier.height(8.dp))
                                         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                            var isPressed by remember { mutableStateOf(false) }
+                                            val interactionSource = remember { MutableInteractionSource() }
+                                            val isPressed by interactionSource.collectIsPressedAsState()
                                             val scale by animateFloatAsState(
                                                 targetValue = if (isPressed) 0.95f else 1f,
-                                                animationSpec = tween(100)
+                                                animationSpec = tween(100),
+                                                label = "stravaButtonScale"
                                             )
 
                                             Button(
                                                 onClick = {
-                                                    isPressed = true
-                                                    // TODO: Implement Strava deep link or web URL
+                                                    val stravaUri = Uri.parse("strava://activities/$activityId")
+                                                    val fallbackUri = Uri.parse("https://www.strava.com/activities/$activityId")
+                                                    val stravaIntent = Intent(Intent.ACTION_VIEW, stravaUri)
+                                                    val packageManager = context.packageManager
+
+                                                    try {
+                                                        if (stravaIntent.resolveActivity(packageManager) != null) {
+                                                            context.startActivity(stravaIntent)
+                                                        } else {
+                                                            try {
+                                                                CustomTabsIntent.Builder()
+                                                                    .build()
+                                                                    .launchUrl(context, fallbackUri)
+                                                            } catch (browserException: ActivityNotFoundException) {
+                                                                val webIntent = Intent(Intent.ACTION_VIEW, fallbackUri)
+                                                                if (webIntent.resolveActivity(packageManager) != null) {
+                                                                    context.startActivity(webIntent)
+                                                                } else {
+                                                                    Toast.makeText(
+                                                                        context,
+                                                                        "No application available to open Strava link",
+                                                                        Toast.LENGTH_SHORT
+                                                                    ).show()
+                                                                }
+                                                            }
+                                                        }
+                                                    } catch (e: ActivityNotFoundException) {
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Unable to open Strava",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    } catch (e: Exception) {
+                                                        Log.e("StravaActivityDetail", "Failed to open Strava activity", e)
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Unable to open Strava",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
                                                 },
                                                 modifier = Modifier
                                                     .fillMaxWidth()
@@ -738,7 +784,8 @@ fun StravaActivityDetailScreen(
                                                     containerColor = colorScheme.primary
                                                 ),
                                                 elevation = ButtonDefaults.buttonElevation(12.dp),
-                                                shape = RoundedCornerShape(16.dp)
+                                                shape = RoundedCornerShape(16.dp),
+                                                interactionSource = interactionSource
                                             ) {
                                                 Icon(
                                                     Icons.Default.Link,
