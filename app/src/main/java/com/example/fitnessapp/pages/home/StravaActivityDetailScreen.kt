@@ -88,8 +88,8 @@ import com.example.fitnessapp.R
 import com.example.fitnessapp.components.ActivityChartsComponent
 import com.example.fitnessapp.components.ActivityStatsSection
 import com.example.fitnessapp.components.PerformanceChartsSection
-import com.example.fitnessapp.components.PowerCurveComponent
 import com.example.fitnessapp.components.PowerCurveSection
+import com.example.fitnessapp.components.isPowerCurveEligible
 import com.example.fitnessapp.components.RouteMapSection
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.model.ActivityStreamsResponse
@@ -690,19 +690,22 @@ fun StravaActivityDetailScreen(
                                     }
                                 }
                             }
-                            // --- Section Header with Icon: Power Curve ---
-                            item {
-                                AnimatedVisibility(
-                                    visible = true,
-                                    enter = fadeIn(animationSpec = tween(300, delayMillis = 500)) + slideInVertically { it/4 }
-                                ) {
-                                    Column {
-                                        SectionHeader(Icons.Filled.Terrain, "Power Curve")
-                                        PowerCurveSection(
-                                            activityId = activityId,
-                                            activityType = activity!!.type,
-                                            activity = activity
-                                        )
+                            val showPowerCurve = isPowerCurveEligible(activity?.type)
+                            if (showPowerCurve) {
+                                // --- Section Header with Icon: Power Curve ---
+                                item {
+                                    AnimatedVisibility(
+                                        visible = true,
+                                        enter = fadeIn(animationSpec = tween(300, delayMillis = 500)) + slideInVertically { it/4 }
+                                    ) {
+                                        Column {
+                                            SectionHeader(Icons.Filled.Terrain, "Power Curve")
+                                            PowerCurveSection(
+                                                activityId = activityId,
+                                                activityType = activity!!.type,
+                                                activity = activity
+                                            )
+                                        }
                                     }
                                 }
                             }
