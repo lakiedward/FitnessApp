@@ -80,6 +80,10 @@ fun PowerCurveSection(
     activity: StravaActivity?,
     modifier: Modifier = Modifier
 ) {
+    if (!isPowerCurveEligible(activityType)) {
+        return
+    }
+
     val context = LocalContext.current
     val stravaViewModel: StravaViewModel = viewModel(factory = StravaViewModelFactory(context))
 
@@ -87,7 +91,8 @@ fun PowerCurveSection(
     var maxBpm by remember { mutableStateOf<Int?>(null) }
 
     // Fetch max BPM when component loads
-    LaunchedEffect(Unit) {
+    LaunchedEffect(activityId) {
+        maxBpm = null
         try {
             val maxBpmData = stravaViewModel.getMaxBpm()
             val maxBpmValue = maxBpmData["max_bpm"] as? Number

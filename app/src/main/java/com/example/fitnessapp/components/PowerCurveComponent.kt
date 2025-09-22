@@ -108,7 +108,7 @@ fun PowerCurveComponent(
     modifier: Modifier = Modifier,
     fthr: Int? = null
 ) {
-    if (activityType.lowercase() !in listOf("ride", "virtualride", "cycling")) return
+    if (!isPowerCurveEligible(activityType)) return
 
     val context = LocalContext.current
     val density = LocalDensity.current
