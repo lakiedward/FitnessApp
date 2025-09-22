@@ -41,8 +41,9 @@ fun PerformanceChartsSection(
     // State for max BPM
     var maxBpm by remember { mutableStateOf<Float?>(null) }
 
-    // Fetch max BPM when component loads
-    LaunchedEffect(Unit) {
+    // Fetch max BPM when the activity changes
+    LaunchedEffect(activityId) {
+        maxBpm = null
         try {
             val maxBpmData = stravaViewModel.getMaxBpm()
             val maxBpmValue = maxBpmData["max_bpm"] as? Number
