@@ -1,14 +1,19 @@
 package com.example.fitnessapp.pages.home
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +27,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,24 +55,22 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import com.example.fitnessapp.ui.theme.extendedColors
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -100,23 +102,21 @@ import java.util.TimeZone
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.background
-import androidx.compose.runtime.getValue
-import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.em
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.ui.draw.shadow
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -216,6 +216,11 @@ fun StravaActivityDetailScreen(
 
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
+    val gradientContentColor = if (isSystemInDarkTheme()) {
+        colorScheme.onSurface
+    } else {
+        colorScheme.onPrimary
+    }
 
     var activity by remember { mutableStateOf<StravaActivity?>(null) }
     var mapViewData by remember { mutableStateOf<Map<String, String>?>(null) }
@@ -224,69 +229,61 @@ fun StravaActivityDetailScreen(
     var isLoading by remember { mutableStateOf(true) }
     var maxBpm by remember { mutableStateOf<Int?>(null) }
 
+    val coroutineScope = rememberCoroutineScope()
+
     // Pull-to-refresh state
     val pullToRefreshState = rememberPullToRefreshState()
 
-    // Handle pull-to-refresh
-    if (pullToRefreshState.isRefreshing) {
-        LaunchedEffect(Unit) {
-            // Reload activity data
-            try {
-                Log.d("StravaActivityDetail", "Refreshing activity $activityId")
-
-                val activityDetails = stravaViewModel.getActivityById(activityId)
-                activity = activityDetails
-
-                // Load map view data
-                if (activityDetails != null) {
-                    val mapResponse = stravaViewModel.getActivityMapView(activityId)
-                    mapViewData = mapResponse
-                    Log.d("StravaActivityDetail", "Map view data on refresh: $mapResponse")
-                }
-
-                val streamsData = stravaViewModel.getActivityStreamsFromDB(activityId)
-                streamsFromDB = streamsData
-
-                val legacyStreamsData = stravaViewModel.getActivityStreams(activityId)
-                streams = legacyStreamsData
-
-                // Load max BPM
-                val maxBpmData = stravaViewModel.getMaxBpm()
-                maxBpm = maxBpmData["max_bpm"] as? Int
-
-                Log.d("StravaActivityDetail", "Refresh completed")
-            } catch (e: Exception) {
-                Log.e("StravaActivityDetail", "Error during refresh", e)
-            }
-            pullToRefreshState.endRefresh()
+    suspend fun loadActivityData(showLoading: Boolean) {
+        if (showLoading) {
+            isLoading = true
         }
-    }
-
-    // Load activity details
-    LaunchedEffect(activityId) {
         try {
             val activityDetails = stravaViewModel.getActivityById(activityId)
             activity = activityDetails
 
-            // Load map view data
-            if (activityDetails != null) {
-                val mapResponse = stravaViewModel.getActivityMapView(activityId)
-                mapViewData = mapResponse
+            mapViewData = if (activityDetails != null) {
+                stravaViewModel.getActivityMapView(activityId)
+            } else {
+                null
             }
-            val streamsData = stravaViewModel.getActivityStreamsFromDB(activityId)
-            streamsFromDB = streamsData
 
-            val legacyStreamsData = stravaViewModel.getActivityStreams(activityId)
-            streams = legacyStreamsData
+            if (activityDetails != null) {
+                streamsFromDB = stravaViewModel.getActivityStreamsFromDB(activityId)
+                streams = stravaViewModel.getActivityStreams(activityId)
+            } else {
+                streamsFromDB = null
+                streams = null
+            }
 
-            // Load max BPM
             val maxBpmData = stravaViewModel.getMaxBpm()
             maxBpm = maxBpmData["max_bpm"] as? Int
             Log.d("StravaActivityDetail", "Max BPM loaded: $maxBpm")
-
-            isLoading = false
         } catch (e: Exception) {
+            Log.e("StravaActivityDetail", "Error loading activity $activityId", e)
+            if (activity == null) {
+                mapViewData = null
+                streamsFromDB = null
+                streams = null
+                maxBpm = null
+            }
+        } finally {
             isLoading = false
+            if (pullToRefreshState.isRefreshing) {
+                pullToRefreshState.endRefresh()
+            }
+        }
+    }
+
+    // Load activity details when the screen opens or the activity ID changes
+    LaunchedEffect(activityId) {
+        loadActivityData(showLoading = true)
+    }
+
+    // Handle pull-to-refresh gestures
+    LaunchedEffect(pullToRefreshState.isRefreshing) {
+        if (pullToRefreshState.isRefreshing) {
+            loadActivityData(showLoading = false)
         }
     }
 
@@ -319,12 +316,15 @@ fun StravaActivityDetailScreen(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
-                        .background(Color.Transparent)
+                        .background(Color.Transparent),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = gradientContentColor
+                    )
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "Navigate back to previous screen",
-                        tint = colorScheme.onPrimary
+                        tint = gradientContentColor
                     )
                 }
                 Row(
@@ -349,13 +349,13 @@ fun StravaActivityDetailScreen(
                             else -> Icons.Default.Speed
                         },
                         contentDescription = "Activity type: ${activity?.type}",
-                        tint = colorScheme.onPrimary,
+                        tint = gradientContentColor,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = activity?.name ?: "Activity Details",
-                        color = colorScheme.onPrimary,
+                        color = gradientContentColor,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleLarge,
                         maxLines = 2,
@@ -478,7 +478,11 @@ fun StravaActivityDetailScreen(
                                 )
                                 Spacer(modifier = Modifier.height(32.dp))
                                 Button(
-                                    onClick = { /* TODO: Add retry functionality */ },
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            loadActivityData(showLoading = true)
+                                        }
+                                    },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = colorScheme.primary
                                     ),
@@ -710,27 +714,71 @@ fun StravaActivityDetailScreen(
                                 ) {
                                     Column {
                                         Spacer(modifier = Modifier.height(8.dp))
-                                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                            var isPressed by remember { mutableStateOf(false) }
-                                            val scale by animateFloatAsState(
-                                                targetValue = if (isPressed) 0.95f else 1f,
-                                                animationSpec = tween(100)
-                                            )
+                                        val stravaButtonInteractionSource = remember { MutableInteractionSource() }
+                                        val isStravaButtonPressed by stravaButtonInteractionSource.collectIsPressedAsState()
+                                        val stravaButtonScale by animateFloatAsState(
+                                            targetValue = if (isStravaButtonPressed) 0.95f else 1f,
+                                            animationSpec = tween(durationMillis = 100),
+                                            label = "stravaButtonScale"
+                                        )
 
+                                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                                             Button(
                                                 onClick = {
-                                                    isPressed = true
-                                                    // TODO: Implement Strava deep link or web URL
+                                                    val stravaUri = Uri.parse("strava://activities/$activityId")
+                                                    val fallbackUri = Uri.parse("https://www.strava.com/activities/$activityId")
+                                                    val stravaIntent = Intent(Intent.ACTION_VIEW, stravaUri)
+                                                    val packageManager = context.packageManager
+
+                                                    try {
+                                                        if (stravaIntent.resolveActivity(packageManager) != null) {
+                                                            context.startActivity(stravaIntent)
+                                                        } else {
+                                                            try {
+                                                                CustomTabsIntent.Builder()
+                                                                    .build()
+                                                                    .launchUrl(context, fallbackUri)
+                                                            } catch (browserException: ActivityNotFoundException) {
+                                                                val webIntent = Intent(Intent.ACTION_VIEW, fallbackUri)
+                                                                if (webIntent.resolveActivity(packageManager) != null) {
+                                                                    context.startActivity(webIntent)
+                                                                } else {
+                                                                    Toast.makeText(
+                                                                        context,
+                                                                        "No application available to open Strava link",
+                                                                        Toast.LENGTH_SHORT
+                                                                    ).show()
+                                                                }
+                                                            }
+                                                        }
+                                                    } catch (e: ActivityNotFoundException) {
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Unable to open Strava",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    } catch (e: Exception) {
+                                                        Log.e("StravaActivityDetail", "Failed to open Strava activity", e)
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Unable to open Strava",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
                                                 },
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .height(56.dp)
-                                                    .graphicsLayer(scaleX = scale, scaleY = scale),
+                                                    .graphicsLayer(
+                                                        scaleX = stravaButtonScale,
+                                                        scaleY = stravaButtonScale
+                                                    ),
                                                 colors = ButtonDefaults.buttonColors(
                                                     containerColor = colorScheme.primary
                                                 ),
                                                 elevation = ButtonDefaults.buttonElevation(12.dp),
-                                                shape = RoundedCornerShape(16.dp)
+                                                shape = RoundedCornerShape(16.dp),
+                                                interactionSource = stravaButtonInteractionSource
                                             ) {
                                                 Icon(
                                                     Icons.Default.Link,

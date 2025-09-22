@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
@@ -35,7 +37,10 @@ import androidx.compose.material3.MaterialTheme
 import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,6 +52,20 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+
+@Stable
+private class MapInteractionState {
+    var zoomSteps by mutableIntStateOf(0)
+}
+
+private sealed interface RouteMapContent {
+    data class Html(val value: String) : RouteMapContent
+    data class Url(val value: String) : RouteMapContent
+    data class Gpx(val value: String) : RouteMapContent
+    data class Polyline(val value: String) : RouteMapContent
+}
 
 // Single unified function for all map types
 @Composable
@@ -57,122 +76,187 @@ fun RouteMapSection(
     gpxData: String? = null,
     modifier: Modifier = Modifier
 ) {
-    when {
+    val mapContent: RouteMapContent? = when {
         gpxData != null -> {
             Log.d("RouteMapSection", "Using GPX data")
-            Card(
-                modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(8.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        "Route Map",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colorScheme.surfaceVariant,
-                                RoundedCornerShape(12.dp)
-                            )
-                    ) {
-                        InteractiveWebViewMapFromGpx(gpxData = gpxData)
-                    }
-                }
-            }
+            RouteMapContent.Gpx(gpxData)
         }
+
         mapHtml != null -> {
             Log.d("RouteMapSection", "Using raw HTML map")
-            Card(
-                modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(8.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        "Route Map",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colorScheme.surfaceVariant,
-                                RoundedCornerShape(12.dp)
-                            )
-                    ) {
-                        InteractiveWebViewMap(html = mapHtml)
-                    }
-                }
-            }
+            RouteMapContent.Html(mapHtml)
         }
+
         htmlUrl != null -> {
             Log.d("RouteMapSection", "Using HTML URL: $htmlUrl")
-            Card(
-                modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(8.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        "Route Map",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colorScheme.surfaceVariant,
-                                RoundedCornerShape(12.dp)
-                            )
-                    ) {
-                        InteractiveWebViewMap(url = htmlUrl)
-                    }
-                }
-            }
+            RouteMapContent.Url(htmlUrl)
         }
+
         polyline != null -> {
             Log.d("RouteMapSection", "Received polyline: $polyline")
             Log.d("RouteMapSection", "Polyline length: ${polyline.length}")
-            Card(
-                modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(8.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        "Route Map",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 8.dp)
+            RouteMapContent.Polyline(polyline)
+        }
+
+        else -> null
+    }
+
+    if (mapContent == null) {
+        return
+    }
+
+    val mapState = remember(gpxData, mapHtml, htmlUrl, polyline) { MapInteractionState() }
+    var showFullscreen by remember(mapContent) { mutableStateOf(false) }
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(8.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                "Route Map",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant,
+                        RoundedCornerShape(12.dp)
                     )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colorScheme.surfaceVariant,
-                                RoundedCornerShape(12.dp)
-                            )
-                    ) {
-                        InteractiveWebViewMapFromPolyline(polyline = polyline)
+            ) {
+                when (mapContent) {
+                    is RouteMapContent.Gpx -> {
+                        InteractiveWebViewMapFromGpx(
+                            gpxData = mapContent.value,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp),
+                            mapState = mapState,
+                            onRequestFullscreen = { showFullscreen = true }
+                        )
+                    }
+
+                    is RouteMapContent.Html -> {
+                        InteractiveWebViewMap(
+                            html = mapContent.value,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp),
+                            mapState = mapState,
+                            onRequestFullscreen = { showFullscreen = true }
+                        )
+                    }
+
+                    is RouteMapContent.Url -> {
+                        InteractiveWebViewMap(
+                            url = mapContent.value,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp),
+                            mapState = mapState,
+                            onRequestFullscreen = { showFullscreen = true }
+                        )
+                    }
+
+                    is RouteMapContent.Polyline -> {
+                        InteractiveWebViewMapFromPolyline(
+                            polyline = mapContent.value,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp),
+                            mapState = mapState,
+                            onRequestFullscreen = { showFullscreen = true }
+                        )
                     }
                 }
+            }
+        }
+    }
+
+    if (showFullscreen) {
+        RouteMapFullscreenDialog(
+            mapContent = mapContent,
+            mapState = mapState,
+            onDismiss = { showFullscreen = false }
+        )
+    }
+}
+
+@Composable
+private fun RouteMapFullscreenDialog(
+    mapContent: RouteMapContent,
+    mapState: MapInteractionState,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
+            when (mapContent) {
+                is RouteMapContent.Gpx -> {
+                    InteractiveWebViewMapFromGpx(
+                        gpxData = mapContent.value,
+                        modifier = Modifier.fillMaxSize(),
+                        mapState = mapState,
+                        onRequestFullscreen = null
+                    )
+                }
+
+                is RouteMapContent.Html -> {
+                    InteractiveWebViewMap(
+                        html = mapContent.value,
+                        modifier = Modifier.fillMaxSize(),
+                        mapState = mapState,
+                        onRequestFullscreen = null
+                    )
+                }
+
+                is RouteMapContent.Url -> {
+                    InteractiveWebViewMap(
+                        url = mapContent.value,
+                        modifier = Modifier.fillMaxSize(),
+                        mapState = mapState,
+                        onRequestFullscreen = null
+                    )
+                }
+
+                is RouteMapContent.Polyline -> {
+                    InteractiveWebViewMapFromPolyline(
+                        polyline = mapContent.value,
+                        modifier = Modifier.fillMaxSize(),
+                        mapState = mapState,
+                        onRequestFullscreen = null
+                    )
+                }
+            }
+
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .size(40.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                        shape = CircleShape
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Close fullscreen map",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
@@ -183,16 +267,17 @@ fun RouteMapSection(
 private fun InteractiveWebViewMap(
     html: String? = null,
     url: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mapState: MapInteractionState,
+    onRequestFullscreen: (() -> Unit)?
 ) {
     var isMapLoading by remember { mutableStateOf(true) }
     var hasError by remember { mutableStateOf(false) }
     var webView by remember { mutableStateOf<WebView?>(null) }
+    var appliedZoomSteps by remember { mutableIntStateOf(0) }
 
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .height(300.dp)
             .semantics {
                 contentDescription = "Interactive route map"
             }
@@ -205,7 +290,6 @@ private fun InteractiveWebViewMap(
                         android.widget.FrameLayout.LayoutParams.MATCH_PARENT
                     )
 
-                    // Enable WebView debugging for development
                     WebView.setWebContentsDebuggingEnabled(true)
 
                     settings.apply {
@@ -220,8 +304,11 @@ private fun InteractiveWebViewMap(
 
                     webChromeClient = object : WebChromeClient() {
                         override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-                            Log.d("WebViewConsole", "${consoleMessage?.messageLevel()}: ${consoleMessage?.message()} " +
-                                "(${consoleMessage?.sourceId()}:${consoleMessage?.lineNumber()})")
+                            Log.d(
+                                "WebViewConsole",
+                                "${consoleMessage?.messageLevel()}: ${consoleMessage?.message()} " +
+                                    "(${consoleMessage?.sourceId()}:${consoleMessage?.lineNumber()})"
+                            )
                             return true
                         }
 
@@ -232,9 +319,14 @@ private fun InteractiveWebViewMap(
                     }
 
                     webViewClient = object : WebViewClient() {
-                        override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                        override fun onPageStarted(
+                            view: WebView?,
+                            url: String?,
+                            favicon: android.graphics.Bitmap?
+                        ) {
                             super.onPageStarted(view, url, favicon)
                             Log.d("RouteMapSection", "Page started loading: $url")
+                            appliedZoomSteps = 0
                         }
 
                         override fun onPageFinished(view: WebView?, url: String?) {
@@ -262,14 +354,17 @@ private fun InteractiveWebViewMap(
                             errorResponse: android.webkit.WebResourceResponse?
                         ) {
                             super.onReceivedHttpError(view, request, errorResponse)
-                            Log.e("RouteMapSection", "HTTP error: ${errorResponse?.statusCode} - ${errorResponse?.reasonPhrase}")
+                            Log.e(
+                                "RouteMapSection",
+                                "HTTP error: ${errorResponse?.statusCode} - ${errorResponse?.reasonPhrase}"
+                            )
                         }
                     }
 
                     isMapLoading = true
                     hasError = false
+                    appliedZoomSteps = 0
 
-                    // Load either HTML or URL
                     when {
                         html != null -> {
                             Log.d("RouteMapSection", "Loading HTML content with ${html.length} characters")
@@ -281,10 +376,12 @@ private fun InteractiveWebViewMap(
                                 null
                             )
                         }
+
                         url != null -> {
                             Log.d("RouteMapSection", "Loading URL: $url")
                             loadUrl(url)
                         }
+
                         else -> {
                             hasError = true
                             isMapLoading = false
@@ -293,10 +390,37 @@ private fun InteractiveWebViewMap(
                     webView = this
                 }
             },
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            update = { view ->
+                webView = view
+            }
         )
 
-        // Loading indicator
+        LaunchedEffect(mapState.zoomSteps, webView, isMapLoading, hasError) {
+            val view = webView ?: return@LaunchedEffect
+            if (isMapLoading || hasError) {
+                return@LaunchedEffect
+            }
+            val delta = mapState.zoomSteps - appliedZoomSteps
+            if (delta > 0) {
+                repeat(delta) {
+                    if (view.zoomIn()) {
+                        appliedZoomSteps++
+                    } else {
+                        return@LaunchedEffect
+                    }
+                }
+            } else if (delta < 0) {
+                repeat(-delta) {
+                    if (view.zoomOut()) {
+                        appliedZoomSteps--
+                    } else {
+                        return@LaunchedEffect
+                    }
+                }
+            }
+        }
+
         if (isMapLoading) {
             Box(
                 modifier = Modifier
@@ -319,7 +443,6 @@ private fun InteractiveWebViewMap(
             }
         }
 
-        // Error state
         if (hasError) {
             Card(
                 modifier = Modifier
@@ -378,7 +501,6 @@ private fun InteractiveWebViewMap(
             }
         }
 
-        // Control overlay (top-right corner)
         if (!isMapLoading && !hasError) {
             Row(
                 modifier = Modifier
@@ -386,9 +508,14 @@ private fun InteractiveWebViewMap(
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Zoom In button
                 IconButton(
-                    onClick = { webView?.zoomIn() },
+                    onClick = {
+                        val view = webView
+                        if (view?.zoomIn() == true) {
+                            mapState.zoomSteps++
+                            appliedZoomSteps++
+                        }
+                    },
                     modifier = Modifier
                         .size(36.dp)
                         .background(
@@ -404,9 +531,14 @@ private fun InteractiveWebViewMap(
                     )
                 }
 
-                // Zoom Out button
                 IconButton(
-                    onClick = { webView?.zoomOut() },
+                    onClick = {
+                        val view = webView
+                        if (view?.zoomOut() == true) {
+                            mapState.zoomSteps--
+                            appliedZoomSteps--
+                        }
+                    },
                     modifier = Modifier
                         .size(36.dp)
                         .background(
@@ -422,25 +554,23 @@ private fun InteractiveWebViewMap(
                     )
                 }
 
-                // Fullscreen toggle button
-                IconButton(
-                    onClick = {
-                        // TODO: Implement fullscreen functionality
-                        // This would require navigation to a fullscreen map view
-                    },
-                    modifier = Modifier
-                        .size(36.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-                            RoundedCornerShape(6.dp)
+                if (onRequestFullscreen != null) {
+                    IconButton(
+                        onClick = onRequestFullscreen,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                                RoundedCornerShape(6.dp)
+                            )
+                    ) {
+                        Icon(
+                            Icons.Filled.Fullscreen,
+                            contentDescription = "View map in fullscreen",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
                         )
-                ) {
-                    Icon(
-                        Icons.Filled.Fullscreen,
-                        contentDescription = "View map in fullscreen",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(20.dp)
-                    )
+                    }
                 }
             }
         }
@@ -451,7 +581,9 @@ private fun InteractiveWebViewMap(
 @Composable
 private fun InteractiveWebViewMapFromPolyline(
     polyline: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.fillMaxWidth().height(300.dp),
+    mapState: MapInteractionState,
+    onRequestFullscreen: (() -> Unit)?
 ) {
     // Decode polyline to lat/lng points
     val points = remember(polyline) { 
@@ -467,9 +599,7 @@ private fun InteractiveWebViewMapFromPolyline(
     if (points.isEmpty()) {
         // Show error if no valid route data
         Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(300.dp),
+            modifier = modifier,
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -576,7 +706,12 @@ private fun InteractiveWebViewMapFromPolyline(
         """.trimIndent()
 
         // Use the generic InteractiveWebViewMap with the generated HTML
-        InteractiveWebViewMap(html = html, modifier = modifier)
+        InteractiveWebViewMap(
+            html = html,
+            modifier = modifier,
+            mapState = mapState,
+            onRequestFullscreen = onRequestFullscreen
+        )
     }
 }
 
@@ -584,7 +719,9 @@ private fun InteractiveWebViewMapFromPolyline(
 @Composable
 private fun InteractiveWebViewMapFromGpx(
     gpxData: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.fillMaxWidth().height(300.dp),
+    mapState: MapInteractionState,
+    onRequestFullscreen: (() -> Unit)?
 ) {
     // Parse GPX data (lat,lng;lat,lng;...) into coordinates
     val coordinates = remember(gpxData) {
@@ -613,9 +750,7 @@ private fun InteractiveWebViewMapFromGpx(
     if (coordinates.isEmpty()) {
         // Show error if no valid coordinates
         Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(300.dp),
+            modifier = modifier,
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -684,7 +819,12 @@ private fun InteractiveWebViewMapFromGpx(
         """.trimIndent()
 
         // Use the generic InteractiveWebViewMap with the generated HTML
-        InteractiveWebViewMap(html = html, modifier = modifier)
+        InteractiveWebViewMap(
+            html = html,
+            modifier = modifier,
+            mapState = mapState,
+            onRequestFullscreen = onRequestFullscreen
+        )
     }
 }
 

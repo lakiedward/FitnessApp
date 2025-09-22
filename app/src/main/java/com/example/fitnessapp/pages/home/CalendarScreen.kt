@@ -244,6 +244,11 @@ fun InfiniteCalendarPage(
     val coroutineScope = rememberCoroutineScope()
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
+    val gradientContentColor = if (isSystemInDarkTheme()) {
+        colorScheme.onSurface
+    } else {
+        colorScheme.onPrimary
+    }
 
     // Sync live state
     var isSyncingLive by remember { mutableStateOf(false) }
@@ -878,12 +883,12 @@ fun InfiniteCalendarPage(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        androidx.compose.material3.CircularProgressIndicator(color = Color.White)
+                        androidx.compose.material3.CircularProgressIndicator(color = gradientContentColor)
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Loading calendar activities...",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = Color.White
+                            color = gradientContentColor
                         )
                     }
                 } else {
@@ -896,12 +901,13 @@ fun InfiniteCalendarPage(
                             listState = listState,
                             coroutineScope = coroutineScope,
                             todayIndex = todayIndex,
+                            gradientContentColor = gradientContentColor,
                             onRefresh = { performSyncLive() })
                         // Calendar Content
                         Card(
                             modifier = Modifier.fillMaxSize(),
                             shape = RoundedCornerShape(24.dp, 24.dp, 0.dp, 0.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
                             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
                             LazyColumn(
@@ -1108,7 +1114,7 @@ fun StravaMapDialog(
                 .fillMaxWidth()
                 .height(400.dp),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
             Column(
@@ -1184,6 +1190,7 @@ private fun CalendarHeader(
     listState: LazyListState,
     coroutineScope: CoroutineScope,
     todayIndex: Int,
+    gradientContentColor: Color,
     onRefresh: () -> Unit = {}
 ) {
     val colorScheme = MaterialTheme.colorScheme
@@ -1204,7 +1211,7 @@ private fun CalendarHeader(
                 text = "Training Calendar",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = gradientContentColor
             )
 
             // Refresh button
@@ -1221,7 +1228,7 @@ private fun CalendarHeader(
                         }
                     },
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f)),
+                colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceVariant),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Box(
@@ -1258,7 +1265,7 @@ private fun CalendarHeader(
                     }
                 },
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f)),
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceVariant),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Row(
@@ -1803,7 +1810,7 @@ fun RoutePreview(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {

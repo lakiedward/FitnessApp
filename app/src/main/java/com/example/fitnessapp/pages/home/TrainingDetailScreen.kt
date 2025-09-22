@@ -12,6 +12,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -112,6 +113,12 @@ fun TrainingDetailScreen(
     var error by remember { mutableStateOf<String?>(null) }
 
     val pullToRefreshState = rememberPullToRefreshState()
+    val colorScheme = MaterialTheme.colorScheme
+    val gradientContentColor = if (isSystemInDarkTheme()) {
+        colorScheme.onSurface
+    } else {
+        colorScheme.onPrimary
+    }
 
     // Add pull-to-refresh handler
     if (pullToRefreshState.isRefreshing) {
@@ -189,7 +196,7 @@ fun TrainingDetailScreen(
 
     val gradient = Brush.verticalGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.primary,
+            colorScheme.primary,
             MaterialTheme.extendedColors.chartAltitude,
             MaterialTheme.extendedColors.gradientAccent
         )
@@ -218,7 +225,7 @@ fun TrainingDetailScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            tint = gradientContentColor
                         )
                     }
                 },
@@ -232,21 +239,21 @@ fun TrainingDetailScreen(
                                 else -> Icons.Default.Speed
                             },
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary,
+                            tint = gradientContentColor,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text = training.workout_name,
                             style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = gradientContentColor
                         )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Color.Transparent,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    navigationIconContentColor = gradientContentColor,
+                    titleContentColor = gradientContentColor
                 )
             )
         },
