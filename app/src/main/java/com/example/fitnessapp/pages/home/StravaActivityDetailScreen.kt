@@ -33,6 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Favorite
@@ -170,8 +171,8 @@ private fun ShimmerPlaceholder(modifier: Modifier = Modifier, height: Int = 32) 
 // Reusable Section Header Composable
 @Composable
 fun SectionHeader(
-    icon: ImageVector, 
-    title: String, 
+    icon: ImageVector,
+    title: String,
     modifier: Modifier = Modifier
 ) {
     val colorScheme = MaterialTheme.colorScheme
@@ -194,6 +195,362 @@ fun SectionHeader(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             letterSpacing = 0.1.em
         )
+    }
+}
+
+@Composable
+private fun ActivityOverviewCard(activity: StravaActivity) {
+    val colorScheme = MaterialTheme.colorScheme
+    val extendedColors = MaterialTheme.extendedColors
+    val onGradient = colorScheme.onPrimary
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(28.dp),
+        border = BorderStroke(1.dp, colorScheme.primary.copy(alpha = 0.12f)),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        elevation = CardDefaults.cardElevation(0.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            extendedColors.gradientPrimary.copy(alpha = 0.95f),
+                            extendedColors.gradientSecondary.copy(alpha = 0.95f)
+                        )
+                    )
+                )
+                .padding(24.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .background(
+                                color = onGradient.copy(alpha = 0.15f),
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = when (activity.type.lowercase(Locale.getDefault())) {
+                                "ride", "virtualride" -> Icons.Default.DirectionsBike
+                                "run" -> Icons.Default.DirectionsRun
+                                "swim" -> Icons.Default.Pool
+                                else -> Icons.Default.Speed
+                            },
+                            contentDescription = "Activity type ${activity.type}",
+                            tint = onGradient,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = "Strava Activity",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = onGradient.copy(alpha = 0.75f)
+                        )
+                        Text(
+                            text = activity.name,
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = onGradient,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = formatActivityType(activity.type),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = onGradient.copy(alpha = 0.85f)
+                        )
+                    }
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.CalendarToday,
+                        contentDescription = null,
+                        tint = onGradient.copy(alpha = 0.85f),
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        text = formatStartDate(activity.startDate),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = onGradient.copy(alpha = 0.85f)
+                    )
+                }
+
+                val location = listOfNotNull(
+                    activity.location_city,
+                    activity.location_state,
+                    activity.location_country
+                )
+                    .filter { it.isNotBlank() }
+                    .joinToString(separator = ", ")
+
+                if (location.isNotEmpty()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Place,
+                            contentDescription = null,
+                            tint = onGradient.copy(alpha = 0.85f),
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = location,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = onGradient.copy(alpha = 0.85f)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TrainingTypeCard(activity: StravaActivity) {
+    val colorScheme = MaterialTheme.colorScheme
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
+        border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.1f)),
+        elevation = CardDefaults.cardElevation(6.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Training Type",
+                style = MaterialTheme.typography.labelLarge,
+                color = colorScheme.onSurfaceVariant
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = when (activity.type.lowercase(Locale.getDefault())) {
+                        "ride", "virtualride" -> Icons.Default.DirectionsBike
+                        "run" -> Icons.Default.DirectionsRun
+                        "swim" -> Icons.Default.Pool
+                        else -> Icons.Default.Speed
+                    },
+                    contentDescription = null,
+                    tint = colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = formatActivityType(activity.type),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colorScheme.onSurface
+                    )
+                    Text(
+                        text = if (activity.manual) {
+                            "Logged in FitSense"
+                        } else {
+                            "Synced automatically from Strava"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+private data class KeyMetric(
+    val label: String,
+    val value: String,
+    val icon: ImageVector
+)
+
+@Composable
+private fun ActivityCoreStatsRow(activity: StravaActivity) {
+    val metrics = buildList {
+        activity.distance?.let { distance ->
+            add(
+                KeyMetric(
+                    label = "Distance",
+                    value = "${String.format(Locale.getDefault(), "%.1f", distance / 1000f)} km",
+                    icon = Icons.Filled.Place
+                )
+            )
+        }
+
+        add(
+            KeyMetric(
+                label = "Moving Time",
+                value = formatMovingTime(activity.movingTime),
+                icon = Icons.Filled.Timer
+            )
+        )
+
+        activity.averageSpeed?.let { speed ->
+            add(
+                KeyMetric(
+                    label = "Avg Speed",
+                    value = "${String.format(Locale.getDefault(), "%.1f", speed * 3.6f)} km/h",
+                    icon = Icons.Filled.Speed
+                )
+            )
+        }
+
+        activity.totalElevationGain?.let { gain ->
+            add(
+                KeyMetric(
+                    label = "Elevation Gain",
+                    value = "${String.format(Locale.getDefault(), "%.0f", gain)} m",
+                    icon = Icons.Filled.Terrain
+                )
+            )
+        }
+    }
+
+    if (metrics.isEmpty()) {
+        return
+    }
+
+    val displayedMetrics = metrics.take(3)
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        displayedMetrics.forEach { metric ->
+            KeyMetricChip(metric = metric, modifier = Modifier.weight(1f))
+        }
+        repeat(3 - displayedMetrics.size) {
+            Spacer(modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+private fun KeyMetricChip(metric: KeyMetric, modifier: Modifier = Modifier) {
+    val colorScheme = MaterialTheme.colorScheme
+
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
+        border = BorderStroke(1.dp, colorScheme.primary.copy(alpha = 0.08f)),
+        elevation = CardDefaults.cardElevation(6.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = metric.icon,
+                contentDescription = metric.label,
+                tint = colorScheme.primary,
+                modifier = Modifier.size(24.dp)
+            )
+            Text(
+                text = metric.value,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = colorScheme.onSurface
+            )
+            Text(
+                text = metric.label,
+                style = MaterialTheme.typography.bodySmall,
+                color = colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun WorkoutStructureCard(
+    activity: StravaActivity,
+    userMaxBpm: Int?,
+    heartRateData: List<Int>?
+) {
+    val colorScheme = MaterialTheme.colorScheme
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
+        border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.1f)),
+        elevation = CardDefaults.cardElevation(6.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Workout Structure",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = colorScheme.onSurface
+            )
+            Text(
+                text = "Zone distribution",
+                style = MaterialTheme.typography.bodySmall,
+                color = colorScheme.onSurfaceVariant
+            )
+
+            val averageHr = activity.averageHeartrate
+            val resolvedMaxBpm = userMaxBpm
+
+            if (averageHr != null && resolvedMaxBpm != null) {
+                val activityMaxHr = activity.maxHeartrate?.toFloat() ?: averageHr
+                HeartRateZoneDistribution(
+                    avgHr = averageHr,
+                    maxHr = activityMaxHr,
+                    maxBpm = resolvedMaxBpm,
+                    heartRateData = heartRateData
+                )
+            } else {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceVariant),
+                    elevation = CardDefaults.cardElevation(0.dp)
+                ) {
+                    Text(
+                        text = "Sync a heart rate monitor to see detailed zone insights.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun formatActivityType(type: String): String {
+    return when (type.lowercase(Locale.getDefault())) {
+        "ride", "virtualride" -> "Cycling"
+        "run", "trailrun" -> "Running"
+        "swim" -> "Swimming"
+        "walk" -> "Walking"
+        "hike" -> "Hiking"
+        "workout" -> "Workout"
+        else -> type.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 }
 
@@ -294,8 +651,8 @@ fun StravaActivityDetailScreen(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        colorScheme.primary,
-                        colorScheme.secondary,
+                        extendedColors.gradientPrimary,
+                        extendedColors.gradientSecondary,
                         extendedColors.gradientAccent
                     )
                 )
@@ -509,6 +866,13 @@ fun StravaActivityDetailScreen(
 
                     else -> {
                         // --- Main Content with AnimatedVisibility per section card ---
+                        val currentActivity = activity!!
+                        val userMaxBpm = maxBpm?.takeIf { it > 0 }
+                            ?: currentActivity.maxHeartrate?.takeIf { it > 0 }
+                        val heartRateData = remember(streamsFromDB) {
+                            getHeartRateDataFromStreams(streamsFromDB)
+                        }
+
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -516,91 +880,58 @@ fun StravaActivityDetailScreen(
                             contentPadding = PaddingValues(bottom = 36.dp),
                             verticalArrangement = Arrangement.spacedBy(24.dp)
                         ) {
-                            // Activity Summary Card
                             item {
                                 AnimatedVisibility(
-                                    visible = true, 
+                                    visible = true,
                                     enter = fadeIn(animationSpec = tween(300, delayMillis = 0)) + slideInVertically { it/4 }
                                 ) {
-                                    Card(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .shadow(
-                                                elevation = 8.dp,
-                                                shape = RoundedCornerShape(20.dp),
-                                                ambientColor = colorScheme.primary.copy(alpha = 0.1f),
-                                                spotColor = colorScheme.primary.copy(alpha = 0.1f)
-                                            )
-                                            .border(
-                                                BorderStroke(1.dp, extendedColors.borderSubtle),
-                                                RoundedCornerShape(20.dp)
-                                            ),
-                                        shape = RoundedCornerShape(20.dp),
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
-                                        ),
-                                        elevation = CardDefaults.cardElevation(0.dp)
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .background(
-                                                    brush = Brush.horizontalGradient(
-                                                        colors = listOf(
-                                                            MaterialTheme.colorScheme.surfaceVariant,
-                                                            MaterialTheme.colorScheme.surfaceVariant.copy(
-                                                                alpha = 0.7f
-                                                            )
-                                                        )
-                                                    )
-                                                )
-                                        ) {
-                                            Row(
-                                                modifier = Modifier.padding(24.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Column {
-                                                    Text(
-                                                        "Activity Summary",
-                                                        style = MaterialTheme.typography.titleSmall,
-                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                        fontWeight = FontWeight.Medium
-                                                    )
-                                                    Text(
-                                                        activity!!.type,
-                                                        style = MaterialTheme.typography.headlineSmall,
-                                                        color = MaterialTheme.colorScheme.onSurface,
-                                                        fontWeight = FontWeight.Bold
-                                                    )
-                                                }
-                                                Text(
-                                                    formatStartDate(activity!!.startDate),
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                                )
-                                            }
-                                        }
-                                    }
+                                    ActivityOverviewCard(activity = currentActivity)
                                 }
                             }
-                            // --- Section Header with Icon: Statistics ---
                             item {
                                 AnimatedVisibility(
                                     visible = true,
                                     enter = fadeIn(animationSpec = tween(300, delayMillis = 100)) + slideInVertically { it/4 }
                                 ) {
-                                    Column {
-                                        SectionHeader(Icons.Filled.Speed, "Statistics")
-                                        ActivityStatsSection(activity!!)
+                                    TrainingTypeCard(activity = currentActivity)
+                                }
+                            }
+                            item {
+                                AnimatedVisibility(
+                                    visible = true,
+                                    enter = fadeIn(animationSpec = tween(300, delayMillis = 150)) + slideInVertically { it/4 }
+                                ) {
+                                    ActivityCoreStatsRow(activity = currentActivity)
+                                }
+                            }
+                            if (currentActivity.averageHeartrate != null || userMaxBpm != null) {
+                                item {
+                                    AnimatedVisibility(
+                                        visible = true,
+                                        enter = fadeIn(animationSpec = tween(300, delayMillis = 200)) + slideInVertically { it/4 }
+                                    ) {
+                                        WorkoutStructureCard(
+                                            activity = currentActivity,
+                                            userMaxBpm = userMaxBpm,
+                                            heartRateData = heartRateData
+                                        )
                                     }
+                                }
+                            }
+                            // Detailed statistics card
+                            item {
+                                AnimatedVisibility(
+                                    visible = true,
+                                    enter = fadeIn(animationSpec = tween(300, delayMillis = 250)) + slideInVertically { it/4 }
+                                ) {
+                                    ActivityStatsSection(activity = currentActivity)
                                 }
                             }
                             // --- Section Header with Icon: Route Map ---
                             item {
                                 AnimatedVisibility(
                                     visible = true,
-                                    enter = fadeIn(animationSpec = tween(300, delayMillis = 200)) + slideInVertically { it/4 }
+                                    enter = fadeIn(animationSpec = tween(300, delayMillis = 300)) + slideInVertically { it/4 }
                                 ) {
                                     Column {
                                         SectionHeader(Icons.Filled.Place, "Route Map")
@@ -651,27 +982,6 @@ fun StravaActivityDetailScreen(
                                         }
                                     }
                                 }
-                                    }
-                                }
-                            }
-                            // --- Section Header with Icon: Heart Rate ---
-                            if (activity!!.averageHeartrate != null) {
-                                item {
-                                    AnimatedVisibility(
-                                        visible = true,
-                                        enter = fadeIn(animationSpec = tween(300, delayMillis = 300)) + slideInVertically { it/4 }
-                                    ) {
-                                        Column {
-                                            SectionHeader(Icons.Filled.Favorite, "Heart Rate Zones (Max BPM)")
-                                            HeartRateZoneDistribution(
-                                                avgHr = activity!!.averageHeartrate!!.toFloat(),
-                                                maxHr = (activity!!.maxHeartrate ?: 200).toFloat(),
-                                                maxBpm = maxBpm ?: 200,
-                                                heartRateData = getHeartRateDataFromStreams(
-                                                    streamsFromDB
-                                                )
-                                            )
-                                        }
                                     }
                                 }
                             }
@@ -777,7 +1087,8 @@ fun StravaActivityDetailScreen(
                                                         scaleY = stravaButtonScale
                                                     ),
                                                 colors = ButtonDefaults.buttonColors(
-                                                    containerColor = colorScheme.primary
+                                                    containerColor = extendedColors.gradientPrimary,
+                                                    contentColor = colorScheme.onPrimary
                                                 ),
                                                 elevation = ButtonDefaults.buttonElevation(12.dp),
                                                 shape = RoundedCornerShape(16.dp),
