@@ -2,7 +2,6 @@ package com.example.fitnessapp.pages.more
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,56 +60,68 @@ fun TrainingZonesScreen(
     var currentHeartRate by remember { mutableStateOf(150) } // Current HR for demo
     var currentPower by remember { mutableStateOf(200) } // Current power for demo
 
-    val gradientColors = listOf(
-        MaterialTheme.extendedColors.gradientPrimary,
-        MaterialTheme.extendedColors.gradientSecondary,
-        MaterialTheme.extendedColors.gradientAccent
-    )
-
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(brush = Brush.verticalGradient(colors = gradientColors))
-                    .statusBarsPadding()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.extendedColors.gradientPrimary,
+                                MaterialTheme.extendedColors.gradientSecondary,
+                                MaterialTheme.extendedColors.gradientAccent
+                            )
+                        )
+                    )
                     .padding(horizontal = 16.dp, vertical = 20.dp)
             ) {
-                IconButton(
-                    onClick = { navController.navigateUp() },
-                    modifier = Modifier.align(Alignment.CenterStart)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onPrimary
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Text(
+                        text = "Training Zones",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Bold
                     )
                 }
-
-                Text(
-                    text = "Training Zones",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(Alignment.Center)
-                )
             }
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = Brush.verticalGradient(colors = gradientColors))
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.extendedColors.gradientPrimary,
+                            MaterialTheme.extendedColors.gradientSecondary,
+                            MaterialTheme.extendedColors.gradientAccent
+                        )
+                    )
+                )
         ) {
-            Surface(
+            Card(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-                color = MaterialTheme.extendedColors.surfaceSubtle,
-                tonalElevation = 2.dp
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 16.dp),
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -220,7 +229,7 @@ fun CurrentMetricCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.height(136.dp),
+        modifier = modifier.height(132.dp),
         colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.12f)),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -442,7 +451,7 @@ fun TrainingSection(title: String, content: @Composable ColumnScope.() -> Unit) 
         )
         Card(
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.extendedColors.surfaceSubtle),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
