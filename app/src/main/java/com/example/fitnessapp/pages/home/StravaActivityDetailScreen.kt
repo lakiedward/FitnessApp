@@ -59,6 +59,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
@@ -69,6 +70,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -97,6 +99,9 @@ import com.example.fitnessapp.model.ActivityStreamsResponse
 import com.example.fitnessapp.model.StravaActivity
 import com.example.fitnessapp.viewmodel.StravaViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModelFactory
+import androidx.core.view.WindowCompat
+import androidx.compose.ui.graphics.toArgb
+import android.app.Activity
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -573,10 +578,23 @@ fun StravaActivityDetailScreen(
 
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
-    val gradientContentColor = if (isSystemInDarkTheme()) {
+    val isDarkTheme = isSystemInDarkTheme()
+    val gradientContentColor = if (isDarkTheme) {
         colorScheme.onSurface
     } else {
         colorScheme.onPrimary
+    }
+    val useDarkIcons = !isDarkTheme
+
+    val hostActivity = LocalContext.current as? Activity
+    SideEffect {
+        hostActivity?.let { act ->
+            val window = act.window
+            window.statusBarColor = Color.Transparent.toArgb()
+            val controller = WindowCompat.getInsetsController(window, window.decorView)
+            controller.isAppearanceLightStatusBars = useDarkIcons
+            controller.isAppearanceLightNavigationBars = useDarkIcons
+        }
     }
 
     var activity by remember { mutableStateOf<StravaActivity?>(null) }
@@ -657,9 +675,18 @@ fun StravaActivityDetailScreen(
                     )
                 )
             )
-            .nestedScroll(pullToRefreshState.nestedScrollConnection)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(pullToRefreshState.nestedScrollConnection),
+            containerColor = Color.Transparent
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
             // --- Header (accessibility: guarantee 48dp min icons) ---
             Row(
                 modifier = Modifier
@@ -931,57 +958,60 @@ fun StravaActivityDetailScreen(
                             item {
                                 AnimatedVisibility(
                                     visible = true,
-                                    enter = fadeIn(animationSpec = tween(300, delayMillis = 300)) + slideInVertically { it/4 }
+                                    enter = fadeIn(animationSpec = tween(300, delayMillis = 300)) + slideInVertically { it / 4 }
                                 ) {
                                     Column {
                                         SectionHeader(Icons.Filled.Place, "Route Map")
-                                // ... existing RouteMapSection code ... remain unchanged
-                                val mapData = mapViewData
-                                when {
-                                    mapData?.get("gpx_data") != null && mapData["gpx_data"]!!.isNotEmpty() -> {
-                                        val gpxData = mapData["gpx_data"]!!
-                                        RouteMapSection(gpxData = gpxData)
-                                    }
 
-                                    mapData?.get("html_url") != null && mapData["html_url"]!!.isNotEmpty() -> {
-                                        RouteMapSection(htmlUrl = mapData["html_url"]!!)
-                                    }
+                                        val mapData = mapViewData
+                                        when {
+                                            mapData?.get("gpx_data") != null && mapData["gpx_data"]!!.isNotEmpty() -> {
+                                                val gpxData = mapData["gpx_data"]!!
+                                                RouteMapSection(gpxData = gpxData)
+                                            }
 
-                                    mapData?.get("map_html") != null && mapData["map_html"]!!.isNotEmpty() -> {
-                                        RouteMapSection(mapHtml = mapData["map_html"]!!)
-                                    }
+                                            mapData?.get("html_url") != null && mapData["html_url"]!!.isNotEmpty() -> {
+                                                RouteMapSection(htmlUrl = mapData["html_url"]!!)
+                                            }
 
-                                    activity?.map?.summaryPolyline != null && activity?.map?.summaryPolyline!!.isNotEmpty() -> {
-                                        RouteMapSection(polyline = activity!!.map!!.summaryPolyline!!)
-                                    }
+                                            mapData?.get("map_html") != null && mapData["map_html"]!!.isNotEmpty() -> {
+                                                RouteMapSection(mapHtml = mapData["map_html"]!!)
+                                            }
 
-                                    activity?.map?.polyline != null && activity?.map?.polyline!!.isNotEmpty() -> {
-                                        RouteMapSection(polyline = activity!!.map!!.polyline!!)
-                                    }
-                                    else -> {
-                                        Card(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 8.dp)
-                                                .shadow(
-                                                    elevation = 4.dp,
-                                                    shape = RoundedCornerShape(20.dp)
-                                                ),
-                                            shape = RoundedCornerShape(20.dp),
-                                            border = BorderStroke(1.dp, extendedColors.borderSubtle),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                                            elevation = CardDefaults.cardElevation(0.dp)
-                                        ) {
-                                            Text(
-                                                text = "No route data available for this activity",
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                modifier = Modifier.padding(20.dp),
-                                                textAlign = TextAlign.Center
-                                            )
+                                            activity?.map?.summaryPolyline != null && activity?.map?.summaryPolyline!!.isNotEmpty() -> {
+                                                RouteMapSection(polyline = activity!!.map!!.summaryPolyline!!)
+                                            }
+
+                                            activity?.map?.polyline != null && activity?.map?.polyline!!.isNotEmpty() -> {
+                                                RouteMapSection(polyline = activity!!.map!!.polyline!!)
+                                            }
+
+                                            else -> {
+                                                Card(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(vertical = 8.dp)
+                                                        .shadow(
+                                                            elevation = 4.dp,
+                                                            shape = RoundedCornerShape(20.dp)
+                                                        ),
+                                                    shape = RoundedCornerShape(20.dp),
+                                                    border = BorderStroke(1.dp, extendedColors.borderSubtle),
+                                                    colors = CardDefaults.cardColors(
+                                                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                                    ),
+                                                    elevation = CardDefaults.cardElevation(0.dp)
+                                                ) {
+                                                    Text(
+                                                        text = "No route data available for this activity",
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        modifier = Modifier.padding(20.dp),
+                                                        textAlign = TextAlign.Center
+                                                    )
+                                                }
+                                            }
                                         }
-                                    }
-                                }
                                     }
                                 }
                             }
@@ -1131,6 +1161,7 @@ fun StravaActivityDetailScreen(
             modifier = Modifier.align(Alignment.TopCenter)
         )
     }
+}
 }
 
 @Composable

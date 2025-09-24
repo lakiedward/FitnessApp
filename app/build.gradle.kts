@@ -105,6 +105,9 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.animation:animation")
 
+    // Accompanist (for system UI controller)
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
+
     // Shimmer effect for loading placeholders
     implementation("com.valentinilk.shimmer:compose-shimmer:1.2.0")
 
