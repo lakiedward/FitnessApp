@@ -953,57 +953,60 @@ fun StravaActivityDetailScreen(
                             item {
                                 AnimatedVisibility(
                                     visible = true,
-                                    enter = fadeIn(animationSpec = tween(300, delayMillis = 300)) + slideInVertically { it/4 }
+                                    enter = fadeIn(animationSpec = tween(300, delayMillis = 300)) + slideInVertically { it / 4 }
                                 ) {
                                     Column {
                                         SectionHeader(Icons.Filled.Place, "Route Map")
-                                // ... existing RouteMapSection code ... remain unchanged
-                                val mapData = mapViewData
-                                when {
-                                    mapData?.get("gpx_data") != null && mapData["gpx_data"]!!.isNotEmpty() -> {
-                                        val gpxData = mapData["gpx_data"]!!
-                                        RouteMapSection(gpxData = gpxData)
-                                    }
 
-                                    mapData?.get("html_url") != null && mapData["html_url"]!!.isNotEmpty() -> {
-                                        RouteMapSection(htmlUrl = mapData["html_url"]!!)
-                                    }
+                                        val mapData = mapViewData
+                                        when {
+                                            mapData?.get("gpx_data") != null && mapData["gpx_data"]!!.isNotEmpty() -> {
+                                                val gpxData = mapData["gpx_data"]!!
+                                                RouteMapSection(gpxData = gpxData)
+                                            }
 
-                                    mapData?.get("map_html") != null && mapData["map_html"]!!.isNotEmpty() -> {
-                                        RouteMapSection(mapHtml = mapData["map_html"]!!)
-                                    }
+                                            mapData?.get("html_url") != null && mapData["html_url"]!!.isNotEmpty() -> {
+                                                RouteMapSection(htmlUrl = mapData["html_url"]!!)
+                                            }
 
-                                    activity?.map?.summaryPolyline != null && activity?.map?.summaryPolyline!!.isNotEmpty() -> {
-                                        RouteMapSection(polyline = activity!!.map!!.summaryPolyline!!)
-                                    }
+                                            mapData?.get("map_html") != null && mapData["map_html"]!!.isNotEmpty() -> {
+                                                RouteMapSection(mapHtml = mapData["map_html"]!!)
+                                            }
 
-                                    activity?.map?.polyline != null && activity?.map?.polyline!!.isNotEmpty() -> {
-                                        RouteMapSection(polyline = activity!!.map!!.polyline!!)
-                                    }
-                                    else -> {
-                                        Card(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 8.dp)
-                                                .shadow(
-                                                    elevation = 4.dp,
-                                                    shape = RoundedCornerShape(20.dp)
-                                                ),
-                                            shape = RoundedCornerShape(20.dp),
-                                            border = BorderStroke(1.dp, extendedColors.borderSubtle),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                                            elevation = CardDefaults.cardElevation(0.dp)
-                                        ) {
-                                            Text(
-                                                text = "No route data available for this activity",
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                modifier = Modifier.padding(20.dp),
-                                                textAlign = TextAlign.Center
-                                            )
+                                            activity?.map?.summaryPolyline != null && activity?.map?.summaryPolyline!!.isNotEmpty() -> {
+                                                RouteMapSection(polyline = activity!!.map!!.summaryPolyline!!)
+                                            }
+
+                                            activity?.map?.polyline != null && activity?.map?.polyline!!.isNotEmpty() -> {
+                                                RouteMapSection(polyline = activity!!.map!!.polyline!!)
+                                            }
+
+                                            else -> {
+                                                Card(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(vertical = 8.dp)
+                                                        .shadow(
+                                                            elevation = 4.dp,
+                                                            shape = RoundedCornerShape(20.dp)
+                                                        ),
+                                                    shape = RoundedCornerShape(20.dp),
+                                                    border = BorderStroke(1.dp, extendedColors.borderSubtle),
+                                                    colors = CardDefaults.cardColors(
+                                                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                                    ),
+                                                    elevation = CardDefaults.cardElevation(0.dp)
+                                                ) {
+                                                    Text(
+                                                        text = "No route data available for this activity",
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        modifier = Modifier.padding(20.dp),
+                                                        textAlign = TextAlign.Center
+                                                    )
+                                                }
+                                            }
                                         }
-                                    }
-                                }
                                     }
                                 }
                             }
@@ -1153,6 +1156,7 @@ fun StravaActivityDetailScreen(
             modifier = Modifier.align(Alignment.TopCenter)
         )
     }
+}
 }
 
 @Composable
