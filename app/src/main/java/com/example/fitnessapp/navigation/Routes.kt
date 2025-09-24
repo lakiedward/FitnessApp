@@ -42,6 +42,9 @@ object Routes {
     const val STRAVA_ACTIVITY_DETAIL = "strava_activity_detail/{activityId}"
     const val TRAINING_CREATE = "training_detail/new?date={date}"
 
+    // Full screen map route
+    const val FULL_SCREEN_MAP_ROUTE = "full_screen_map"
+
     // Builders
     fun trainingDetail(id: Int) = "training_detail/$id"
     fun loadingTraining(id: Int) = "loading_training/$id"

@@ -14,6 +14,7 @@ import com.example.fitnessapp.model.FTPEstimate
 import com.example.fitnessapp.model.StravaActivity
 import com.example.fitnessapp.model.StravaAthlete
 import com.example.fitnessapp.model.StravaUserData
+import com.example.fitnessapp.model.StravaGear
 import com.example.fitnessapp.utils.AuthManager
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -60,6 +61,10 @@ class StravaViewModel(private val context: Context) : ViewModel() {
     // Cycling FTHR estimate (bpm)
     private val _fthrEstimate = MutableStateFlow<Int?>(null)
     val fthrEstimate: StateFlow<Int?> = _fthrEstimate.asStateFlow()
+
+    // Gear details for activities
+    private val _gearDetails = MutableStateFlow<StravaGear?>(null)
+    val gearDetails: StateFlow<StravaGear?> = _gearDetails.asStateFlow()
 
     private val prefs: SharedPreferences by lazy {
         context.getSharedPreferences("strava_prefs", Context.MODE_PRIVATE)
@@ -1230,6 +1235,24 @@ class StravaViewModel(private val context: Context) : ViewModel() {
                 null
             }
         }
+    }
+
+    fun fetchGearDetails(gearId: String) {
+        viewModelScope.launch {
+            try {
+                val jwtToken = authManager.getJwtToken() ?: return@launch
+                Log.d("StravaViewModel", "Fetching gear details for $gearId")
+                val gear = apiService.getGearDetails("Bearer $jwtToken", gearId)
+                _gearDetails.value = gear
+            } catch (e: Exception) {
+                Log.e("StravaViewModel", "Failed to fetch gear details for $gearId", e)
+                _gearDetails.value = null
+            }
+        }
+    }
+
+    fun clearGearDetails() {
+        _gearDetails.value = null
     }
 
     // Get max BPM for the user

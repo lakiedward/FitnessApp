@@ -1,0 +1,861 @@
+-- Merging decision tree log ---
+application
+INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:42:5-125:19
+INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:42:5-125:19
+MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:14:5-22:19
+MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:14:5-22:19
+MERGED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1f415a94333f358b7c1f973c04bcf2c8\transformed\ui-tooling-release\AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1f415a94333f358b7c1f973c04bcf2c8\transformed\ui-tooling-release\AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-test-manifest:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8c0b91e67593d85f5cb834d0a8519be0\transformed\ui-test-manifest-1.6.1\AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-test-manifest:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8c0b91e67593d85f5cb834d0a8519be0\transformed\ui-test-manifest-1.6.1\AndroidManifest.xml:22:5-26:19
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:36:5-42:19
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:36:5-42:19
+MERGED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:22:5-38:19
+MERGED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:22:5-38:19
+MERGED from [com.google.android.gms:play-services-location:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\00f8ace8d42cd9073686df1d1b070df6\transformed\play-services-location-21.1.0\AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-location:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\00f8ace8d42cd9073686df1d1b070df6\transformed\play-services-location-21.1.0\AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-fitness:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c189e5ab904bfbd855fb0320823f0d4d\transformed\play-services-fitness-21.1.0\AndroidManifest.xml:22:5-26:19
+MERGED from [com.google.android.gms:play-services-fitness:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c189e5ab904bfbd855fb0320823f0d4d\transformed\play-services-fitness-21.1.0\AndroidManifest.xml:22:5-26:19
+MERGED from [com.google.android.gms:play-services-fido:20.0.1] C:\Users\lakie\.gradle\caches\8.13\transforms\c8d01039411495d2a3f95e26224b63c5\transformed\play-services-fido-20.0.1\AndroidManifest.xml:7:5-8:19
+MERGED from [com.google.android.gms:play-services-fido:20.0.1] C:\Users\lakie\.gradle\caches\8.13\transforms\c8d01039411495d2a3f95e26224b63c5\transformed\play-services-fido-20.0.1\AndroidManifest.xml:7:5-8:19
+MERGED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:19:5-23:19
+MERGED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:19:5-23:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:23:5-33:19
+MERGED from [com.google.android.gms:play-services-tasks:18.0.2] C:\Users\lakie\.gradle\caches\8.13\transforms\e269e39e1ad98035fc71505259f03444\transformed\play-services-tasks-18.0.2\AndroidManifest.xml:5:5-20
+MERGED from [com.google.android.gms:play-services-tasks:18.0.2] C:\Users\lakie\.gradle\caches\8.13\transforms\e269e39e1ad98035fc71505259f03444\transformed\play-services-tasks-18.0.2\AndroidManifest.xml:5:5-20
+MERGED from [com.google.android.gms:play-services-basement:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\80d9f19a1d7f1c0cb84095346163cac2\transformed\play-services-basement-18.2.0\AndroidManifest.xml:20:5-24:19
+MERGED from [com.google.android.gms:play-services-basement:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\80d9f19a1d7f1c0cb84095346163cac2\transformed\play-services-basement-18.2.0\AndroidManifest.xml:20:5-24:19
+MERGED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:28:5-89
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:23:5-53:19
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:28:5-36:19
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:28:5-36:19
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:25:5-39:19
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:25:5-39:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\92114624f13d06f258fcb6ae9383c66e\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\92114624f13d06f258fcb6ae9383c66e\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\6998cb23adf3489cec60eb7a1337dfb9\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\6998cb23adf3489cec60eb7a1337dfb9\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+	android:extractNativeLibs
+		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:49:9-35
+	android:label
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:47:9-41
+	android:fullBackupContent
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:45:9-54
+	android:roundIcon
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:48:9-45
+	tools:targetApi
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:53:9-29
+	android:icon
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:46:9-40
+	android:allowBackup
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:43:9-35
+	android:theme
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:50:9-48
+	android:networkSecurityConfig
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:51:9-69
+	android:dataExtractionRules
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:44:9-65
+	android:usesCleartextTraffic
+		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:52:9-56
+manifest
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
+INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
+INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
+INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
+MERGED from [com.google.maps.android:maps-compose:4.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a02fabb1ab0eb3f6b3d6ea16fdb65d6a\transformed\maps-compose-4.3.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.maps.android:maps-ktx:5.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\86da30fccbaf84b62751d50f6b5ca6d7\transformed\maps-ktx-5.0.0\AndroidManifest.xml:18:1-23:12
+MERGED from [androidx.databinding:viewbinding:8.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\ffe0d3ec9393ed1e14b45a4e2edc2523\transformed\viewbinding-8.13.0\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:2:1-24:12
+MERGED from [io.coil-kt:coil-gif:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b935f705fd1cdb5e16c9b1caf3026569\transformed\coil-gif-2.5.0\AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil-compose:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e03d0c31ab9d97b052c0348961528dc5\transformed\coil-compose-2.5.0\AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil-compose-base:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c9f659e92a52c2224f2ab28d17e4c171\transformed\coil-compose-base-2.5.0\AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\2ac8c9faeb41acfa02b81eaded6b7f98\transformed\coil-2.5.0\AndroidManifest.xml:2:1-7:12
+MERGED from [io.coil-kt:coil-base:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\57830ec899e13702be820898520b5f71\transformed\coil-base-2.5.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.appcompat:appcompat-resources:1.7.1] C:\Users\lakie\.gradle\caches\8.13\transforms\0ec5250ea888e3c71645ec0d7f97d60f\transformed\appcompat-resources-1.7.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.appcompat:appcompat:1.7.1] C:\Users\lakie\.gradle\caches\8.13\transforms\038e5473679f716ee7f46a59b74fca7b\transformed\appcompat-1.7.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigation:navigation-common:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\ebe4ea33c9cfdfb41672ad02615fc81a\transformed\navigation-common-2.7.7\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.navigation:navigation-runtime:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\a5ef6be21089b13b12f6ef198fe6957e\transformed\navigation-runtime-2.7.7\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.navigation:navigation-common-ktx:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\035f38509a2fe9a19a4be57bae407bb6\transformed\navigation-common-ktx-2.7.7\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\57c4c6033d9b7381fca78fd37367cac8\transformed\navigation-runtime-ktx-2.7.7\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.navigation:navigation-compose:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\820f99a536199c0dcd781ff717f81a80\transformed\navigation-compose-2.7.7\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.compose.material3:material3-android:1.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\1bf742f0d497519044b029f18955ba89\transformed\material3-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.material:material-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\b765648a1d9c71faaa1fe72067ceef6a\transformed\material-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-core-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\e76d558845e056679207ae6d2fb60211\transformed\material-icons-core-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-extended-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\a76900131b435c5f01d61a7929367f8c\transformed\material-icons-extended-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-ripple-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\b919c2cdbed39e7358c02533d02f5b8a\transformed\material-ripple-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\91deec6d457f3713763090a9be88d6a1\transformed\foundation-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-core-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\a8c88e81fb03bc7fe7233336c15b7b34\transformed\animation-core-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\78efdb8bf0152a11618db747d2a9da82\transformed\ui-tooling-data-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-unit-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\50035a5a1f8af15a3d1e4207b3956b81\transformed\ui-unit-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-geometry-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7bc9fd5c5b6ef378daf1ae33cd0e5a40\transformed\ui-geometry-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-text-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1396ff954988de08a20298eebcbcb767\transformed\ui-text-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-util-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\5bf1b4545a0799477f7f51b5c8d0a372\transformed\ui-util-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\f948598acac57a5e582f3c7a385100f3\transformed\ui-tooling-preview-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.ui:ui-graphics-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\cb0f0cbddb190b9d2710b55713933eb6\transformed\ui-graphics-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1f415a94333f358b7c1f973c04bcf2c8\transformed\ui-tooling-release\AndroidManifest.xml:17:1-28:12
+MERGED from [androidx.compose.animation:animation-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7cfa5e30f04d61e19eb3994110142585\transformed\animation-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\c182959f6b81ba51457b2989a514d20c\transformed\foundation-layout-release\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users\lakie\.gradle\caches\8.13\transforms\1ffda5a22f002b6ebbc25a091b6f7f4a\transformed\accompanist-drawablepainter-0.32.0\AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.compose.ui:ui-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\52f5edc9135c8979d3365be76c077115\transformed\ui-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-test-manifest:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8c0b91e67593d85f5cb834d0a8519be0\transformed\ui-test-manifest-1.6.1\AndroidManifest.xml:17:1-28:12
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:17:1-44:12
+MERGED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:17:1-40:12
+MERGED from [com.google.android.gms:play-services-location:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\00f8ace8d42cd9073686df1d1b070df6\transformed\play-services-location-21.1.0\AndroidManifest.xml:2:1-9:12
+MERGED from [com.google.android.gms:play-services-fitness:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c189e5ab904bfbd855fb0320823f0d4d\transformed\play-services-fitness-21.1.0\AndroidManifest.xml:17:1-28:12
+MERGED from [com.google.android.gms:play-services-auth-api-phone:18.0.1] C:\Users\lakie\.gradle\caches\8.13\transforms\093832fec2f82d6d6a74765861c2b9ac\transformed\play-services-auth-api-phone-18.0.1\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-auth-base:18.0.4] C:\Users\lakie\.gradle\caches\8.13\transforms\83d536da5fa4cd42a3c444a79389f709\transformed\play-services-auth-base-18.0.4\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-fido:20.0.1] C:\Users\lakie\.gradle\caches\8.13\transforms\c8d01039411495d2a3f95e26224b63c5\transformed\play-services-fido-20.0.1\AndroidManifest.xml:2:1-10:12
+MERGED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:16:1-24:12
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\6ebc253990733fe577850477ff6b7bff\transformed\emoji2-views-helper-1.3.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7d7dd6b61b0a2b2a4fc28004c1a142a3\transformed\savedstate-ktx-1.2.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\lakie\.gradle\caches\8.13\transforms\f3e7afb1cda599920531665ffffbf8b2\transformed\savedstate-1.2.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e36281875d7f63cabd293c7e3739cb99\transformed\lifecycle-livedata-core-2.7.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\8eb5b92633220aaac49fdf0b8fa89294\transformed\lifecycle-viewmodel-savedstate-2.7.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a5f949cc02398ab22351882d553a5b76\transformed\lifecycle-livedata-core-ktx-2.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.recyclerview:recyclerview:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\82230eb2daa1a7b19758decdd4a99db8\transformed\recyclerview-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\af29ef5a2b024514d3b6278b571f0af4\transformed\legacy-support-core-ui-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\fbe415914682d3d5392b2f3f2ca40166\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\393a458803cc33d6956a7a1b62dcffb8\transformed\loader-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\3f96f2f5f93d546719cf98f28adea1df\transformed\lifecycle-livedata-2.7.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\9516b11e405f577ec79dcf7a9a67e58a\transformed\lifecycle-viewmodel-2.7.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity-ktx:1.8.2] C:\Users\lakie\.gradle\caches\8.13\transforms\3585c77313a504f13c0d727b0fae38ca\transformed\activity-ktx-1.8.2\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\d4b3ecb8fb099276c22ba5c92f8be35f\transformed\lifecycle-viewmodel-ktx-2.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-tasks:18.0.2] C:\Users\lakie\.gradle\caches\8.13\transforms\e269e39e1ad98035fc71505259f03444\transformed\play-services-tasks-18.0.2\AndroidManifest.xml:2:1-6:12
+MERGED from [com.google.android.gms:play-services-basement:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\80d9f19a1d7f1c0cb84095346163cac2\transformed\play-services-basement-18.2.0\AndroidManifest.xml:16:1-26:12
+MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\lakie\.gradle\caches\8.13\transforms\522cef8169f397eaf6d5b8284f6cb1df\transformed\fragment-1.5.4\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.activity:activity:1.8.2] C:\Users\lakie\.gradle\caches\8.13\transforms\d24842d0b9e24eecf11e5a9ee2566f79\transformed\activity-1.8.2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity-compose:1.8.2] C:\Users\lakie\.gradle\caches\8.13\transforms\1d2326b41d6575da41d3221f24298f25\transformed\activity-compose-1.8.2\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7c81c4f3f4b7182eec194cfd7b8863bb\transformed\runtime-saveable-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\9a9382e49e8d5ccfbef4935680d88fe8\transformed\runtime-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-livedata:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8ee322dbe02ba6e7f019d182348d01b5\transformed\runtime-livedata-1.6.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.browser:browser:1.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e31feaae6d889eeae319b1f8a877f6b7\transformed\browser-1.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\70eb3341ae77f6e7cd6c37bca3f2adf1\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.core:core-ktx:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\37efe5abbb080a7851bc57b43876912b\transformed\core-ktx-1.13.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\4841045720576f4e67f044ccda11bf23\transformed\drawerlayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e0c7efbe2642c1bd362331fc4cbae873\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\235e3f07959e2536709f02959e2d7941\transformed\vectordrawable-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\159719bfbad9171f2945ad6afd56fa70\transformed\viewpager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\dab4fde4af6309d0c165fdcbcad92c43\transformed\coordinatorlayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\84476026c20b1bcebf1594b4a3b6a015\transformed\slidingpanelayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\9892878d77b7e42b355d30728c987d21\transformed\customview-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\3e1e86709333b2d08c28215103af4a58\transformed\autofill-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\f483354c3655e0e508c8b30049ba598d\transformed\swiperefreshlayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c2f89e02d0bff8a9590f7f4b5dee2f4b\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b52a417fc80c8ab322dfdf4e894076e6\transformed\lifecycle-runtime-2.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\f2ab4ec9b1088647fad0a61e6431213b\transformed\lifecycle-runtime-compose-2.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b5420ef1ec18e07aac44c1513a2ebd1b\transformed\lifecycle-viewmodel-compose-2.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e21dfea3f5985b6a9da183fea4422d4f\transformed\lifecycle-runtime-ktx-2.7.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\98a46d15ec64a216740bf29034b423e2\transformed\lifecycle-livedata-ktx-2.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e297295d87ed33fa33f9687d16164552\transformed\annotation-experimental-1.4.0\AndroidManifest.xml:2:1-7:12
+MERGED from [com.github.PhilJay:MPAndroidChart:v3.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a24511dc69d3a12dacd620eb589a2a28\transformed\MPAndroidChart-v3.1.0\AndroidManifest.xml:2:1-20:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a8a8f396983812074531153916ce49fd\transformed\cursoradapter-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7d17b19536d87d11fa013ec1961b2dcb\transformed\interpolator-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.cardview:cardview:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\1c5acff29683246166e6fc9fbcfb6e6e\transformed\cardview-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:15:1-38:12
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:15:1-41:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\92114624f13d06f258fcb6ae9383c66e\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\6998cb23adf3489cec60eb7a1337dfb9\transformed\startup-runtime-1.1.1\AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c55b3f706dddcaa11abf376fc54aa4bf\transformed\core-runtime-2.2.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7161a7dc77a002a353d90cbc2919c472\transformed\tracing-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.firebase:firebase-encoders-json:16.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e7e10b0fe481ccd65f0fef52b50465cf\transformed\firebase-encoders-json-16.1.0\AndroidManifest.xml:15:1-23:12
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] C:\Users\lakie\.gradle\caches\8.13\transforms\ae66fa723c5235f46d55e264d0f19724\transformed\exifinterface-1.3.6\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\8278accfcf096fd39408640fa967a859\transformed\documentfile-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\51b233a6f49b47d318ea2c10963ccdc3\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.print:print:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\19db2a27bb3833a7cc45998def556c49\transformed\print-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.volley:volley:1.2.1] C:\Users\lakie\.gradle\caches\8.13\transforms\ef80273e7c3ddb99d2ba28b6c2ab078e\transformed\volley-1.2.1\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.datatransport:transport-api:2.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\dde5200382be0255b2a341a85ad8f59f\transformed\transport-api-2.2.0\AndroidManifest.xml:15:1-22:12
+	package
+		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+	xmlns:tools
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:2:5-51
+	android:versionCode
+		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:1:11-69
+uses-permission#android.permission.INTERNET
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:4:5-67
+MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:12:5-67
+MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:12:5-67
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:24:5-67
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:24:5-67
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:26:5-67
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:26:5-67
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:4:22-64
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:5:5-79
+MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:10:5-79
+MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:10:5-79
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:5:22-76
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:6:5-81
+MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:9:5-81
+MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:9:5-81
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:6:22-78
+uses-permission#android.permission.ACTIVITY_RECOGNITION
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:7:5-79
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:7:22-76
+uses-permission#android.permission.ACCESS_BACKGROUND_LOCATION
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:8:5-85
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:8:22-82
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:9:5-81
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:9:22-78
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:10:5-80
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:10:22-77
+uses-permission#android.permission.BLUETOOTH
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:13:5-68
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:13:22-65
+uses-permission#android.permission.BLUETOOTH_ADMIN
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:14:5-74
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:14:22-71
+uses-permission#android.permission.BLUETOOTH_CONNECT
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:15:5-76
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:15:22-73
+uses-permission#android.permission.BLUETOOTH_SCAN
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:16:5-73
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:16:22-70
+uses-permission#android.permission.health.READ_STEPS
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:19:5-76
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:19:22-73
+uses-permission#android.permission.health.WRITE_STEPS
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:20:5-77
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:20:22-74
+uses-permission#android.permission.health.READ_DISTANCE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:21:5-79
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:21:22-76
+uses-permission#android.permission.health.WRITE_DISTANCE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:22:5-80
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:22:22-77
+uses-permission#android.permission.health.READ_ACTIVE_CALORIES_BURNED
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:23:5-93
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:23:22-90
+uses-permission#android.permission.health.WRITE_ACTIVE_CALORIES_BURNED
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:24:5-94
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:24:22-91
+uses-permission#android.permission.health.READ_TOTAL_CALORIES_BURNED
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:25:5-92
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:25:22-89
+uses-permission#android.permission.health.WRITE_TOTAL_CALORIES_BURNED
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:26:5-93
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:26:22-90
+uses-permission#android.permission.health.READ_EXERCISE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:27:5-79
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:27:22-76
+uses-permission#android.permission.health.WRITE_EXERCISE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:28:5-80
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:28:22-77
+uses-permission#android.permission.health.READ_HEART_RATE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:29:5-81
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:29:22-78
+uses-permission#android.permission.health.WRITE_HEART_RATE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:30:5-82
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:30:22-79
+uses-permission#android.permission.health.READ_SLEEP
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:32:5-76
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:32:22-73
+uses-permission#android.permission.health.WRITE_SLEEP
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:33:5-77
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:33:22-74
+queries
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:36:5-40:15
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:30:5-34:15
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:30:5-34:15
+package#com.google.android.apps.healthdata
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:38:9-70
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:38:18-67
+package#com.google.android.healthconnect.controller
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:39:9-79
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:39:18-76
+meta-data#com.google.android.geo.API_KEY
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:56:9-58:71
+	android:value
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:58:13-68
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:57:13-58
+meta-data#health_permissions
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:61:9-63:60
+	android:resource
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:63:13-57
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:62:13-46
+activity#com.example.fitnessapp.MainActivity
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:65:9-79:20
+	android:screenOrientation
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:68:13-49
+	android:exported
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:67:13-36
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:66:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:69:13-72:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:70:17-69
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:70:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:71:17-77
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:71:27-74
+intent-filter#action:name:androidx.health.ACTION_REQUEST_PERMISSIONS+category:name:android.intent.category.DEFAULT
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:75:13-78:29
+action#androidx.health.ACTION_REQUEST_PERMISSIONS
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:76:17-85
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:76:25-82
+category#android.intent.category.DEFAULT
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
+activity#com.example.fitnessapp.activities.PermissionsRationaleActivity
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:81:9-87:20
+	android:exported
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:83:13-36
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:82:13-68
+intent-filter#action:name:androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:84:13-86:29
+action#androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:85:17-92
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:85:25-89
+activity-alias#com.example.fitnessapp.ViewPermissionUsageActivity
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:90:9-99:26
+	android:exported
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:93:13-36
+	android:targetActivity
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:92:13-78
+	android:permission
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:94:13-80
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:91:13-55
+intent-filter#action:name:android.intent.action.VIEW_PERMISSION_USAGE+category:name:android.intent.category.HEALTH_PERMISSIONS
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:95:13-98:29
+action#android.intent.action.VIEW_PERMISSION_USAGE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:96:17-86
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:96:25-83
+category#android.intent.category.HEALTH_PERMISSIONS
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:97:17-87
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:97:27-84
+activity#com.example.fitnessapp.StravaCallbackActivity
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:101:9-124:20
+	android:exported
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:103:13-36
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:102:13-51
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:fitnessapp-production-60ee.up.railway.app+data:pathPrefix:/strava/callback+data:scheme:https
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:105:13-113:29
+action#android.intent.action.VIEW
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:17-69
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:25-66
+category#android.intent.category.BROWSABLE
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:17-78
+	android:name
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:27-75
+data
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:109:17-112:61
+	android:host
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:111:21-77
+	android:scheme
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:110:21-43
+	android:pathPrefix
+		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:112:21-58
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:strava+data:pathPrefix:/callback+data:scheme:fitnessapp
+ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:115:13-123:29
+uses-sdk
+INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+MERGED from [com.google.maps.android:maps-compose:4.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a02fabb1ab0eb3f6b3d6ea16fdb65d6a\transformed\maps-compose-4.3.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.maps.android:maps-compose:4.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a02fabb1ab0eb3f6b3d6ea16fdb65d6a\transformed\maps-compose-4.3.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.maps.android:maps-ktx:5.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\86da30fccbaf84b62751d50f6b5ca6d7\transformed\maps-ktx-5.0.0\AndroidManifest.xml:21:5-44
+MERGED from [com.google.maps.android:maps-ktx:5.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\86da30fccbaf84b62751d50f6b5ca6d7\transformed\maps-ktx-5.0.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.databinding:viewbinding:8.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\ffe0d3ec9393ed1e14b45a4e2edc2523\transformed\viewbinding-8.13.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.databinding:viewbinding:8.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\ffe0d3ec9393ed1e14b45a4e2edc2523\transformed\viewbinding-8.13.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:7:5-44
+MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:7:5-44
+MERGED from [io.coil-kt:coil-gif:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b935f705fd1cdb5e16c9b1caf3026569\transformed\coil-gif-2.5.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-gif:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b935f705fd1cdb5e16c9b1caf3026569\transformed\coil-gif-2.5.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e03d0c31ab9d97b052c0348961528dc5\transformed\coil-compose-2.5.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e03d0c31ab9d97b052c0348961528dc5\transformed\coil-compose-2.5.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose-base:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c9f659e92a52c2224f2ab28d17e4c171\transformed\coil-compose-base-2.5.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-compose-base:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c9f659e92a52c2224f2ab28d17e4c171\transformed\coil-compose-base-2.5.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\2ac8c9faeb41acfa02b81eaded6b7f98\transformed\coil-2.5.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\2ac8c9faeb41acfa02b81eaded6b7f98\transformed\coil-2.5.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-base:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\57830ec899e13702be820898520b5f71\transformed\coil-base-2.5.0\AndroidManifest.xml:5:5-44
+MERGED from [io.coil-kt:coil-base:2.5.0] C:\Users\lakie\.gradle\caches\8.13\transforms\57830ec899e13702be820898520b5f71\transformed\coil-base-2.5.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.7.1] C:\Users\lakie\.gradle\caches\8.13\transforms\0ec5250ea888e3c71645ec0d7f97d60f\transformed\appcompat-resources-1.7.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.7.1] C:\Users\lakie\.gradle\caches\8.13\transforms\0ec5250ea888e3c71645ec0d7f97d60f\transformed\appcompat-resources-1.7.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat:1.7.1] C:\Users\lakie\.gradle\caches\8.13\transforms\038e5473679f716ee7f46a59b74fca7b\transformed\appcompat-1.7.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat:1.7.1] C:\Users\lakie\.gradle\caches\8.13\transforms\038e5473679f716ee7f46a59b74fca7b\transformed\appcompat-1.7.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-common:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\ebe4ea33c9cfdfb41672ad02615fc81a\transformed\navigation-common-2.7.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-common:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\ebe4ea33c9cfdfb41672ad02615fc81a\transformed\navigation-common-2.7.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-runtime:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\a5ef6be21089b13b12f6ef198fe6957e\transformed\navigation-runtime-2.7.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-runtime:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\a5ef6be21089b13b12f6ef198fe6957e\transformed\navigation-runtime-2.7.7\AndroidManifest.xml:20:5-44
+MERGED from [androidx.navigation:navigation-common-ktx:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\035f38509a2fe9a19a4be57bae407bb6\transformed\navigation-common-ktx-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-common-ktx:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\035f38509a2fe9a19a4be57bae407bb6\transformed\navigation-common-ktx-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\57c4c6033d9b7381fca78fd37367cac8\transformed\navigation-runtime-ktx-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-runtime-ktx:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\57c4c6033d9b7381fca78fd37367cac8\transformed\navigation-runtime-ktx-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-compose:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\820f99a536199c0dcd781ff717f81a80\transformed\navigation-compose-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.navigation:navigation-compose:2.7.7] C:\Users\lakie\.gradle\caches\8.13\transforms\820f99a536199c0dcd781ff717f81a80\transformed\navigation-compose-2.7.7\AndroidManifest.xml:5:5-44
+MERGED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:21:5-44
+MERGED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:21:5-44
+MERGED from [androidx.compose.material3:material3-android:1.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\1bf742f0d497519044b029f18955ba89\transformed\material3-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material3:material3-android:1.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\1bf742f0d497519044b029f18955ba89\transformed\material3-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material:material-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\b765648a1d9c71faaa1fe72067ceef6a\transformed\material-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\b765648a1d9c71faaa1fe72067ceef6a\transformed\material-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\e76d558845e056679207ae6d2fb60211\transformed\material-icons-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\e76d558845e056679207ae6d2fb60211\transformed\material-icons-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\a76900131b435c5f01d61a7929367f8c\transformed\material-icons-extended-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\a76900131b435c5f01d61a7929367f8c\transformed\material-icons-extended-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\b919c2cdbed39e7358c02533d02f5b8a\transformed\material-ripple-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\b919c2cdbed39e7358c02533d02f5b8a\transformed\material-ripple-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\91deec6d457f3713763090a9be88d6a1\transformed\foundation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\91deec6d457f3713763090a9be88d6a1\transformed\foundation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\a8c88e81fb03bc7fe7233336c15b7b34\transformed\animation-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\a8c88e81fb03bc7fe7233336c15b7b34\transformed\animation-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\78efdb8bf0152a11618db747d2a9da82\transformed\ui-tooling-data-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\78efdb8bf0152a11618db747d2a9da82\transformed\ui-tooling-data-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\50035a5a1f8af15a3d1e4207b3956b81\transformed\ui-unit-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\50035a5a1f8af15a3d1e4207b3956b81\transformed\ui-unit-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7bc9fd5c5b6ef378daf1ae33cd0e5a40\transformed\ui-geometry-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7bc9fd5c5b6ef378daf1ae33cd0e5a40\transformed\ui-geometry-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1396ff954988de08a20298eebcbcb767\transformed\ui-text-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1396ff954988de08a20298eebcbcb767\transformed\ui-text-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\5bf1b4545a0799477f7f51b5c8d0a372\transformed\ui-util-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\5bf1b4545a0799477f7f51b5c8d0a372\transformed\ui-util-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\f948598acac57a5e582f3c7a385100f3\transformed\ui-tooling-preview-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\f948598acac57a5e582f3c7a385100f3\transformed\ui-tooling-preview-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\cb0f0cbddb190b9d2710b55713933eb6\transformed\ui-graphics-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\cb0f0cbddb190b9d2710b55713933eb6\transformed\ui-graphics-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1f415a94333f358b7c1f973c04bcf2c8\transformed\ui-tooling-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1f415a94333f358b7c1f973c04bcf2c8\transformed\ui-tooling-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.animation:animation-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7cfa5e30f04d61e19eb3994110142585\transformed\animation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7cfa5e30f04d61e19eb3994110142585\transformed\animation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\c182959f6b81ba51457b2989a514d20c\transformed\foundation-layout-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\c182959f6b81ba51457b2989a514d20c\transformed\foundation-layout-release\AndroidManifest.xml:5:5-44
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users\lakie\.gradle\caches\8.13\transforms\1ffda5a22f002b6ebbc25a091b6f7f4a\transformed\accompanist-drawablepainter-0.32.0\AndroidManifest.xml:21:5-44
+MERGED from [com.google.accompanist:accompanist-drawablepainter:0.32.0] C:\Users\lakie\.gradle\caches\8.13\transforms\1ffda5a22f002b6ebbc25a091b6f7f4a\transformed\accompanist-drawablepainter-0.32.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.compose.ui:ui-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\52f5edc9135c8979d3365be76c077115\transformed\ui-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\52f5edc9135c8979d3365be76c077115\transformed\ui-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-test-manifest:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8c0b91e67593d85f5cb834d0a8519be0\transformed\ui-test-manifest-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-test-manifest:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8c0b91e67593d85f5cb834d0a8519be0\transformed\ui-test-manifest-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-location:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\00f8ace8d42cd9073686df1d1b070df6\transformed\play-services-location-21.1.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-location:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\00f8ace8d42cd9073686df1d1b070df6\transformed\play-services-location-21.1.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-fitness:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c189e5ab904bfbd855fb0320823f0d4d\transformed\play-services-fitness-21.1.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-fitness:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c189e5ab904bfbd855fb0320823f0d4d\transformed\play-services-fitness-21.1.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-auth-api-phone:18.0.1] C:\Users\lakie\.gradle\caches\8.13\transforms\093832fec2f82d6d6a74765861c2b9ac\transformed\play-services-auth-api-phone-18.0.1\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-auth-api-phone:18.0.1] C:\Users\lakie\.gradle\caches\8.13\transforms\093832fec2f82d6d6a74765861c2b9ac\transformed\play-services-auth-api-phone-18.0.1\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-auth-base:18.0.4] C:\Users\lakie\.gradle\caches\8.13\transforms\83d536da5fa4cd42a3c444a79389f709\transformed\play-services-auth-base-18.0.4\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-auth-base:18.0.4] C:\Users\lakie\.gradle\caches\8.13\transforms\83d536da5fa4cd42a3c444a79389f709\transformed\play-services-auth-base-18.0.4\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-fido:20.0.1] C:\Users\lakie\.gradle\caches\8.13\transforms\c8d01039411495d2a3f95e26224b63c5\transformed\play-services-fido-20.0.1\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-fido:20.0.1] C:\Users\lakie\.gradle\caches\8.13\transforms\c8d01039411495d2a3f95e26224b63c5\transformed\play-services-fido-20.0.1\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:18:5-43
+MERGED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:18:5-43
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\6ebc253990733fe577850477ff6b7bff\transformed\emoji2-views-helper-1.3.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\6ebc253990733fe577850477ff6b7bff\transformed\emoji2-views-helper-1.3.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7d7dd6b61b0a2b2a4fc28004c1a142a3\transformed\savedstate-ktx-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7d7dd6b61b0a2b2a4fc28004c1a142a3\transformed\savedstate-ktx-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\lakie\.gradle\caches\8.13\transforms\f3e7afb1cda599920531665ffffbf8b2\transformed\savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\lakie\.gradle\caches\8.13\transforms\f3e7afb1cda599920531665ffffbf8b2\transformed\savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e36281875d7f63cabd293c7e3739cb99\transformed\lifecycle-livedata-core-2.7.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e36281875d7f63cabd293c7e3739cb99\transformed\lifecycle-livedata-core-2.7.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\8eb5b92633220aaac49fdf0b8fa89294\transformed\lifecycle-viewmodel-savedstate-2.7.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\8eb5b92633220aaac49fdf0b8fa89294\transformed\lifecycle-viewmodel-savedstate-2.7.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a5f949cc02398ab22351882d553a5b76\transformed\lifecycle-livedata-core-ktx-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a5f949cc02398ab22351882d553a5b76\transformed\lifecycle-livedata-core-ktx-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.recyclerview:recyclerview:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\82230eb2daa1a7b19758decdd4a99db8\transformed\recyclerview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.recyclerview:recyclerview:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\82230eb2daa1a7b19758decdd4a99db8\transformed\recyclerview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\af29ef5a2b024514d3b6278b571f0af4\transformed\legacy-support-core-ui-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\af29ef5a2b024514d3b6278b571f0af4\transformed\legacy-support-core-ui-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\fbe415914682d3d5392b2f3f2ca40166\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\fbe415914682d3d5392b2f3f2ca40166\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\393a458803cc33d6956a7a1b62dcffb8\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\393a458803cc33d6956a7a1b62dcffb8\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\3f96f2f5f93d546719cf98f28adea1df\transformed\lifecycle-livedata-2.7.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\3f96f2f5f93d546719cf98f28adea1df\transformed\lifecycle-livedata-2.7.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\9516b11e405f577ec79dcf7a9a67e58a\transformed\lifecycle-viewmodel-2.7.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\9516b11e405f577ec79dcf7a9a67e58a\transformed\lifecycle-viewmodel-2.7.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-ktx:1.8.2] C:\Users\lakie\.gradle\caches\8.13\transforms\3585c77313a504f13c0d727b0fae38ca\transformed\activity-ktx-1.8.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.8.2] C:\Users\lakie\.gradle\caches\8.13\transforms\3585c77313a504f13c0d727b0fae38ca\transformed\activity-ktx-1.8.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\d4b3ecb8fb099276c22ba5c92f8be35f\transformed\lifecycle-viewmodel-ktx-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\d4b3ecb8fb099276c22ba5c92f8be35f\transformed\lifecycle-viewmodel-ktx-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-tasks:18.0.2] C:\Users\lakie\.gradle\caches\8.13\transforms\e269e39e1ad98035fc71505259f03444\transformed\play-services-tasks-18.0.2\AndroidManifest.xml:4:5-43
+MERGED from [com.google.android.gms:play-services-tasks:18.0.2] C:\Users\lakie\.gradle\caches\8.13\transforms\e269e39e1ad98035fc71505259f03444\transformed\play-services-tasks-18.0.2\AndroidManifest.xml:4:5-43
+MERGED from [com.google.android.gms:play-services-basement:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\80d9f19a1d7f1c0cb84095346163cac2\transformed\play-services-basement-18.2.0\AndroidManifest.xml:18:5-43
+MERGED from [com.google.android.gms:play-services-basement:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\80d9f19a1d7f1c0cb84095346163cac2\transformed\play-services-basement-18.2.0\AndroidManifest.xml:18:5-43
+MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\lakie\.gradle\caches\8.13\transforms\522cef8169f397eaf6d5b8284f6cb1df\transformed\fragment-1.5.4\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\lakie\.gradle\caches\8.13\transforms\522cef8169f397eaf6d5b8284f6cb1df\transformed\fragment-1.5.4\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.8.2] C:\Users\lakie\.gradle\caches\8.13\transforms\d24842d0b9e24eecf11e5a9ee2566f79\transformed\activity-1.8.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.8.2] C:\Users\lakie\.gradle\caches\8.13\transforms\d24842d0b9e24eecf11e5a9ee2566f79\transformed\activity-1.8.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-compose:1.8.2] C:\Users\lakie\.gradle\caches\8.13\transforms\1d2326b41d6575da41d3221f24298f25\transformed\activity-compose-1.8.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-compose:1.8.2] C:\Users\lakie\.gradle\caches\8.13\transforms\1d2326b41d6575da41d3221f24298f25\transformed\activity-compose-1.8.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7c81c4f3f4b7182eec194cfd7b8863bb\transformed\runtime-saveable-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\7c81c4f3f4b7182eec194cfd7b8863bb\transformed\runtime-saveable-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\9a9382e49e8d5ccfbef4935680d88fe8\transformed\runtime-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\9a9382e49e8d5ccfbef4935680d88fe8\transformed\runtime-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-livedata:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8ee322dbe02ba6e7f019d182348d01b5\transformed\runtime-livedata-1.6.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-livedata:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8ee322dbe02ba6e7f019d182348d01b5\transformed\runtime-livedata-1.6.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.browser:browser:1.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e31feaae6d889eeae319b1f8a877f6b7\transformed\browser-1.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.browser:browser:1.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e31feaae6d889eeae319b1f8a877f6b7\transformed\browser-1.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\70eb3341ae77f6e7cd6c37bca3f2adf1\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\70eb3341ae77f6e7cd6c37bca3f2adf1\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.core:core-ktx:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\37efe5abbb080a7851bc57b43876912b\transformed\core-ktx-1.13.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\37efe5abbb080a7851bc57b43876912b\transformed\core-ktx-1.13.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\4841045720576f4e67f044ccda11bf23\transformed\drawerlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\4841045720576f4e67f044ccda11bf23\transformed\drawerlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e0c7efbe2642c1bd362331fc4cbae873\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e0c7efbe2642c1bd362331fc4cbae873\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\235e3f07959e2536709f02959e2d7941\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\235e3f07959e2536709f02959e2d7941\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\159719bfbad9171f2945ad6afd56fa70\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\159719bfbad9171f2945ad6afd56fa70\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\dab4fde4af6309d0c165fdcbcad92c43\transformed\coordinatorlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\dab4fde4af6309d0c165fdcbcad92c43\transformed\coordinatorlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\84476026c20b1bcebf1594b4a3b6a015\transformed\slidingpanelayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\84476026c20b1bcebf1594b4a3b6a015\transformed\slidingpanelayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\9892878d77b7e42b355d30728c987d21\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\9892878d77b7e42b355d30728c987d21\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\3e1e86709333b2d08c28215103af4a58\transformed\autofill-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\3e1e86709333b2d08c28215103af4a58\transformed\autofill-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\f483354c3655e0e508c8b30049ba598d\transformed\swiperefreshlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\f483354c3655e0e508c8b30049ba598d\transformed\swiperefreshlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c2f89e02d0bff8a9590f7f4b5dee2f4b\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c2f89e02d0bff8a9590f7f4b5dee2f4b\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b52a417fc80c8ab322dfdf4e894076e6\transformed\lifecycle-runtime-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b52a417fc80c8ab322dfdf4e894076e6\transformed\lifecycle-runtime-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\f2ab4ec9b1088647fad0a61e6431213b\transformed\lifecycle-runtime-compose-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\f2ab4ec9b1088647fad0a61e6431213b\transformed\lifecycle-runtime-compose-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b5420ef1ec18e07aac44c1513a2ebd1b\transformed\lifecycle-viewmodel-compose-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b5420ef1ec18e07aac44c1513a2ebd1b\transformed\lifecycle-viewmodel-compose-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e21dfea3f5985b6a9da183fea4422d4f\transformed\lifecycle-runtime-ktx-2.7.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e21dfea3f5985b6a9da183fea4422d4f\transformed\lifecycle-runtime-ktx-2.7.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\98a46d15ec64a216740bf29034b423e2\transformed\lifecycle-livedata-ktx-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-ktx:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\98a46d15ec64a216740bf29034b423e2\transformed\lifecycle-livedata-ktx-2.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e297295d87ed33fa33f9687d16164552\transformed\annotation-experimental-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e297295d87ed33fa33f9687d16164552\transformed\annotation-experimental-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [com.github.PhilJay:MPAndroidChart:v3.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a24511dc69d3a12dacd620eb589a2a28\transformed\MPAndroidChart-v3.1.0\AndroidManifest.xml:16:5-18:41
+MERGED from [com.github.PhilJay:MPAndroidChart:v3.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a24511dc69d3a12dacd620eb589a2a28\transformed\MPAndroidChart-v3.1.0\AndroidManifest.xml:16:5-18:41
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a8a8f396983812074531153916ce49fd\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a8a8f396983812074531153916ce49fd\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7d17b19536d87d11fa013ec1961b2dcb\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7d17b19536d87d11fa013ec1961b2dcb\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cardview:cardview:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\1c5acff29683246166e6fc9fbcfb6e6e\transformed\cardview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cardview:cardview:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\1c5acff29683246166e6fc9fbcfb6e6e\transformed\cardview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:18:5-20:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\92114624f13d06f258fcb6ae9383c66e\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\92114624f13d06f258fcb6ae9383c66e\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\6998cb23adf3489cec60eb7a1337dfb9\transformed\startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\6998cb23adf3489cec60eb7a1337dfb9\transformed\startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c55b3f706dddcaa11abf376fc54aa4bf\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c55b3f706dddcaa11abf376fc54aa4bf\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7161a7dc77a002a353d90cbc2919c472\transformed\tracing-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7161a7dc77a002a353d90cbc2919c472\transformed\tracing-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.firebase:firebase-encoders-json:16.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e7e10b0fe481ccd65f0fef52b50465cf\transformed\firebase-encoders-json-16.1.0\AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.firebase:firebase-encoders-json:16.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\e7e10b0fe481ccd65f0fef52b50465cf\transformed\firebase-encoders-json-16.1.0\AndroidManifest.xml:19:5-21:41
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] C:\Users\lakie\.gradle\caches\8.13\transforms\ae66fa723c5235f46d55e264d0f19724\transformed\exifinterface-1.3.6\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] C:\Users\lakie\.gradle\caches\8.13\transforms\ae66fa723c5235f46d55e264d0f19724\transformed\exifinterface-1.3.6\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\8278accfcf096fd39408640fa967a859\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\8278accfcf096fd39408640fa967a859\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\51b233a6f49b47d318ea2c10963ccdc3\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\51b233a6f49b47d318ea2c10963ccdc3\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\19db2a27bb3833a7cc45998def556c49\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\19db2a27bb3833a7cc45998def556c49\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.volley:volley:1.2.1] C:\Users\lakie\.gradle\caches\8.13\transforms\ef80273e7c3ddb99d2ba28b6c2ab078e\transformed\volley-1.2.1\AndroidManifest.xml:5:5-43
+MERGED from [com.android.volley:volley:1.2.1] C:\Users\lakie\.gradle\caches\8.13\transforms\ef80273e7c3ddb99d2ba28b6c2ab078e\transformed\volley-1.2.1\AndroidManifest.xml:5:5-43
+MERGED from [com.google.android.datatransport:transport-api:2.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\dde5200382be0255b2a341a85ad8f59f\transformed\transport-api-2.2.0\AndroidManifest.xml:18:5-20:41
+MERGED from [com.google.android.datatransport:transport-api:2.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\dde5200382be0255b2a341a85ad8f59f\transformed\transport-api-2.2.0\AndroidManifest.xml:18:5-20:41
+	android:targetSdkVersion
+		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:11:5-76
+	android:name
+		ADDED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:11:22-73
+activity#com.google.android.libraries.places.widget.AutocompleteActivity
+ADDED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:15:9-21:20
+	android:label
+		ADDED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:18:13-62
+	android:windowSoftInputMode
+		ADDED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:20:13-55
+	android:exported
+		ADDED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:17:13-37
+	android:theme
+		ADDED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:19:13-61
+	android:name
+		ADDED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:16:13-91
+service#androidx.health.platform.client.impl.sdkservice.HealthDataSdkService
+ADDED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:24:9-32:19
+	android:enabled
+		ADDED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:26:13-35
+	android:exported
+		ADDED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:27:13-36
+	tools:ignore
+		ADDED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:28:13-43
+	android:name
+		ADDED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:25:13-96
+intent-filter#action:name:androidx.health.platform.client.ACTION_BIND_SDK_SERVICE
+ADDED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:29:13-31:29
+action#androidx.health.platform.client.ACTION_BIND_SDK_SERVICE
+ADDED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:30:17-98
+	android:name
+		ADDED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:30:25-95
+activity#androidx.compose.ui.tooling.PreviewActivity
+ADDED from [androidx.compose.ui:ui-tooling-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1f415a94333f358b7c1f973c04bcf2c8\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
+	android:exported
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1f415a94333f358b7c1f973c04bcf2c8\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1f415a94333f358b7c1f973c04bcf2c8\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
+activity#androidx.activity.ComponentActivity
+ADDED from [androidx.compose.ui:ui-test-manifest:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8c0b91e67593d85f5cb834d0a8519be0\transformed\ui-test-manifest-1.6.1\AndroidManifest.xml:23:9-25:39
+	android:exported
+		ADDED from [androidx.compose.ui:ui-test-manifest:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8c0b91e67593d85f5cb834d0a8519be0\transformed\ui-test-manifest-1.6.1\AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from [androidx.compose.ui:ui-test-manifest:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8c0b91e67593d85f5cb834d0a8519be0\transformed\ui-test-manifest-1.6.1\AndroidManifest.xml:24:13-63
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:23:5-79
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:25:5-79
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:25:5-79
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:22:5-79
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:22:5-79
+	android:name
+		ADDED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:23:22-76
+uses-feature#0x00020000
+ADDED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:26:5-28:35
+	android:glEsVersion
+		ADDED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:27:9-41
+	android:required
+		ADDED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:28:9-32
+package#com.google.android.apps.maps
+ADDED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:33:9-64
+	android:name
+		ADDED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:33:18-61
+uses-library#org.apache.http.legacy
+ADDED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:39:9-41:40
+	android:required
+		ADDED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:41:13-37
+	android:name
+		ADDED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:40:13-50
+activity#com.google.android.gms.auth.api.signin.internal.SignInHubActivity
+ADDED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:23:9-27:75
+	android:excludeFromRecents
+		ADDED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:25:13-46
+	android:exported
+		ADDED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:26:13-37
+	android:theme
+		ADDED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:27:13-72
+	android:name
+		ADDED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:24:13-93
+service#com.google.android.gms.auth.api.signin.RevocationBoundService
+ADDED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:33:9-37:51
+	android:exported
+		ADDED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:35:13-36
+	android:visibleToInstantApps
+		ADDED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:37:13-48
+	android:permission
+		ADDED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:36:13-107
+	android:name
+		ADDED from [com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:34:13-89
+meta-data#com.google.gms.fitness.sdk.version
+ADDED from [com.google.android.gms:play-services-fitness:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c189e5ab904bfbd855fb0320823f0d4d\transformed\play-services-fitness-21.1.0\AndroidManifest.xml:23:9-25:38
+	android:value
+		ADDED from [com.google.android.gms:play-services-fitness:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c189e5ab904bfbd855fb0320823f0d4d\transformed\play-services-fitness-21.1.0\AndroidManifest.xml:25:13-35
+	android:name
+		ADDED from [com.google.android.gms:play-services-fitness:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c189e5ab904bfbd855fb0320823f0d4d\transformed\play-services-fitness-21.1.0\AndroidManifest.xml:24:13-62
+activity#com.google.android.gms.common.api.GoogleApiActivity
+ADDED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:20:9-22:45
+	android:exported
+		ADDED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:22:19-43
+	android:theme
+		ADDED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:21:19-78
+	android:name
+		ADDED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:20:19-85
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\6998cb23adf3489cec60eb7a1337dfb9\transformed\startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\6998cb23adf3489cec60eb7a1337dfb9\transformed\startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:30:17-78
+meta-data#com.google.android.gms.version
+ADDED from [com.google.android.gms:play-services-basement:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\80d9f19a1d7f1c0cb84095346163cac2\transformed\play-services-basement-18.2.0\AndroidManifest.xml:21:9-23:69
+	android:value
+		ADDED from [com.google.android.gms:play-services-basement:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\80d9f19a1d7f1c0cb84095346163cac2\transformed\play-services-basement-18.2.0\AndroidManifest.xml:23:13-66
+	android:name
+		ADDED from [com.google.android.gms:play-services-basement:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\80d9f19a1d7f1c0cb84095346163cac2\transformed\play-services-basement-18.2.0\AndroidManifest.xml:22:13-58
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:23:9-81
+permission#com.example.fitnessapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:26:22-94
+uses-permission#com.example.fitnessapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:26:22-94
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+service#com.google.android.datatransport.runtime.backends.TransportBackendDiscovery
+ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:29:9-35:19
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:36:9-38:40
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:36:9-38:40
+	android:exported
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:31:13-37
+	android:name
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:30:13-103
+meta-data#backend:com.google.android.datatransport.cct.CctBackendFactory
+ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:32:13-34:39
+	android:value
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:34:17-36
+	android:name
+		ADDED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:33:17-94
+service#com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService
+ADDED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:26:9-30:19
+	android:exported
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:28:13-37
+	android:permission
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:29:13-69
+	android:name
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:27:13-117
+receiver#com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver
+ADDED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:32:9-34:40
+	android:exported
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:34:13-37
+	android:name
+		ADDED from [com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:33:13-132

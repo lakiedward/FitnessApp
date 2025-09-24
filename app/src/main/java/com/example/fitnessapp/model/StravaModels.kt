@@ -117,8 +117,26 @@ data class StravaActivity(
     @SerializedName("segment_efforts")
     val segmentEfforts: List<StravaSegmentEffort>? = null,
     @SerializedName("HrTSS")
-    val hrTss: Float? = null
+    val hrTss: Float? = null,
+    @SerializedName("kilojoules")
+    val kilojoules: Float? = null,
+    @SerializedName("calories")
+    val calories: Float? = null,
+    @SerializedName("gear_id")
+    val gearId: String? = null,
+    @SerializedName("average_temp")
+    val averageTemp: Int? = null,
+    @SerializedName("average_cadence")
+    val averageCadence: Float? = null
 )
+
+data class StravaGear(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("brand_name") val brandName: String?,
+    @SerializedName("model_name") val modelName: String?
+)
+
 
 data class StravaMap(
     val id: String,

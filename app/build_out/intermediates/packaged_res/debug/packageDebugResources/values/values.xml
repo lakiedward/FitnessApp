@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="health_permissions">
+        <item>android.permission.health.READ_STEPS</item>
+        <item>android.permission.health.WRITE_STEPS</item>
+        <item>android.permission.health.READ_DISTANCE</item>
+        <item>android.permission.health.WRITE_DISTANCE</item>
+        <item>android.permission.health.READ_ACTIVE_CALORIES_BURNED</item>
+        <item>android.permission.health.WRITE_ACTIVE_CALORIES_BURNED</item>
+        <item>android.permission.health.READ_EXERCISE</item>
+        <item>android.permission.health.WRITE_EXERCISE</item>
+        <item>android.permission.health.READ_HEART_RATE</item>
+        <item>android.permission.health.WRITE_HEART_RATE</item>
+        <item>android.permission.health.READ_SLEEP</item>
+        <item>android.permission.health.WRITE_SLEEP</item>
+    </string-array>
+    <color name="black">#FF000000</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">FitnessApp</string>
+    <string name="back_button">Back</string>
+    <string name="bpm_unit">bpm</string>
+    <string name="calculating_training_metrics">Calculating training metrics…</string>
+    <string name="calories_label">Calories</string>
+    <string name="cycling_ftp">Cycling FTP</string>
+    <string name="description">Description</string>
+    <string name="duration_label">Duration</string>
+    <string name="error_prefix">Error: %1$s</string>
+    <string name="fthr_label">FTHR</string>
+    <string name="fthr_swimming_label">FTHR Swimming</string>
+    <string name="ftp_label">FTP</string>
+    <string name="gcm_defaultSenderId" translatable="false">308329252100</string>
+    <string name="google_api_key" translatable="false">AIzaSyCl_WWGdtBXcfY9BlDn4V61DYbbnUVZIs4</string>
+    <string name="google_app_id" translatable="false">1:308329252100:android:c30ef06d73a945ddf27c51</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCl_WWGdtBXcfY9BlDn4V61DYbbnUVZIs4</string>
+    <string name="google_storage_bucket" translatable="false">fitnessapp-bf757.firebasestorage.app</string>
+    <string name="no_data">No data</string>
+    <string name="no_steps_data">No Workout Structure</string>
+    <string name="no_steps_data_message">Workout structure is not available for this training session.</string>
+    <string name="no_training_data">No Training Data</string>
+    <string name="no_training_data_message">No metrics available for this workout. Please check your training plan or try refreshing.</string>
+    <string name="pace_100m_label">Pace 100m</string>
+    <string name="project_id" translatable="false">fitnessapp-bf757</string>
+    <string name="retry_button">Retry</string>
+    <string name="running_data">Running Data</string>
+    <string name="running_pace_label">Running Pace</string>
+    <string name="start_workout">Începe antrenamentul</string>
+    <string name="strava_logo_description">Strava logo</string>
+    <string name="swimming_data">Swimming Data</string>
+    <string name="sync_button">Sync</string>
+    <string name="sync_strava_button_description">Sync workout to Strava</string>
+    <string name="sync_to_strava">Sync this workout to Strava?</string>
+    <string name="test_tag_back_button">back_button</string>
+    <string name="test_tag_description_card">description_card</string>
+    <string name="test_tag_empty_state_card">empty_state_card</string>
+    <string name="test_tag_metrics_card">metrics_card</string>
+    <string name="test_tag_retry_button">retry_button</string>
+    <string name="test_tag_sport_specific_card">sport_specific_card</string>
+    <string name="test_tag_start_workout_button">start_workout_button</string>
+    <string name="test_tag_strava_sync_card">strava_sync_card</string>
+    <string name="test_tag_training_type_card">training_type_card</string>
+    <string name="test_tag_workout_structure_card">workout_structure_card</string>
+    <string name="test_tag_zone_distribution_card">zone_distribution_card</string>
+    <string name="training_chart_description">Training workout structure chart showing intensity zones over time</string>
+    <string name="training_information">Training Information</string>
+    <string name="training_type">Training Type</string>
+    <string name="tss_label">TSS</string>
+    <string name="unknown_workout">Unknown</string>
+    <string name="using_default_values">Using default values for calculations</string>
+    <string name="watts_unit">watts</string>
+    <string name="workout_structure">Workout Structure</string>
+    <string name="zone_1">Z1</string>
+    <string name="zone_2">Z2</string>
+    <string name="zone_3">Z3</string>
+    <string name="zone_4">Z4</string>
+    <string name="zone_5">Z5</string>
+    <string name="zone_distribution">Zone Distribution</string>
+    <string name="zone_distribution_description">Zone distribution showing time spent in each power or heart rate zone</string>
+    <style name="Theme.FitnessApp" parent="android:Theme.Material.Light.NoActionBar"/>
+</resources>

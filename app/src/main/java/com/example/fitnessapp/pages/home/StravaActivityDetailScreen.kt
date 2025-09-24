@@ -72,6 +72,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -604,6 +605,9 @@ fun StravaActivityDetailScreen(
     var isLoading by remember { mutableStateOf(true) }
     var maxBpm by remember { mutableStateOf<Int?>(null) }
 
+    // Collect gear details from ViewModel
+    val gear by stravaViewModel.gearDetails.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
 
     // Pull-to-refresh state
@@ -616,6 +620,17 @@ fun StravaActivityDetailScreen(
         try {
             val activityDetails = stravaViewModel.getActivityById(activityId)
             activity = activityDetails
+
+            // Fetch gear details if available
+            activityDetails?.gearId?.let { gid ->
+                if (gid.isNotEmpty()) {
+                    stravaViewModel.fetchGearDetails(gid)
+                } else {
+                    stravaViewModel.clearGearDetails()
+                }
+            } ?: run {
+                stravaViewModel.clearGearDetails()
+            }
 
             mapViewData = if (activityDetails != null) {
                 stravaViewModel.getActivityMapView(activityId)
@@ -754,8 +769,11 @@ fun StravaActivityDetailScreen(
             Card(
                 modifier = Modifier
                     .fillMaxSize()
-                    .border(BorderStroke(1.dp, extendedColors.borderSubtle), RoundedCornerShape(20.dp)),
-                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                    .border(
+                        BorderStroke(1.dp, extendedColors.borderSubtle),
+                        RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                    ),
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
@@ -951,7 +969,7 @@ fun StravaActivityDetailScreen(
                                     visible = true,
                                     enter = fadeIn(animationSpec = tween(300, delayMillis = 250)) + slideInVertically { it/4 }
                                 ) {
-                                    ActivityStatsSection(activity = currentActivity)
+                                    ActivityStatsSection(activity = currentActivity, gearName = gear?.name)
                                 }
                             }
                             // --- Section Header with Icon: Route Map ---

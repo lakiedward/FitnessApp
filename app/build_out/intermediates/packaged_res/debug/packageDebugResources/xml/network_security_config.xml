@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Debug: allow cleartext access to local dev host; disallow cleartext for production -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">192.168.60.108</domain>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">fitnessapp-production-60ee.up.railway.app</domain>
+    </domain-config>
+    <!-- You can add more dev hosts here if needed -->
+    <!-- <domain-config cleartextTrafficPermitted="true"><domain>10.0.2.2</domain></domain-config> -->
+</network-security-config>
+

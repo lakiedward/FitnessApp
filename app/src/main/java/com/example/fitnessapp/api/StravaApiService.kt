@@ -165,4 +165,10 @@ interface StravaApiService {
     suspend fun getMaxBpm(
         @Header("Authorization") jwtToken: String
     ): retrofit2.Response<Map<String, Any>>
+
+    @GET("strava/gear/{id}")
+    suspend fun getGearDetails(
+        @Header("Authorization") jwtToken: String,
+        @Path("id") gearId: String
+    ): com.example.fitnessapp.model.StravaGear
 }
