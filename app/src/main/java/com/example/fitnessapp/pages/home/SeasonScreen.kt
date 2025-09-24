@@ -21,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.mock.SharedPreferencesMock
 import com.example.fitnessapp.components.TopBar
-import com.example.fitnessapp.components.BottomNavigationBar
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 
 @Composable
@@ -30,14 +29,15 @@ fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
     val typography = MaterialTheme.typography
     val races = authViewModel.races.observeAsState(emptyList())
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = colorScheme.surface
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
+    Box(modifier = Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = colorScheme.surface
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -51,6 +51,8 @@ fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
                     .fillMaxSize()
                     .weight(1f)
                     .padding(horizontal = 16.dp)
+                    // Add bottom space to avoid overlap with floating bottom bar
+                    .padding(bottom = 100.dp)
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -93,8 +95,12 @@ fun SeasonScreen(navController: NavController, authViewModel: AuthViewModel) {
                     )
                 }
             }
+            }
+        }
 
-            BottomNavigationBar(navController)
+        // Floating bottom navigation over content
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+            ModernBottomNavigation(navController = navController)
         }
     }
 }

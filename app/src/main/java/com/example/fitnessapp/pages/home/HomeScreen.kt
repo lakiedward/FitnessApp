@@ -7,13 +7,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,6 +57,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+ 
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -127,32 +136,41 @@ fun HomeScreen(
     val calorieAllowance by homeViewModel.calorieAllowance.observeAsState(0.0)
     val steps by healthConnectViewModel.totalSteps.collectAsState()
 
-    Scaffold(
-        bottomBar = {
-            ModernBottomNavigation(navController = navController)
-        },
-        containerColor = Color.Transparent
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.extendedColors.gradientPrimary,
-                            MaterialTheme.extendedColors.gradientSecondary,
-                            MaterialTheme.extendedColors.gradientAccent
-                        )
-                    )
-                )
-        ) {
-            LazyColumn(
+    // Floating bottom bar like in Calendar: content underlaps, fixed extra bottom space
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+            containerColor = Color.Transparent
+        ) { innerPadding ->
+            val layoutDirection = LocalLayoutDirection.current
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 32.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.extendedColors.gradientPrimary,
+                                MaterialTheme.extendedColors.gradientSecondary,
+                                MaterialTheme.extendedColors.gradientAccent
+                            )
+                        )
+                    )
             ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        // Apply only top/horizontal insets; ignore bottom so content can underlap
+                        .padding(
+                            start = innerPadding.calculateStartPadding(layoutDirection),
+                            end = innerPadding.calculateEndPadding(layoutDirection),
+                            top = innerPadding.calculateTopPadding()
+                        )
+                        .padding(horizontal = 24.dp)
+                        .padding(top = 32.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    // Extra bottom space so last items are not hidden under the floating bottom bar
+                    contentPadding = PaddingValues(bottom = 120.dp)
+                ) {
                 item {
                     WelcomeHeader()
                 }
@@ -183,7 +201,13 @@ fun HomeScreen(
                         ErrorCard(errorMessage = error!!, homeViewModel = homeViewModel)
                     }
                 }
+                }
             }
+        }
+
+        // Floating bottom navigation over content (fixed, like Calendar)
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+            ModernBottomNavigation(navController = navController)
         }
     }
 }
@@ -582,7 +606,7 @@ private fun ErrorCard(errorMessage: String, homeViewModel: HomeViewModel) {
 }
 
 @Composable
-fun ModernBottomNavigation(navController: NavController) {
+fun ModernBottomNavigation(navController: NavController, modifier: Modifier = Modifier) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -594,9 +618,10 @@ fun ModernBottomNavigation(navController: NavController) {
     )
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .navigationBarsPadding(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
