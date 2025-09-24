@@ -10,22 +10,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,6 +40,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.R
 import com.example.fitnessapp.navigation.Routes
+import com.example.fitnessapp.pages.home.ModernBottomNavigation
+import com.example.fitnessapp.ui.theme.extendedColors
 import com.example.fitnessapp.viewmodel.AuthViewModel
 
 @Composable
@@ -60,16 +60,18 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
         MaterialTheme.extendedColors.gradientAccent
     )
 
+    val scrollState = rememberScrollState()
+
     Scaffold(
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
         bottomBar = {
-            com.example.fitnessapp.pages.home.ModernBottomNavigation(navController = navController)
+            ModernBottomNavigation(navController = navController)
         },
         containerColor = Color.Transparent
-    ) { paddingValues ->
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .background(
                     brush = Brush.verticalGradient(colors = gradientColors)
                 )
@@ -77,43 +79,38 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 24.dp, vertical = 32.dp)
+                    .verticalScroll(scrollState)
+                    .padding(innerPadding)
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 24.dp, bottom = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // Header
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 24.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "More",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = gradientContentColor
-                    )
-                }
+                Text(
+                    text = "More",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = gradientContentColor
+                )
 
-                // Content Card
                 Card(
-                    modifier = Modifier.fillMaxSize(),
-                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = colorScheme.surface.copy(alpha = 0.95f)
+                        containerColor = colorScheme.surface.copy(alpha = 0.98f)
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Column(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .padding(24.dp)
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 28.dp),
+                        verticalArrangement = Arrangement.spacedBy(24.dp)
                     ) {
-                        // User Info
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.iclogo),
@@ -122,7 +119,6 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
                                     .size(80.dp)
                                     .clip(CircleShape)
                             )
-                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = "Lucas Scott",
                                 style = MaterialTheme.typography.headlineMedium,
@@ -136,14 +132,11 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(32.dp))
-
-                        // Sections
                         ModernSection(title = "Account") {
                             ModernSectionItem("My Account") {}
                             ModernSectionItem("Settings") {}
                             ModernSectionItem("Training Dashboard") {
-                                navController.navigate("training_dashboard")
+                                navController.navigate(Routes.TRAINING_DASHBOARD)
                             }
                             ModernSectionItem("App Integrations") {
                                 navController.navigate("app_integrations")
@@ -159,14 +152,10 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(24.dp))
-
                         ModernSection(title = "Support") {
                             ModernSectionItem("Contact us") {}
                             ModernSectionItem("Help & Support") {}
                         }
-
-                        Spacer(modifier = Modifier.height(24.dp))
 
                         ModernSection(title = "Actions") {
                             ModernSectionItem("Log out") {
@@ -177,12 +166,11 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
                                 }
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
             }
         }
+    }
 }
 
 @Composable
@@ -192,20 +180,20 @@ fun ModernSection(title: String, content: @Composable ColumnScope.() -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
             color = colorScheme.onSurface,
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         Card(
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = colorScheme.surface.copy(alpha = 0.95f)
+                containerColor = colorScheme.surfaceVariant.copy(alpha = 0.65f)
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column(modifier = Modifier.padding(8.dp), content = content)
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), content = content)
         }
     }
 }
@@ -216,7 +204,7 @@ fun ModernSectionItem(title: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 16.dp, horizontal = 16.dp),
+            .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
