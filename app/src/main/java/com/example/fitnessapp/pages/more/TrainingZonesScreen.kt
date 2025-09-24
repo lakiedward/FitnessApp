@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateTopPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -109,12 +108,8 @@ fun TrainingZonesScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        bottom = 16.dp,
-                        top = paddingValues.calculateTopPadding() + 16.dp
-                    ),
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
                 color = MaterialTheme.extendedColors.surfaceSubtle,
                 tonalElevation = 2.dp
