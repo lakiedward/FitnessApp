@@ -2,21 +2,22 @@ package com.example.fitnessapp.pages.more
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateTopPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DirectionsBike
@@ -29,8 +30,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.mock.SharedPreferencesMock
+import com.example.fitnessapp.ui.theme.extendedColors
 import com.example.fitnessapp.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,25 +64,26 @@ fun TrainingZonesScreen(
     var currentHeartRate by remember { mutableStateOf(150) } // Current HR for demo
     var currentPower by remember { mutableStateOf(200) } // Current power for demo
 
+    val gradientColors = listOf(
+        MaterialTheme.extendedColors.gradientPrimary,
+        MaterialTheme.extendedColors.gradientSecondary,
+        MaterialTheme.extendedColors.gradientAccent
+    )
+
     Scaffold(
+        containerColor = Color.Transparent,
         topBar = {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.extendedColors.chartAltitude,
-                                MaterialTheme.extendedColors.gradientAccent
-                            )
-                        )
-                    )
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .background(brush = Brush.verticalGradient(colors = gradientColors))
+                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 20.dp)
             ) {
-                IconButton(onClick = { navController.navigateUp() }) {
+                IconButton(
+                    onClick = { navController.navigateUp() },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
@@ -92,52 +95,86 @@ fun TrainingZonesScreen(
                     text = "Training Zones",
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.Center)
                 )
-
-                Spacer(modifier = Modifier.weight(1f))
             }
         }
     ) { paddingValues ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            contentPadding = PaddingValues(
-                top = 8.dp + WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-            ),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .background(brush = Brush.verticalGradient(colors = gradientColors))
         ) {
-            // Current Status Section
-            item {
-                CurrentStatusSection(
-                    currentPower = currentPower,
-                    currentHeartRate = currentHeartRate,
-                    userFtp = userFtp,
-                    userMaxBpm = userMaxBpm
-                )
-            }
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = 16.dp,
+                        top = paddingValues.calculateTopPadding() + 16.dp
+                    ),
+                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+                color = MaterialTheme.extendedColors.surfaceSubtle,
+                tonalElevation = 2.dp
+            ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    item {
+                        CurrentStatusSection(
+                            currentPower = currentPower,
+                            currentHeartRate = currentHeartRate,
+                            userFtp = userFtp,
+                            userMaxBpm = userMaxBpm
+                        )
+                    }
 
-            // Cycling Zones Section
-            item {
-                CyclingZonesSection(userFtp = userFtp)
-            }
+                    item {
+                        CyclingZonesSection(userFtp)
+                    }
 
-            // Running Zones Section
-            item {
-                RunningZonesSection(userMaxBpm = userMaxBpm)
-            }
+                    item {
+                        RunningZonesSection(userMaxBpm)
+                    }
 
-            // Swimming Zones Section
-            item {
-                SwimmingZonesSection()
-            }
+                    item {
+                        SwimmingZonesSection()
+                    }
 
-            // Bottom spacing
-            item {
-                Spacer(modifier = Modifier.height(32.dp))
+                    item {
+                        TrainingSection(title = "Training Tips") {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                TrainingTip(
+                                    icon = Icons.Default.FitnessCenter,
+                                    title = "Balance your Training",
+                                    description = "Include recovery days and easy sessions to avoid overtraining."
+                                )
+                                TrainingTip(
+                                    icon = Icons.Default.DirectionsBike,
+                                    title = "Mix Intensities",
+                                    description = "Combine different zones in your weekly plan for optimal progress."
+                                )
+                                TrainingTip(
+                                    icon = Icons.Default.DirectionsRun,
+                                    title = "Monitor Heart Rate",
+                                    description = "Track your HR zones to ensure you're hitting the right effort."
+                                )
+                                TrainingTip(
+                                    icon = Icons.Default.Pool,
+                                    title = "Technique Matters",
+                                    description = "Focus on form, especially in high-intensity sessions."
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -155,14 +192,15 @@ fun CurrentStatusSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             CurrentMetricCard(
                 title = "Power Zone",
                 value = calculatePowerZone(currentPower.toDouble(), userFtp.toDouble()),
                 subtitle = "$currentPower W",
                 icon = Icons.Default.DirectionsBike,
-                color = getPowerZoneColor(currentPower.toDouble(), userFtp.toDouble())
+                color = getPowerZoneColor(currentPower.toDouble(), userFtp.toDouble()),
+                modifier = Modifier.weight(1f)
             )
 
             CurrentMetricCard(
@@ -170,7 +208,8 @@ fun CurrentStatusSection(
                 value = calculateHeartRateZone(currentHeartRate, userMaxBpm),
                 subtitle = "$currentHeartRate BPM",
                 icon = Icons.Default.DirectionsRun,
-                color = getHeartRateZoneColor(currentHeartRate, userMaxBpm)
+                color = getHeartRateZoneColor(currentHeartRate, userMaxBpm),
+                modifier = Modifier.weight(1f)
             )
         }
     }
@@ -182,27 +221,27 @@ fun CurrentMetricCard(
     value: String,
     subtitle: String,
     icon: ImageVector,
-    color: Color
+    color: Color,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier.size(width = 160.dp, height = 120.dp),
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.1f)),
-        shape = RoundedCornerShape(12.dp)
+        modifier = modifier.height(136.dp),
+        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.12f)),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = title,
                 tint = color,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(28.dp)
             )
-            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodySmall,
@@ -210,7 +249,7 @@ fun CurrentMetricCard(
             )
             Text(
                 text = value,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = color
             )
@@ -228,7 +267,7 @@ fun CyclingZonesSection(userFtp: Int) {
     TrainingSection(title = "Cycling Power Zones (FTP: ${userFtp}W)") {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             val zones = listOf(
                 ZoneInfo("Zone 1", "Recovery", "< 56%", "< ${(userFtp * 0.56).toInt()}W", MaterialTheme.extendedColors.success),
@@ -252,7 +291,7 @@ fun RunningZonesSection(userMaxBpm: Int) {
     TrainingSection(title = "Running Heart Rate Zones (Max: ${userMaxBpm} BPM)") {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             val zones = listOf(
                 ZoneInfo("Zone 1", "Recovery", "< 60%", "< ${(userMaxBpm * 0.60).toInt()} BPM", MaterialTheme.extendedColors.success),
@@ -274,7 +313,7 @@ fun SwimmingZonesSection() {
     TrainingSection(title = "Swimming Training Zones") {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             val zones = listOf(
                 ZoneInfo("EN1", "Aerobic Base", "Easy", "Conversational pace", MaterialTheme.extendedColors.success),
@@ -296,7 +335,7 @@ fun ZoneCard(zone: ZoneInfo, icon: ImageVector) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = zone.color.copy(alpha = 0.1f)),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(12.dp)
     ) {
         Row(
             modifier = Modifier
@@ -310,8 +349,11 @@ fun ZoneCard(zone: ZoneInfo, icon: ImageVector) {
                 tint = zone.color,
                 modifier = Modifier.size(20.dp)
             )
-            Spacer(modifier = Modifier.padding(8.dp))
-            Column(modifier = Modifier.weight(1f)) {
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(
                     text = "${zone.zone} - ${zone.name}",
                     style = MaterialTheme.typography.bodyMedium,
@@ -405,11 +447,40 @@ fun TrainingSection(title: String, content: @Composable ColumnScope.() -> Unit) 
         )
         Card(
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.extendedColors.surfaceSubtle),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column(modifier = Modifier.padding(8.dp), content = content)
+            Column(modifier = Modifier.padding(16.dp), content = content)
+        }
+    }
+}
+
+@Composable
+fun TrainingTip(icon: ImageVector, title: String, description: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -422,5 +493,3 @@ fun TrainingZonesScreenPreview() {
         authViewModel = AuthViewModel(SharedPreferencesMock())
     )
 }
-
-
