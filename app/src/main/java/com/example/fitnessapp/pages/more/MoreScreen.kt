@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnessapp.R
+import com.example.fitnessapp.navigation.Routes
 import com.example.fitnessapp.viewmodel.AuthViewModel
 
 @Composable
@@ -134,6 +135,9 @@ fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = nul
                         }
                         ModernSectionItem("Change Sport Metrics") {
                             navController.navigate("change_sport_metrics")
+                        }
+                        ModernSectionItem("Performance") {
+                            navController.navigate(Routes.PERFORMANCE)
                         }
                         ModernSectionItem("Training Zones") {
                             navController.navigate("training_zones")

@@ -28,6 +28,7 @@ object Routes {
     const val APP_INTEGRATIONS = "app_integrations"
     const val CHANGE_SPORT_METRICS = "change_sport_metrics"
     const val TRAINING_ZONES = "training_zones"
+    const val PERFORMANCE = "performance_metrics"
 
     // Loading
     const val LOADING = "loading_screen"
