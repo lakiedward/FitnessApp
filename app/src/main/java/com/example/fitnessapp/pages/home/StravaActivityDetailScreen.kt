@@ -99,7 +99,9 @@ import com.example.fitnessapp.model.ActivityStreamsResponse
 import com.example.fitnessapp.model.StravaActivity
 import com.example.fitnessapp.viewmodel.StravaViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModelFactory
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import androidx.core.view.WindowCompat
+import androidx.compose.ui.graphics.toArgb
+import android.app.Activity
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -582,14 +584,17 @@ fun StravaActivityDetailScreen(
     } else {
         colorScheme.onPrimary
     }
-    val systemUiController = rememberSystemUiController()
     val useDarkIcons = !isDarkTheme
 
+    val hostActivity = LocalContext.current as? Activity
     SideEffect {
-        systemUiController.setSystemBarsColor(
-            color = Color.Transparent,
-            darkIcons = useDarkIcons
-        )
+        hostActivity?.let { act ->
+            val window = act.window
+            window.statusBarColor = Color.Transparent.toArgb()
+            val controller = WindowCompat.getInsetsController(window, window.decorView)
+            controller.isAppearanceLightStatusBars = useDarkIcons
+            controller.isAppearanceLightNavigationBars = useDarkIcons
+        }
     }
 
     var activity by remember { mutableStateOf<StravaActivity?>(null) }
