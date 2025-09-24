@@ -23,6 +23,8 @@ import com.example.fitnessapp.model.SetupStatusResponse
 import com.example.fitnessapp.model.SportsSelectionRequest
 import com.example.fitnessapp.model.SwimPacePredictions
 import com.example.fitnessapp.model.SwimmingPaceResponse
+import com.example.fitnessapp.model.PerformanceRecalcResponse
+import com.example.fitnessapp.model.PerformanceMetricStatusResponse
 import com.example.fitnessapp.model.TrainingDateUpdate
 import com.example.fitnessapp.model.TrainingPlan
 import com.example.fitnessapp.model.TrainingPlanCreateRequest
@@ -138,6 +140,19 @@ interface ApiService {
     suspend fun getSwimmingPace(
         @Header("Authorization") token: String
     ): Response<SwimmingPaceResponse>
+
+    @POST("metrics/recalc")
+    suspend fun recalc(
+        @Header("Authorization") token: String,
+        @Query("metric") metric: String
+    ): Response<PerformanceRecalcResponse>
+
+    @GET("metrics/status")
+    suspend fun getRecalcStatus(
+        @Header("Authorization") token: String,
+        @Query("metric") metric: String,
+        @Query("jobId") jobId: String
+    ): Response<PerformanceMetricStatusResponse>
 
     @GET("running/ftp")
     suspend fun getRunningFtp(
