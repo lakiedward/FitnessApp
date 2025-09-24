@@ -15,11 +15,11 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-// Light palette
-val BrandPrimary = Color(0xFF6366F1)
+// ——— Light palette (AURORA) ———
+val BrandPrimary = Color(0xFF5F5EF1)
 val BrandPrimaryContainer = Color(0xFFE0E7FF)
-val BrandSecondary = Color(0xFF8B5CF6)
-val BrandSecondaryContainer = Color(0xFFE9D5FF)
+val BrandSecondary = Color(0xFF22D3EE)
+val BrandSecondaryContainer = Color(0xFFCFFAFE)
 val BrandTertiary = Color(0xFF10B981)
 val BrandTertiaryContainer = Color(0xFFBBF7D0)
 val BrandSurfaceVariantLight = Color(0xFFF3F4F6)
@@ -32,8 +32,8 @@ val BrandBorderSubtleLight = Color(0xFFE5EAF2)
 val BrandBorderStrongLight = Color(0xFFE2E8F0)
 val BrandWarningLight = Color(0xFFD97706)
 val BrandWarningContainerLight = Color(0xFFFEF3C7)
-val BrandInfoLight = Color(0xFF2563EB)
-val BrandInfoContainerLight = Color(0xFFE0E7FF)
+val BrandInfoLight = Color(0xFF0EA5E9)
+val BrandInfoContainerLight = Color(0xFFE0F2FE)
 val BrandStrava = Color(0xFFFC4C02)
 val BrandChartPower = Color(0xFFFF6B35)
 val BrandChartHeartRate = Color(0xFFEF4444)
@@ -223,13 +223,13 @@ private val lightColorScheme = lightColorScheme(
     primaryContainer = BrandPrimaryContainer,
     onPrimaryContainer = Color(0xFF1E1B4B),
     secondary = BrandSecondary,
-    onSecondary = Color.White,
+    onSecondary = Color(0xFF083344),
     secondaryContainer = BrandSecondaryContainer,
-    onSecondaryContainer = Color(0xFF311B77),
+    onSecondaryContainer = Color(0xFF083344),
     tertiary = BrandTertiary,
-    onTertiary = Color.White,
+    onTertiary = Color(0xFF052E21),
     tertiaryContainer = BrandTertiaryContainer,
-    onTertiaryContainer = Color(0xFF084C36),
+    onTertiaryContainer = Color(0xFF052E21),
     background = Color.White,
     onBackground = Color(0xFF111827),
     surface = Color.White,
@@ -272,19 +272,27 @@ fun FitnessAppTheme(
     val context = LocalContext.current
     val isDark = isSystemInDarkTheme()
 
-    val colorScheme = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && dynamicColor) {
-        if (isDark) {
-            dynamicDarkColorScheme(context)
+    val baseScheme =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && dynamicColor) {
+            if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         } else {
-            dynamicLightColorScheme(context)
+            if (isDark) darkColorScheme else lightColorScheme
         }
-    } else {
-        if (isDark) {
-            darkColorScheme
-        } else {
-            lightColorScheme
-        }
-    }
+
+    val primary = if (isDark) BrandPrimaryDark else BrandPrimary
+    val onPrimary = if (isDark) Color(0xFF0F1A3A) else Color.White
+    val secondary = if (isDark) BrandSecondaryDark else BrandSecondary
+    val onSecondary = if (isDark) Color(0xFF042A2D) else Color(0xFF083344)
+    val tertiary = if (isDark) BrandTertiaryDark else BrandTertiary
+    val onTertiary = Color(0xFF052E21)
+    val colorScheme = baseScheme.copy(
+        primary = primary,
+        onPrimary = onPrimary,
+        secondary = secondary,
+        onSecondary = onSecondary,
+        tertiary = tertiary,
+        onTertiary = onTertiary
+    )
 
     val extendedColors = if (isDark) {
         darkExtendedColors()

@@ -18,9 +18,10 @@ val Grey900 = Color(0xFF202124)
 val White = Color(0xFFFFFFFF)
 val Green500 = Color(0xFF4CAF50)
 
-val GradientStart = Color(0xFF6366F1)
-val GradientCenter = Color(0xFF8B5CF6)
-val GradientEnd = Color(0xFFA855F7)
+// ——— Gradiente AURORA ———
+val GradientStart = Color(0xFF5F5EF1)  // indigo
+val GradientCenter = Color(0xFF22D3EE) // cyan
+val GradientEnd = Color(0xFF10B981)    // emerald
 
 val PrimaryPurple = Color(0xFF6366F1)
 val ErrorRed = Color(0xFFDC2626)
@@ -33,9 +34,10 @@ object WorkoutColors {
         val extended = MaterialTheme.extendedColors
         val surface = MaterialTheme.colorScheme.surfaceVariant
         val accent = when (workoutType?.lowercase()) {
-            "cycling" -> extended.chartSpeed
-            "running" -> MaterialTheme.colorScheme.tertiary
-            "swimming" -> extended.warning
+            "running" -> extended.chartHeartRate   // roșu = intensitate
+            "cycling" -> extended.chartSpeed       // albastru = viteză
+            "swimming" -> extended.info            // aqua = apă
+            "strength" -> extended.chartPower      // portocaliu = power/lift
             else -> MaterialTheme.colorScheme.primary
         }
         return accent.copy(alpha = 0.08f).compositeOver(surface)
@@ -45,9 +47,10 @@ object WorkoutColors {
     fun getTextColor(workoutType: String?): Color {
         val extended = MaterialTheme.extendedColors
         return when (workoutType?.lowercase()) {
+            "running" -> extended.chartHeartRate
             "cycling" -> extended.chartSpeed
-            "running" -> MaterialTheme.colorScheme.tertiary
-            "swimming" -> extended.warning
+            "swimming" -> extended.info
+            "strength" -> extended.chartPower
             else -> MaterialTheme.colorScheme.onSurface
         }
     }
