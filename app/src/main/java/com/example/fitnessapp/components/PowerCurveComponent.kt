@@ -1,6 +1,5 @@
 package com.example.fitnessapp.components
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateFloatAsState
@@ -39,6 +38,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -95,6 +95,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import kotlin.math.roundToInt
+import android.graphics.Paint
 
 data class PowerCurveMarker(
     val interval: String,
@@ -117,6 +118,7 @@ fun PowerCurveComponent(
     val density = LocalDensity.current
     val stravaViewModel: StravaViewModel = viewModel(factory = StravaViewModelFactory(context))
     val scope = rememberCoroutineScope()
+    val colorScheme = MaterialTheme.colorScheme
 
     var powerCurveData by remember { mutableStateOf<PowerCurveResponse?>(null) }
     var isLoading by remember { mutableStateOf(true) }
@@ -149,7 +151,8 @@ fun PowerCurveComponent(
                 .padding(vertical = 4.dp, horizontal = 0.dp),
             shape = RoundedCornerShape(20.dp),
             elevation = CardDefaults.cardElevation(4.dp),
-            border = BorderStroke(1.dp, Color(0xFFE5EAF2)),
+            border = BorderStroke(1.dp, colorScheme.outlineVariant),
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surface)
         ) {
             Column(
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 16.dp, bottom = 12.dp),
@@ -174,7 +177,7 @@ fun PowerCurveComponent(
                 androidx.compose.material3.HorizontalDivider(
                     modifier = Modifier.padding(vertical = 6.dp),
                     thickness = 1.dp,
-                    color = Color(0xFFE5E7EB)
+                    color = colorScheme.outlineVariant
                 )
                 // Chart (fills the card, compact)
                 Box(
@@ -234,6 +237,7 @@ private fun PowerCurveControls(
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
         val compact = maxWidth < 360.dp
+        val colorScheme = MaterialTheme.colorScheme
         if (compact) {
             Column(
                 modifier = Modifier
@@ -253,7 +257,7 @@ private fun PowerCurveControls(
                             append("FTP Line")
                             ftp?.toInt()?.let { append(" ($it W)") }
                         },
-                        color = Color(0xFF3B82F6),
+                        color = colorScheme.tertiary,
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -268,7 +272,7 @@ private fun PowerCurveControls(
                     Spacer(Modifier.width(8.dp))
                     Text(
                         text = "Previous Best",
-                        color = Color(0xFF10B981),
+                        color = colorScheme.secondary,
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -298,7 +302,7 @@ private fun PowerCurveControls(
                             append("FTP Line")
                             ftp?.toInt()?.let { append(" ($it W)") }
                         },
-                        color = Color(0xFF3B82F6),
+                        color = colorScheme.tertiary,
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -313,7 +317,7 @@ private fun PowerCurveControls(
                     Spacer(Modifier.width(8.dp))
                     Text(
                         text = "Previous Best",
-                        color = Color(0xFF10B981),
+                        color = colorScheme.secondary,
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -335,6 +339,7 @@ private fun PowerCurveChart(
     val density = LocalDensity.current
     val chartPadding = 24.dp
     val chartPaddingPx = with(density) { chartPadding.toPx() }
+    val colorScheme = MaterialTheme.colorScheme
     val animatedProgress by animateFloatAsState(
         targetValue = 1f,
         animationSpec = tween(durationMillis = 1500, easing = EaseInOutCubic),
@@ -444,7 +449,8 @@ private fun PowerCurveChart(
                     chartPadding = chartPaddingPx,
                     animatedProgress = animatedProgress,
                     showFtpLine = showFtpLine,
-                    showComparisonLine = showComparisonLine
+                    showComparisonLine = showComparisonLine,
+                    colorScheme = colorScheme
                 )
             }
         }
@@ -458,12 +464,13 @@ private fun SelectionInfoBar(
     marker: PowerCurveMarker,
     onClose: () -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 8.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF3F4F6)),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
@@ -479,19 +486,36 @@ private fun SelectionInfoBar(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                MetricChip(label = marker.interval, color = Color(0xFF374151))
-                MetricChip(label = marker.power, color = Color(0xFFFF6B35))
+                MetricChip(
+                    label = marker.interval,
+                    containerColor = colorScheme.surfaceVariant,
+                    contentColor = colorScheme.onSurfaceVariant
+                )
+                MetricChip(
+                    label = marker.power,
+                    containerColor = colorScheme.primaryContainer,
+                    contentColor = colorScheme.onPrimaryContainer
+                )
                 marker.hr?.let {
-                    MetricChip(label = it, color = Color(0xFFEF4444))
+                    MetricChip(
+                        label = it,
+                        containerColor = colorScheme.errorContainer,
+                        contentColor = colorScheme.onErrorContainer
+                    )
                 }
                 marker.zone?.let {
-                    MetricPill(label = it, bg = getZoneColorFromLabel(it))
+                    val zoneColors = zoneColorsForLabel(it)
+                    MetricPill(
+                        label = it,
+                        containerColor = zoneColors.containerColor,
+                        contentColor = zoneColors.contentColor
+                    )
                 }
             }
             Icon(
                 imageVector = Icons.Filled.Close,
                 contentDescription = "Clear selection",
-                tint = Color(0xFF64748B),
+                tint = colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .size(20.dp)
                     .clickable { onClose() }
@@ -501,28 +525,37 @@ private fun SelectionInfoBar(
 }
 
 @Composable
-private fun MetricChip(label: String, color: Color) {
+private fun MetricChip(
+    label: String,
+    containerColor: Color,
+    contentColor: Color
+) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(color.copy(alpha = 0.08f))
-            .padding(horizontal = 10.dp, vertical = 6.dp)
-    ) {
-        Text(text = label, color = color, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold)
-    }
-}
-
-@Composable
-private fun MetricPill(label: String, bg: Color) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(bg)
+            .background(containerColor)
             .padding(horizontal = 10.dp, vertical = 6.dp)
     ) {
         Text(
             text = label,
-            color = Color.White,
+            color = contentColor,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
+
+@Composable
+private fun MetricPill(label: String, containerColor: Color, contentColor: Color) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(containerColor)
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        Text(
+            text = label,
+            color = contentColor,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
@@ -533,6 +566,7 @@ private fun MetricPill(label: String, bg: Color) {
 
 @Composable
 private fun LoadingState() {
+    val colorScheme = MaterialTheme.colorScheme
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -546,7 +580,7 @@ private fun LoadingState() {
                 .fillMaxWidth()
                 .height(200.dp)
                 .background(
-                    Color(0xFFE5E7EB).copy(alpha = 0.3f),
+                    colorScheme.surfaceVariant.copy(alpha = 0.3f),
                     RoundedCornerShape(8.dp)
                 )
         ) {
@@ -557,7 +591,7 @@ private fun LoadingState() {
                         .height(2.dp)
                         .offset(y = (40 * index).dp)
                         .background(
-                            Color(0xFFD1D5DB).copy(alpha = 0.5f),
+                            colorScheme.outlineVariant.copy(alpha = 0.5f),
                             RoundedCornerShape(1.dp)
                         )
                         .align(Alignment.CenterStart)
@@ -567,14 +601,14 @@ private fun LoadingState() {
 
         Spacer(modifier = Modifier.height(16.dp))
         CircularProgressIndicator(
-            color = Color(0xFF6366F1),
+            color = colorScheme.primary,
             modifier = Modifier.size(32.dp)
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = "Loading power curve...",
             style = MaterialTheme.typography.bodyMedium,
-            color = Color(0xFF6B7280)
+            color = colorScheme.onSurfaceVariant
         )
     }
 }
@@ -584,6 +618,7 @@ private fun ErrorState(
     message: String,
     onRetry: () -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -596,7 +631,7 @@ private fun ErrorState(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFFF6B6B).copy(alpha = 0.1f)
+                containerColor = colorScheme.errorContainer
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
@@ -607,7 +642,7 @@ private fun ErrorState(
                 Icon(
                     imageVector = Icons.Filled.Error,
                     contentDescription = "Error loading power curve data",
-                    tint = Color(0xFFD32F2F),
+                    tint = colorScheme.error,
                     modifier = Modifier.size(48.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -615,22 +650,22 @@ private fun ErrorState(
                     text = "Failed to load power curve",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFD32F2F)
+                    color = colorScheme.error
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = message,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF6B7280),
+                    color = colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
                     onClick = onRetry,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6366F1)
+                        containerColor = colorScheme.primary
                     ),
-                    modifier = Modifier.semantics { 
+                    modifier = Modifier.semantics {
                         contentDescription = "Retry loading power curve data"
                     }
                 ) {
@@ -640,7 +675,7 @@ private fun ErrorState(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Retry", color = Color.White)
+                    Text("Retry", color = colorScheme.onPrimary)
                 }
             }
         }
@@ -652,12 +687,13 @@ private fun PowerCurveMarkerDisplay(
     markerData: PowerCurveMarker?,
     modifier: Modifier = Modifier
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFE0E7FF)),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.primaryContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -669,14 +705,14 @@ private fun PowerCurveMarkerDisplay(
             Icon(
                 imageVector = Icons.Filled.Info, // Use a better info/touch icon if available
                 contentDescription = "Info",
-                tint = Color(0xFF6366F1),
+                tint = colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(36.dp)
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Tap a point on the curve to see details for that interval.",
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color(0xFF374151),
+                color = colorScheme.onPrimaryContainer,
                 textAlign = TextAlign.Center
             )
         }
@@ -718,12 +754,13 @@ private fun PowerMetricCard(
 
 @Composable
 private fun PowerCurveStats(powerCurveData: PowerCurveResponse, fthr: Int? = null) {
+    val colorScheme = MaterialTheme.colorScheme
     Column {
         Text(
             text = "Power Statistics",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1F2937)
+            color = colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -749,19 +786,19 @@ private fun PowerCurveStats(powerCurveData: PowerCurveResponse, fthr: Int? = nul
                         Text(
                             text = "$label Peak Power",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF374151)
+                            color = colorScheme.onSurface
                         )
                         Text(
                             text = description,
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF6B7280)
+                            color = colorScheme.onSurfaceVariant
                         )
                     }
                     Text(
                         text = "${power.toInt()} W",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1F2937)
+                        color = colorScheme.onSurface
                     )
                 }
             }
@@ -773,7 +810,7 @@ private fun PowerCurveStats(powerCurveData: PowerCurveResponse, fthr: Int? = nul
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        Color(0xFFEF4444).copy(alpha = 0.1f),
+                        colorScheme.errorContainer,
                         RoundedCornerShape(8.dp)
                     )
                     .padding(12.dp),
@@ -783,13 +820,13 @@ private fun PowerCurveStats(powerCurveData: PowerCurveResponse, fthr: Int? = nul
                     text = "Estimated FTHR",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFFEF4444)
+                    color = colorScheme.onErrorContainer
                 )
                 Text(
                     text = "$fthrValue bpm",
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFEF4444)
+                    color = colorScheme.onErrorContainer
                 )
             }
         } ?: powerCurveData.referenceData.userFtp?.let { ftp ->
@@ -798,7 +835,7 @@ private fun PowerCurveStats(powerCurveData: PowerCurveResponse, fthr: Int? = nul
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        Color(0xFF6366F1).copy(alpha = 0.1f),
+                        colorScheme.primaryContainer,
                         RoundedCornerShape(8.dp)
                     )
                     .padding(12.dp),
@@ -808,13 +845,13 @@ private fun PowerCurveStats(powerCurveData: PowerCurveResponse, fthr: Int? = nul
                     text = "Current FTP",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF6366F1)
+                    color = colorScheme.onPrimaryContainer
                 )
                 Text(
                     text = "${ftp.toInt()} W",
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6366F1)
+                    color = colorScheme.onPrimaryContainer
                 )
             }
         }
@@ -828,14 +865,30 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
     chartPadding: Float,
     animatedProgress: Float,
     showFtpLine: Boolean,
-    showComparisonLine: Boolean
+    showComparisonLine: Boolean,
+    colorScheme: ColorScheme
 ) {
     val chartWidth = size.width - 2 * chartPadding
     val chartHeight = size.height - 2 * chartPadding
 
-    val gridColor = Color(0xFFE5E7EB)
-    val axisColor = Color(0xFF9CA3AF)
-    val textColor = Color(0xFF374151)
+    val gridColor = colorScheme.outlineVariant
+    val axisColor = colorScheme.outline
+    val textColor = colorScheme.onSurfaceVariant
+
+    val tickTextSizePx = 12.sp.toPx()
+    val axisTitleTextSizePx = 14.sp.toPx()
+    val ftpLabelTextSizePx = 12.sp.toPx()
+    val tickLabelSpacing = 6.dp.toPx()
+    val axisTitleSpacing = 8.dp.toPx()
+    val yAxisLabelPadding = 8.dp.toPx()
+    val ftpLabelVerticalPadding = 6.dp.toPx()
+    val ftpLabelHorizontalPadding = 8.dp.toPx()
+
+    val textPaint = Paint().apply {
+        isAntiAlias = true
+        color = textColor.toArgb()
+        textSize = tickTextSizePx
+    }
 
     val intervals = powerCurveData.powerCurve.intervals
     if (intervals.isNotEmpty()) {
@@ -855,16 +908,19 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
                 strokeWidth = if (i == 0 || i == 5) 1.5f else 0.8f
             )
 
+            textPaint.apply {
+                color = textColor.toArgb()
+                textSize = tickTextSizePx
+                textAlign = Paint.Align.RIGHT
+                isFakeBoldText = false
+            }
+            val yMetrics = textPaint.fontMetrics
+            val yLabelBaseline = y - (yMetrics.ascent + yMetrics.descent) / 2f
             drawContext.canvas.nativeCanvas.drawText(
                 "${powerValue.toInt()} W",
-                chartPadding - 8f,
-                y + 6f,
-                android.graphics.Paint().apply {
-                    color = textColor.toArgb()
-                    textSize = 20f
-                    textAlign = android.graphics.Paint.Align.RIGHT
-                    isAntiAlias = true
-                }
+                chartPadding - yAxisLabelPadding,
+                yLabelBaseline,
+                textPaint
             )
         }
 
@@ -881,44 +937,49 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
             )
 
             if (i < timeLabels.size) {
+                textPaint.apply {
+                    color = textColor.toArgb()
+                    textSize = tickTextSizePx
+                    textAlign = Paint.Align.CENTER
+                    isFakeBoldText = false
+                }
+                val xMetrics = textPaint.fontMetrics
+                val xBaseline = size.height - chartPadding + tickLabelSpacing - xMetrics.ascent
                 drawContext.canvas.nativeCanvas.drawText(
                     timeLabels[i],
                     x,
-                    size.height - chartPadding + 18f,
-                    android.graphics.Paint().apply {
-                        color = textColor.toArgb()
-                        textSize = 20f
-                        textAlign = android.graphics.Paint.Align.CENTER
-                        isAntiAlias = true
-                    }
+                    xBaseline,
+                    textPaint
                 )
             }
         }
 
+        textPaint.apply {
+            color = textColor.toArgb()
+            textSize = axisTitleTextSizePx
+            textAlign = Paint.Align.LEFT
+            isFakeBoldText = true
+        }
+        var axisMetrics = textPaint.fontMetrics
+        val powerTitleBaseline = chartPadding - axisTitleSpacing - axisMetrics.ascent
         drawContext.canvas.nativeCanvas.drawText(
             "Power (W)",
-            20f,
-            chartPadding - 16f,
-            android.graphics.Paint().apply {
-                color = textColor.toArgb()
-                textSize = 22f
-                isFakeBoldText = true
-                isAntiAlias = true
-            }
+            chartPadding,
+            powerTitleBaseline,
+            textPaint
         )
 
+        textPaint.textAlign = Paint.Align.CENTER
+        axisMetrics = textPaint.fontMetrics
+        val timeTitleBaseline = size.height - chartPadding + axisTitleSpacing - axisMetrics.ascent
         drawContext.canvas.nativeCanvas.drawText(
             "Time",
-            size.width / 2,
-            size.height - 8f,
-            android.graphics.Paint().apply {
-                color = textColor.toArgb()
-                textSize = 22f
-                textAlign = android.graphics.Paint.Align.CENTER
-                isFakeBoldText = true
-                isAntiAlias = true
-            }
+            size.width / 2f,
+            timeTitleBaseline,
+            textPaint
         )
+        textPaint.isFakeBoldText = false
+        textPaint.textSize = tickTextSizePx
 
         powerCurveData.referenceData.userFtp?.let { ftp ->
             if (showFtpLine) {
@@ -927,24 +988,33 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
                     val y = chartPadding + chartHeight - (yProgress * chartHeight)
 
                     drawLine(
-                        color = Color(0xFF6366F1).copy(alpha = 0.7f),
+                        color = colorScheme.tertiary.copy(alpha = 0.7f),
                         start = Offset(chartPadding, y),
                         end = Offset(size.width - chartPadding, y),
                         strokeWidth = 2f,
                         pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 10f), 0f)
                     )
 
+                    textPaint.apply {
+                        color = colorScheme.tertiary.toArgb()
+                        textSize = ftpLabelTextSizePx
+                        textAlign = Paint.Align.RIGHT
+                        isFakeBoldText = true
+                    }
+                    val ftpMetrics = textPaint.fontMetrics
+                    val ftpBaseline = y - ftpLabelVerticalPadding - ftpMetrics.descent
                     drawContext.canvas.nativeCanvas.drawText(
                         "FTP ${ftp.toInt()}W",
-                        size.width - chartPadding - 8f,
-                        y - 8f,
-                        android.graphics.Paint().apply {
-                            color = Color(0xFF6366F1).toArgb()
-                            textSize = 18f
-                            textAlign = android.graphics.Paint.Align.RIGHT
-                            isAntiAlias = true
-                        }
+                        size.width - chartPadding - ftpLabelHorizontalPadding,
+                        ftpBaseline,
+                        textPaint
                     )
+                    textPaint.apply {
+                        color = textColor.toArgb()
+                        textSize = tickTextSizePx
+                        textAlign = Paint.Align.LEFT
+                        isFakeBoldText = false
+                    }
                 }
             }
         }
@@ -970,7 +1040,7 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
 
             drawPath(
                 path = comparisonPath,
-                color = Color(0xFF10B981).copy(alpha = 0.6f),
+                color = colorScheme.secondary.copy(alpha = 0.6f),
                 style = Stroke(
                     width = 2f,
                     cap = StrokeCap.Round,
@@ -983,7 +1053,7 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
             selectedMarker?.let { marker ->
                 val x = marker.xPosition.coerceIn(chartPadding, size.width - chartPadding)
                 drawLine(
-                    color = Color(0xFF6366F1).copy(alpha = 0.8f * markerAlpha),
+                    color = colorScheme.primary.copy(alpha = 0.8f * markerAlpha),
                     start = Offset(x, chartPadding),
                     end = Offset(x, size.height - chartPadding),
                     strokeWidth = 2.5f,
@@ -1037,12 +1107,12 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
 
                 drawPath(
                     path = fillPath,
-                    color = Color(0xFFFF6B35).copy(alpha = 0.15f * animatedProgress)
+                    color = colorScheme.primary.copy(alpha = 0.15f * animatedProgress)
                 )
 
                 drawPath(
                     path = path,
-                    color = Color(0xFFFF6B35),
+                    color = colorScheme.primary,
                     style = Stroke(
                         width = 3f,
                         cap = StrokeCap.Round,
@@ -1066,12 +1136,12 @@ private fun DrawScope.drawEnhancedPowerCurveChart(
 
                     // Smaller point markers to reduce clutter
                     drawCircle(
-                        color = Color.White.copy(alpha = pointAlpha),
+                        color = colorScheme.surface.copy(alpha = pointAlpha),
                         radius = 4.5f,
                         center = Offset(x, y)
                     )
                     drawCircle(
-                        color = Color(0xFFFF6B35).copy(alpha = pointAlpha),
+                        color = colorScheme.primary.copy(alpha = pointAlpha),
                         radius = 3f,
                         center = Offset(x, y)
                     )
@@ -1095,15 +1165,33 @@ private fun calculatePowerZone(power: Double, ftp: Double): String {
 }
 
 // Helper to get zone color from label
-private fun getZoneColorFromLabel(zone: String): Color {
+private data class ZoneColorPalette(val containerColor: Color, val contentColor: Color)
+
+@Composable
+private fun zoneColorsForLabel(zone: String): ZoneColorPalette {
+    val colorScheme = MaterialTheme.colorScheme
     return when {
-        zone.contains("Zone 1") -> Color(0xFF6EE7B7)
-        zone.contains("Zone 2") -> Color(0xFF34D399)
-        zone.contains("Zone 3") -> Color(0xFF10B981)
-        zone.contains("Zone 4") -> Color(0xFF059669)
-        zone.contains("Zone 5") -> Color(0xFF6366F1)
-        zone.contains("Zone 6") -> Color(0xFFF59E42)
-        zone.contains("Zone 7") -> Color(0xFFEF4444)
-        else -> Color(0xFF6366F1)
+        zone.contains("Zone 1", ignoreCase = true) ->
+            ZoneColorPalette(colorScheme.secondaryContainer, colorScheme.onSecondaryContainer)
+
+        zone.contains("Zone 2", ignoreCase = true) ->
+            ZoneColorPalette(colorScheme.tertiaryContainer, colorScheme.onTertiaryContainer)
+
+        zone.contains("Zone 3", ignoreCase = true) ->
+            ZoneColorPalette(colorScheme.primaryContainer, colorScheme.onPrimaryContainer)
+
+        zone.contains("Zone 4", ignoreCase = true) ->
+            ZoneColorPalette(colorScheme.secondary, colorScheme.onSecondary)
+
+        zone.contains("Zone 5", ignoreCase = true) ->
+            ZoneColorPalette(colorScheme.tertiary, colorScheme.onTertiary)
+
+        zone.contains("Zone 6", ignoreCase = true) ->
+            ZoneColorPalette(colorScheme.primary, colorScheme.onPrimary)
+
+        zone.contains("Zone 7", ignoreCase = true) ->
+            ZoneColorPalette(colorScheme.error, colorScheme.onError)
+
+        else -> ZoneColorPalette(colorScheme.primaryContainer, colorScheme.onPrimaryContainer)
     }
 }
