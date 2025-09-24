@@ -48,6 +48,7 @@ import com.example.fitnessapp.pages.loading.LoadingTrainingScreen
 import com.example.fitnessapp.pages.more.AppIntegrationsScreen
 import com.example.fitnessapp.pages.more.ChangeSportMetricsScreen
 import com.example.fitnessapp.pages.more.MoreScreen
+import com.example.fitnessapp.pages.more.PerformanceScreen
 import com.example.fitnessapp.pages.more.TrainingZonesScreen
 import com.example.fitnessapp.pages.signup.AddAgeScreen
 import com.example.fitnessapp.pages.signup.AddEmailScreen
@@ -287,6 +288,12 @@ fun AppNavigation(
         }
         composable(Routes.MORE) {
             MoreScreen(navController, authViewModel)
+        }
+        composable(Routes.PERFORMANCE) {
+            PerformanceScreen(
+                navController = navController,
+                authViewModel = authViewModel
+            )
         }
         composable(Routes.CHANGE_SPORT_METRICS) {
             ChangeSportMetricsScreen(navController, authViewModel)

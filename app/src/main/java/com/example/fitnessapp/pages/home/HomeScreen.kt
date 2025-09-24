@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
@@ -34,6 +35,7 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,6 +45,7 @@ import androidx.compose.material3.MaterialTheme
 import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -164,7 +167,16 @@ fun HomeScreen(
                 }
 
                 item {
-                    MetricsSection(ftpEstimate, userTrainingData, isLoading, sleepHours, steps, caloriesBurned, calorieAllowance)
+                    MetricsSection(
+                        navController = navController,
+                        ftpEstimate = ftpEstimate,
+                        userTrainingData = userTrainingData,
+                        isLoading = isLoading,
+                        sleepHours = sleepHours,
+                        steps = steps,
+                        caloriesBurned = caloriesBurned,
+                        calorieAllowance = calorieAllowance
+                    )
                 }
 
                 if (error != null) {
@@ -277,17 +289,29 @@ private fun TodayTrainingCard(todayWorkout: Any?) {
 }
 
 @Composable
-private fun SectionHeader(title: String, modifier: Modifier = Modifier) {
+private fun SectionHeader(
+    title: String,
+    modifier: Modifier = Modifier,
+    action: (@Composable () -> Unit)? = null
+) {
     val colorScheme = MaterialTheme.colorScheme
     val headerColor = if (isSystemInDarkTheme()) colorScheme.onSurface else colorScheme.onPrimary
 
     Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = headerColor
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = headerColor,
+                modifier = Modifier.weight(1f)
+            )
+            action?.invoke()
+        }
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
@@ -313,6 +337,13 @@ private fun QuickActionsSection(navController: NavController) {
                     title = "Training Dashboard",
                     icon = Icons.Filled.Assignment,
                     onClick = { navController.navigate(Routes.TRAINING_DASHBOARD) }
+                )
+            }
+            item {
+                QuickActionCard(
+                    title = "Performance",
+                    icon = Icons.Filled.TrendingUp,
+                    onClick = { navController.navigate(Routes.PERFORMANCE) }
                 )
             }
             item {
@@ -375,9 +406,25 @@ private fun QuickActionCard(
 }
 
 @Composable
-private fun MetricsSection(ftpEstimate: Any?, userTrainingData: Any?, isLoading: Boolean?, sleepHours: Double, steps: Long?, caloriesBurned: Double, calorieAllowance: Double) {
+private fun MetricsSection(
+    navController: NavController,
+    ftpEstimate: Any?,
+    userTrainingData: Any?,
+    isLoading: Boolean?,
+    sleepHours: Double,
+    steps: Long?,
+    caloriesBurned: Double,
+    calorieAllowance: Double
+) {
     Column {
-        SectionHeader(title = "Your Metrics")
+        SectionHeader(
+            title = "Your Metrics",
+            action = {
+                TextButton(onClick = { navController.navigate(Routes.PERFORMANCE) }) {
+                    Text("View details")
+                }
+            }
+        )
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(
