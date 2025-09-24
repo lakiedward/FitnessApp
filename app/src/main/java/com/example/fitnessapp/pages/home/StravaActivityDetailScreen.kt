@@ -95,6 +95,7 @@ import com.example.fitnessapp.components.PerformanceChartsSection
 import com.example.fitnessapp.components.PowerCurveSection
 import com.example.fitnessapp.components.isPowerCurveEligible
 import com.example.fitnessapp.components.RouteMapSection
+import com.example.fitnessapp.navigation.Routes
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.example.fitnessapp.model.ActivityStreamsResponse
 import com.example.fitnessapp.model.StravaActivity
@@ -997,11 +998,23 @@ fun StravaActivityDetailScreen(
                                             }
 
                                             activity?.map?.summaryPolyline != null && activity?.map?.summaryPolyline!!.isNotEmpty() -> {
-                                                RouteMapSection(polyline = activity!!.map!!.summaryPolyline!!)
+                    RouteMapSection(
+                        polyline = activity!!.map!!.summaryPolyline!!,
+                        onFullScreenClick = {
+                            val encodedPolyline = Uri.encode(activity!!.map!!.summaryPolyline!!)
+                            navController.navigate("${Routes.FULL_SCREEN_MAP_ROUTE}/$encodedPolyline")
+                        }
+                    )
                                             }
 
                                             activity?.map?.polyline != null && activity?.map?.polyline!!.isNotEmpty() -> {
-                                                RouteMapSection(polyline = activity!!.map!!.polyline!!)
+                    RouteMapSection(
+                        polyline = activity!!.map!!.polyline!!,
+                        onFullScreenClick = {
+                            val encodedPolyline = Uri.encode(activity!!.map!!.polyline!!)
+                            navController.navigate("${Routes.FULL_SCREEN_MAP_ROUTE}/$encodedPolyline")
+                        }
+                    )
                                             }
 
                                             else -> {

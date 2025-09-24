@@ -74,6 +74,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@drawable/iclogo"
         android:supportsRtl="true"
+        android:testOnly="true"
         android:theme="@style/Theme.FitnessApp"
         android:usesCleartextTraffic="true" >
 

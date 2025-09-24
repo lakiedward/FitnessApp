@@ -31,6 +31,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.NavType
 import com.example.fitnessapp.api.ApiService
 import com.example.fitnessapp.api.RetrofitClient
 import com.example.fitnessapp.model.ChoosedSports
@@ -43,6 +44,7 @@ import com.example.fitnessapp.pages.home.StravaActivityDetailScreen
 import com.example.fitnessapp.pages.home.TrainingDetailScreen
 import com.example.fitnessapp.pages.home.WorkoutScreen
 import com.example.fitnessapp.pages.home.QuickCreateTrainingPlanScreen
+import com.example.fitnessapp.pages.home.FullScreenMapScreen
 import com.example.fitnessapp.pages.loading.LoadingScreen
 import com.example.fitnessapp.pages.loading.LoadingTrainingScreen
 import com.example.fitnessapp.pages.more.AppIntegrationsScreen
@@ -368,6 +370,15 @@ fun AppNavigation(
                 navController = navController,
                 authViewModel = authViewModel
             )
+        }
+        composable(
+            route = "${Routes.FULL_SCREEN_MAP_ROUTE}/{polyline}",
+            arguments = listOf(
+                navArgument("polyline") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val polyline = backStackEntry.arguments?.getString("polyline")
+            FullScreenMapScreen(navController = navController, polyline = polyline)
         }
     }
 }

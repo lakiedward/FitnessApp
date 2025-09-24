@@ -74,7 +74,9 @@ fun RouteMapSection(
     mapHtml: String? = null,
     polyline: String? = null,
     gpxData: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isFullScreen: Boolean = false,
+    onFullScreenClick: (() -> Unit)? = null
 ) {
     val mapContent: RouteMapContent? = when {
         gpxData != null -> {
@@ -108,6 +110,14 @@ fun RouteMapSection(
     val mapState = remember(gpxData, mapHtml, htmlUrl, polyline) { MapInteractionState() }
     var showFullscreen by remember(mapContent) { mutableStateOf(false) }
 
+    // Determine fullscreen handler behavior: navigation callback if provided,
+    // built-in dialog if not, and disabled in fullscreen mode
+    val fullscreenHandler: (() -> Unit)? = when {
+        isFullScreen -> null
+        onFullScreenClick != null -> onFullScreenClick
+        else -> ({ showFullscreen = true })
+    }
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -138,7 +148,7 @@ fun RouteMapSection(
                                 .fillMaxWidth()
                                 .height(300.dp),
                             mapState = mapState,
-                            onRequestFullscreen = { showFullscreen = true }
+                            onRequestFullscreen = fullscreenHandler
                         )
                     }
 
@@ -149,7 +159,7 @@ fun RouteMapSection(
                                 .fillMaxWidth()
                                 .height(300.dp),
                             mapState = mapState,
-                            onRequestFullscreen = { showFullscreen = true }
+                            onRequestFullscreen = fullscreenHandler
                         )
                     }
 
@@ -160,7 +170,7 @@ fun RouteMapSection(
                                 .fillMaxWidth()
                                 .height(300.dp),
                             mapState = mapState,
-                            onRequestFullscreen = { showFullscreen = true }
+                            onRequestFullscreen = fullscreenHandler
                         )
                     }
 
@@ -171,7 +181,7 @@ fun RouteMapSection(
                                 .fillMaxWidth()
                                 .height(300.dp),
                             mapState = mapState,
-                            onRequestFullscreen = { showFullscreen = true }
+                            onRequestFullscreen = fullscreenHandler
                         )
                     }
                 }
