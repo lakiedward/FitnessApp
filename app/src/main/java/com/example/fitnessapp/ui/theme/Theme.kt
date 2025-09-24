@@ -279,14 +279,19 @@ fun FitnessAppTheme(
             if (isDark) darkColorScheme else lightColorScheme
         }
 
-    val onSecondaryFixed = if (isDark) Color(0xFF042A2D) else Color(0xFF083344)
+    val primary = if (isDark) BrandPrimaryDark else BrandPrimary
+    val onPrimary = if (isDark) Color(0xFF0F1A3A) else Color.White
+    val secondary = if (isDark) BrandSecondaryDark else BrandSecondary
+    val onSecondary = if (isDark) Color(0xFF042A2D) else Color(0xFF083344)
+    val tertiary = if (isDark) BrandTertiaryDark else BrandTertiary
+    val onTertiary = Color(0xFF052E21)
     val colorScheme = baseScheme.copy(
-        primary = BrandPrimary,
-        onPrimary = Color.White,
-        secondary = BrandSecondary,
-        onSecondary = onSecondaryFixed,
-        tertiary = BrandTertiary,
-        onTertiary = Color(0xFF052E21)
+        primary = primary,
+        onPrimary = onPrimary,
+        secondary = secondary,
+        onSecondary = onSecondary,
+        tertiary = tertiary,
+        onTertiary = onTertiary
     )
 
     val extendedColors = if (isDark) {
