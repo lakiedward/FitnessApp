@@ -59,6 +59,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import com.example.fitnessapp.ui.theme.extendedColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
@@ -69,6 +70,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -97,6 +99,7 @@ import com.example.fitnessapp.model.ActivityStreamsResponse
 import com.example.fitnessapp.model.StravaActivity
 import com.example.fitnessapp.viewmodel.StravaViewModel
 import com.example.fitnessapp.viewmodel.StravaViewModelFactory
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -573,10 +576,20 @@ fun StravaActivityDetailScreen(
 
     val colorScheme = MaterialTheme.colorScheme
     val extendedColors = MaterialTheme.extendedColors
-    val gradientContentColor = if (isSystemInDarkTheme()) {
+    val isDarkTheme = isSystemInDarkTheme()
+    val gradientContentColor = if (isDarkTheme) {
         colorScheme.onSurface
     } else {
         colorScheme.onPrimary
+    }
+    val systemUiController = rememberSystemUiController()
+    val useDarkIcons = !isDarkTheme
+
+    SideEffect {
+        systemUiController.setSystemBarsColor(
+            color = Color.Transparent,
+            darkIcons = useDarkIcons
+        )
     }
 
     var activity by remember { mutableStateOf<StravaActivity?>(null) }
@@ -657,9 +670,18 @@ fun StravaActivityDetailScreen(
                     )
                 )
             )
-            .nestedScroll(pullToRefreshState.nestedScrollConnection)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(pullToRefreshState.nestedScrollConnection),
+            containerColor = Color.Transparent
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
             // --- Header (accessibility: guarantee 48dp min icons) ---
             Row(
                 modifier = Modifier
