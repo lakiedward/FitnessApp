@@ -4,7 +4,9 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -46,143 +48,160 @@ import com.example.fitnessapp.viewmodel.AuthViewModel
 fun MoreScreen(navController: NavController, authViewModel: AuthViewModel? = null) {
     val context = LocalContext.current
 
+    val colorScheme = MaterialTheme.colorScheme
+    val gradientContentColor = if (isSystemInDarkTheme()) {
+        colorScheme.onSurface
+    } else {
+        colorScheme.onPrimary
+    }
+    val gradientColors = listOf(
+        MaterialTheme.extendedColors.gradientPrimary,
+        MaterialTheme.extendedColors.gradientSecondary,
+        MaterialTheme.extendedColors.gradientAccent
+    )
+
     Scaffold(
         bottomBar = {
             com.example.fitnessapp.pages.home.ModernBottomNavigation(navController = navController)
         },
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = Color.Transparent
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.extendedColors.chartAltitude,
-                            MaterialTheme.extendedColors.gradientAccent
-                        )
-                    )
+                    brush = Brush.verticalGradient(colors = gradientColors)
                 )
         ) {
-            // Header
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 32.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 32.dp)
             ) {
-                Text(
-                    text = "More",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-
-            // Content Card
-            Card(
-                modifier = Modifier.fillMaxSize(),
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Column(
+                // Header
+                Row(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(24.dp)
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // User Info
+                    Text(
+                        text = "More",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = gradientContentColor
+                    )
+                }
+
+                // Content Card
+                Card(
+                    modifier = Modifier.fillMaxSize(),
+                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = colorScheme.surface.copy(alpha = 0.95f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(24.dp)
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.iclogo),
-                            contentDescription = "Profile Picture",
-                            modifier = Modifier
-                                .size(80.dp)
-                                .clip(CircleShape)
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = "Lucas Scott",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "@lucasscott3",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    // Sections
-                    ModernSection(title = "Account") {
-                        ModernSectionItem("My Account") {}
-                        ModernSectionItem("Settings") {}
-                        ModernSectionItem("Training Dashboard") {
-                            navController.navigate("training_dashboard")
+                        // User Info
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.iclogo),
+                                contentDescription = "Profile Picture",
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(CircleShape)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "Lucas Scott",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "@lucasscott3",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
-                        ModernSectionItem("App Integrations") {
-                            navController.navigate("app_integrations")
-                        }
-                        ModernSectionItem("Change Sport Metrics") {
-                            navController.navigate("change_sport_metrics")
-                        }
-                        ModernSectionItem("Performance") {
-                            navController.navigate(Routes.PERFORMANCE)
-                        }
-                        ModernSectionItem("Training Zones") {
-                            navController.navigate("training_zones")
-                        }
-                    }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(32.dp))
 
-                    ModernSection(title = "Support") {
-                        ModernSectionItem("Contact us") {}
-                        ModernSectionItem("Help & Support") {}
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    ModernSection(title = "Actions") {
-                        ModernSectionItem("Log out") {
-                            authViewModel?.logout()
-                            Toast.makeText(context, "Logged out", Toast.LENGTH_SHORT).show()
-                            navController.navigate("login_screen") {
-                                popUpTo(0) { inclusive = true }
+                        // Sections
+                        ModernSection(title = "Account") {
+                            ModernSectionItem("My Account") {}
+                            ModernSectionItem("Settings") {}
+                            ModernSectionItem("Training Dashboard") {
+                                navController.navigate("training_dashboard")
+                            }
+                            ModernSectionItem("App Integrations") {
+                                navController.navigate("app_integrations")
+                            }
+                            ModernSectionItem("Change Sport Metrics") {
+                                navController.navigate("change_sport_metrics")
+                            }
+                            ModernSectionItem("Performance") {
+                                navController.navigate(Routes.PERFORMANCE)
+                            }
+                            ModernSectionItem("Training Zones") {
+                                navController.navigate("training_zones")
                             }
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(100.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        ModernSection(title = "Support") {
+                            ModernSectionItem("Contact us") {}
+                            ModernSectionItem("Help & Support") {}
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        ModernSection(title = "Actions") {
+                            ModernSectionItem("Log out") {
+                                authViewModel?.logout()
+                                Toast.makeText(context, "Logged out", Toast.LENGTH_SHORT).show()
+                                navController.navigate("login_screen") {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(100.dp))
+                    }
                 }
             }
         }
-    }
 }
 
 @Composable
 fun ModernSection(title: String, content: @Composable ColumnScope.() -> Unit) {
+    val colorScheme = MaterialTheme.colorScheme
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 12.dp)
         )
         Card(
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(
+                containerColor = colorScheme.surface.copy(alpha = 0.95f)
+            ),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -203,13 +222,13 @@ fun ModernSectionItem(title: String, onClick: () -> Unit) {
         Text(
             text = title,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f)
         )
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp)
         )
     }
