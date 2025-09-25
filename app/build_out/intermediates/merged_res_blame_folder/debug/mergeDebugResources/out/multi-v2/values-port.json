@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.fitnessapp-mergeDebugResources-71:/values-port/values-port.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\lakie\\.gradle\\caches\\8.13\\transforms\\038e5473679f716ee7f46a59b74fca7b\\transformed\\appcompat-1.7.1\\res\\values-port\\values-port.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "55",
+                        "endOffsets": "106"
+                    }
+                }
+            ]
+        }
+    ]
+}

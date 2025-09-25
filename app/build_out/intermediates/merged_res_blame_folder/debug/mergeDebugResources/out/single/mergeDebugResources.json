@@ -1,0 +1,234 @@
+[
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_record.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_record.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_iclogo.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/iclogo.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_bell.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/bell.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_moon.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_moon.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_help.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_help.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_garmin.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_garmin.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_power.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_power.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_female.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/female.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_arrow_right.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_arrow_right.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/xml_data_extraction_rules.xml.flat",
+        "source": "com.example.fitnessapp-main-75:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_down_arrow.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_down_arrow.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_home.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_home.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_male.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/male.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/layout_marker_view.xml.flat",
+        "source": "com.example.fitnessapp-main-75:/layout/marker_view.xml"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_check_circle.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_check_circle.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_strava.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_strava.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_health_connect.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_health_connect.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_marker_bg.xml.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/marker_bg.xml"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_runningilustration.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/runningilustration.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/xml_backup_rules.xml.flat",
+        "source": "com.example.fitnessapp-main-75:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_back.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/back.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_navigation.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_navigation.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_fitness.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_fitness.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_person.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_person.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_googlelogo.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/googlelogo.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_applelogo.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/applelogo.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_calendar.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_calendar.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_more.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_more.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_password.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/password.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_record_white.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_record_white.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_facebooklogo.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/facebooklogo.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/xml_network_security_config.xml.flat",
+        "source": "com.example.fitnessapp-debug-74:/xml/network_security_config.xml"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_heart.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_heart.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_privacy.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_privacy.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_record_white_no_text.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_record_white_no_text.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_user.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/user.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_link.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_link.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_running.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/running.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.example.fitnessapp-main-75:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_google_fit.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_google_fit.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_cycling.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/cycling.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_eye.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/eye.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_swimming.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/swimming.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_arrow_back.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_arrow_back.png"
+    },
+    {
+        "merged": "com.example.fitnessapp-debug-73:/drawable_ic_season.png.flat",
+        "source": "com.example.fitnessapp-main-75:/drawable/ic_season.png"
+    }
+]

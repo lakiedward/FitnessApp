@@ -1,0 +1,491 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.fitnessapp"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:4:5-67
+11-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:4:22-64
+12    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+12-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:5:5-79
+12-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:5:22-76
+13    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+13-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:6:5-81
+13-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:6:22-78
+14    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+14-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:7:5-79
+14-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:7:22-76
+15    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+15-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:8:5-85
+15-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:8:22-82
+16    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+16-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:9:5-81
+16-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:9:22-78
+17    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+17-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:10:5-80
+17-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:10:22-77
+18
+19    <!-- Bluetooth permissions pentru conectarea la trainers -->
+20    <uses-permission android:name="android.permission.BLUETOOTH" />
+20-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:13:5-68
+20-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:13:22-65
+21    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+21-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:14:5-74
+21-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:14:22-71
+22    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+22-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:15:5-76
+22-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:15:22-73
+23    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+23-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:16:5-73
+23-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:16:22-70
+24
+25    <!-- Health Connect permissions -->
+26    <uses-permission android:name="android.permission.health.READ_STEPS" />
+26-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:19:5-76
+26-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:19:22-73
+27    <uses-permission android:name="android.permission.health.WRITE_STEPS" />
+27-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:20:5-77
+27-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:20:22-74
+28    <uses-permission android:name="android.permission.health.READ_DISTANCE" />
+28-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:21:5-79
+28-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:21:22-76
+29    <uses-permission android:name="android.permission.health.WRITE_DISTANCE" />
+29-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:22:5-80
+29-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:22:22-77
+30    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
+30-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:23:5-93
+30-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:23:22-90
+31    <uses-permission android:name="android.permission.health.WRITE_ACTIVE_CALORIES_BURNED" />
+31-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:24:5-94
+31-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:24:22-91
+32    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
+32-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:25:5-92
+32-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:25:22-89
+33    <uses-permission android:name="android.permission.health.WRITE_TOTAL_CALORIES_BURNED" />
+33-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:26:5-93
+33-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:26:22-90
+34    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
+34-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:27:5-79
+34-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:27:22-76
+35    <uses-permission android:name="android.permission.health.WRITE_EXERCISE" />
+35-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:28:5-80
+35-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:28:22-77
+36    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+36-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:29:5-81
+36-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:29:22-78
+37    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />
+37-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:30:5-82
+37-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:30:22-79
+38    <!-- Add missing sleep permissions -->
+39    <uses-permission android:name="android.permission.health.READ_SLEEP" />
+39-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:32:5-76
+39-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:32:22-73
+40    <uses-permission android:name="android.permission.health.WRITE_SLEEP" />
+40-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:33:5-77
+40-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:33:22-74
+41
+42    <!-- Package visibility for Android 11+ -->
+43    <queries>
+43-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:36:5-40:15
+44
+45        <!-- permite verificarea instalării Health Connect -->
+46        <package android:name="com.google.android.apps.healthdata" />
+46-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:38:9-70
+46-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:38:18-67
+47        <package android:name="com.google.android.healthconnect.controller" />
+47-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:39:9-79
+47-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:39:18-76
+48        <!-- Needs to be explicitly declared on Android R+ -->
+49        <package android:name="com.google.android.apps.maps" />
+49-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:33:9-64
+49-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:33:18-61
+50    </queries>
+51
+52    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- Include required permissions for Google Maps API to run. -->
+52-->[com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:11:5-76
+52-->[com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:11:22-73
+53    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+53-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:23:5-79
+53-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:23:22-76
+54
+55    <uses-feature
+55-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:26:5-28:35
+56        android:glEsVersion="0x00020000"
+56-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:27:9-41
+57        android:required="true" />
+57-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:28:9-32
+58
+59    <permission
+59-->[androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:22:5-24:47
+60        android:name="com.example.fitnessapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+60-->[androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:23:9-81
+61        android:protectionLevel="signature" />
+61-->[androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:24:9-44
+62
+63    <uses-permission android:name="com.example.fitnessapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+63-->[androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:26:5-97
+63-->[androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:26:22-94
+64
+65    <application
+66        android:allowBackup="true"
+66-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:43:9-35
+67        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+67-->[androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:28:18-86
+68        android:dataExtractionRules="@xml/data_extraction_rules"
+68-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:44:9-65
+69        android:debuggable="true"
+70        android:extractNativeLibs="false"
+71        android:fullBackupContent="@xml/backup_rules"
+71-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:45:9-54
+72        android:icon="@drawable/iclogo"
+72-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:46:9-40
+73        android:label="@string/app_name"
+73-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:47:9-41
+74        android:networkSecurityConfig="@xml/network_security_config"
+74-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:51:9-69
+75        android:roundIcon="@drawable/iclogo"
+75-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:48:9-45
+76        android:supportsRtl="true"
+76-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:49:9-35
+77        android:testOnly="true"
+78        android:theme="@style/Theme.FitnessApp"
+78-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:50:9-48
+79        android:usesCleartextTraffic="true" >
+79-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:52:9-56
+80
+81        <!-- Adaugă cheia API aici -->
+82        <meta-data
+82-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:56:9-58:71
+83            android:name="com.google.android.geo.API_KEY"
+83-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:57:13-58
+84            android:value="AIzaSyCdG-W6-clMCpl_CXHJ7yD_dmJJsTmxH3Y" />
+84-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:58:13-68
+85
+86        <!-- Health Connect configuration -->
+87        <meta-data
+87-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:61:9-63:60
+88            android:name="health_permissions"
+88-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:62:13-46
+89            android:resource="@array/health_permissions" />
+89-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:63:13-57
+90
+91        <activity
+91-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:65:9-79:20
+92            android:name="com.example.fitnessapp.MainActivity"
+92-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:66:13-41
+93            android:exported="true"
+93-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:67:13-36
+94            android:screenOrientation="portrait" >
+94-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:68:13-49
+95            <intent-filter>
+95-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:69:13-72:29
+96                <action android:name="android.intent.action.MAIN" />
+96-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:70:17-69
+96-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:70:25-66
+97
+98                <category android:name="android.intent.category.LAUNCHER" />
+98-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:71:17-77
+98-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:71:27-74
+99            </intent-filter>
+100
+101            <!-- Health Connect permission request intent filter -->
+102            <intent-filter>
+102-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:75:13-78:29
+103                <action android:name="androidx.health.ACTION_REQUEST_PERMISSIONS" />
+103-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:76:17-85
+103-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:76:25-82
+104
+105                <category android:name="android.intent.category.DEFAULT" />
+105-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
+105-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
+106            </intent-filter>
+107        </activity>
+108        <activity
+108-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:81:9-87:20
+109            android:name="com.example.fitnessapp.activities.PermissionsRationaleActivity"
+109-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:82:13-68
+110            android:exported="true" >
+110-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:83:13-36
+111            <intent-filter>
+111-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:84:13-86:29
+112                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+112-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:85:17-92
+112-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:85:25-89
+113            </intent-filter>
+114        </activity> <!-- For Android 14+ -->
+115        <activity-alias
+115-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:90:9-99:26
+116            android:name="com.example.fitnessapp.ViewPermissionUsageActivity"
+116-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:91:13-55
+117            android:exported="true"
+117-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:93:13-36
+118            android:permission="android.permission.START_VIEW_PERMISSION_USAGE"
+118-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:94:13-80
+119            android:targetActivity="com.example.fitnessapp.activities.PermissionsRationaleActivity" >
+119-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:92:13-78
+120            <intent-filter>
+120-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:95:13-98:29
+121                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+121-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:96:17-86
+121-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:96:25-83
+122
+123                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+123-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:97:17-87
+123-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:97:27-84
+124            </intent-filter>
+125        </activity-alias>
+126
+127        <activity
+127-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:101:9-124:20
+128            android:name="com.example.fitnessapp.StravaCallbackActivity"
+128-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:102:13-51
+129            android:exported="true" >
+129-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:103:13-36
+130
+131            <!-- Intent filter for HTTP scheme (NO autoVerify for localhost) -->
+132            <intent-filter>
+132-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:105:13-113:29
+133                <action android:name="android.intent.action.VIEW" />
+133-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:17-69
+133-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:25-66
+134
+135                <category android:name="android.intent.category.DEFAULT" />
+135-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
+135-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
+136                <category android:name="android.intent.category.BROWSABLE" />
+136-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:17-78
+136-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:27-75
+137
+138                <data
+138-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:109:17-112:61
+139                    android:host="fitnessapp-production-60ee.up.railway.app"
+139-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:111:21-77
+140                    android:pathPrefix="/strava/callback"
+140-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:112:21-58
+141                    android:scheme="https" />
+141-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:110:21-43
+142            </intent-filter>
+143            <!-- Intent filter for custom scheme -->
+144            <intent-filter>
+144-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:115:13-123:29
+145                <action android:name="android.intent.action.VIEW" />
+145-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:17-69
+145-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:25-66
+146
+147                <category android:name="android.intent.category.DEFAULT" />
+147-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
+147-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
+148                <category android:name="android.intent.category.BROWSABLE" />
+148-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:17-78
+148-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:27-75
+149
+150                <data
+150-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:109:17-112:61
+151                    android:host="strava"
+151-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:111:21-77
+152                    android:pathPrefix="/callback"
+152-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:112:21-58
+153                    android:scheme="fitnessapp" />
+153-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:110:21-43
+154            </intent-filter>
+155        </activity>
+156        <activity
+156-->[com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:15:9-21:20
+157            android:name="com.google.android.libraries.places.widget.AutocompleteActivity"
+157-->[com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:16:13-91
+158            android:exported="false"
+158-->[com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:17:13-37
+159            android:label="@string/places_autocomplete_label"
+159-->[com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:18:13-62
+160            android:theme="@style/PlacesAutocompleteOverlay"
+160-->[com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:19:13-61
+161            android:windowSoftInputMode="adjustResize" >
+161-->[com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:20:13-55
+162        </activity>
+163
+164        <service
+164-->[androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:24:9-32:19
+165            android:name="androidx.health.platform.client.impl.sdkservice.HealthDataSdkService"
+165-->[androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:25:13-96
+166            android:enabled="true"
+166-->[androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:26:13-35
+167            android:exported="true" >
+167-->[androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:27:13-36
+168            <intent-filter>
+168-->[androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:29:13-31:29
+169                <action android:name="androidx.health.platform.client.ACTION_BIND_SDK_SERVICE" />
+169-->[androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:30:17-98
+169-->[androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:30:25-95
+170            </intent-filter>
+171        </service>
+172
+173        <activity
+173-->[androidx.compose.ui:ui-tooling-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1f415a94333f358b7c1f973c04bcf2c8\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
+174            android:name="androidx.compose.ui.tooling.PreviewActivity"
+174-->[androidx.compose.ui:ui-tooling-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1f415a94333f358b7c1f973c04bcf2c8\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
+175            android:exported="true" />
+175-->[androidx.compose.ui:ui-tooling-android:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\1f415a94333f358b7c1f973c04bcf2c8\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
+176        <activity
+176-->[androidx.compose.ui:ui-test-manifest:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8c0b91e67593d85f5cb834d0a8519be0\transformed\ui-test-manifest-1.6.1\AndroidManifest.xml:23:9-25:39
+177            android:name="androidx.activity.ComponentActivity"
+177-->[androidx.compose.ui:ui-test-manifest:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8c0b91e67593d85f5cb834d0a8519be0\transformed\ui-test-manifest-1.6.1\AndroidManifest.xml:24:13-63
+178            android:exported="true" /> <!-- Needs to be explicitly declared on P+ -->
+178-->[androidx.compose.ui:ui-test-manifest:1.6.1] C:\Users\lakie\.gradle\caches\8.13\transforms\8c0b91e67593d85f5cb834d0a8519be0\transformed\ui-test-manifest-1.6.1\AndroidManifest.xml:25:13-36
+179        <uses-library
+179-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:39:9-41:40
+180            android:name="org.apache.http.legacy"
+180-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:40:13-50
+181            android:required="false" />
+181-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:41:13-37
+182
+183        <activity
+183-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:23:9-27:75
+184            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+184-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:24:13-93
+185            android:excludeFromRecents="true"
+185-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:25:13-46
+186            android:exported="false"
+186-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:26:13-37
+187            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+187-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:27:13-72
+188        <!--
+189            Service handling Google Sign-In user revocation. For apps that do not integrate with
+190            Google Sign-In, this service will never be started.
+191        -->
+192        <service
+192-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:33:9-37:51
+193            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+193-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:34:13-89
+194            android:exported="true"
+194-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:35:13-36
+195            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+195-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:36:13-107
+196            android:visibleToInstantApps="true" />
+196-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\5ebb7349efbf10a63459d2ef49b657f1\transformed\play-services-auth-20.7.0\AndroidManifest.xml:37:13-48
+197
+198        <meta-data
+198-->[com.google.android.gms:play-services-fitness:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c189e5ab904bfbd855fb0320823f0d4d\transformed\play-services-fitness-21.1.0\AndroidManifest.xml:23:9-25:38
+199            android:name="com.google.gms.fitness.sdk.version"
+199-->[com.google.android.gms:play-services-fitness:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c189e5ab904bfbd855fb0320823f0d4d\transformed\play-services-fitness-21.1.0\AndroidManifest.xml:24:13-62
+200            android:value="21.1.0" />
+200-->[com.google.android.gms:play-services-fitness:21.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\c189e5ab904bfbd855fb0320823f0d4d\transformed\play-services-fitness-21.1.0\AndroidManifest.xml:25:13-35
+201
+202        <activity
+202-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:20:9-22:45
+203            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+203-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:20:19-85
+204            android:exported="false"
+204-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:22:19-43
+205            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+205-->[com.google.android.gms:play-services-base:18.1.0] C:\Users\lakie\.gradle\caches\8.13\transforms\7702ab6eee06ec35edd64f4a3ba3a2ff\transformed\play-services-base-18.1.0\AndroidManifest.xml:21:19-78
+206
+207        <provider
+207-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+208            android:name="androidx.startup.InitializationProvider"
+208-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+209            android:authorities="com.example.fitnessapp.androidx-startup"
+209-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+210            android:exported="false" >
+210-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+211            <meta-data
+211-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+212                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+212-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+213                android:value="androidx.startup" />
+213-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\58e218720f67df8316ed1e884e166653\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+214            <meta-data
+214-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:29:13-31:52
+215                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+215-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:30:17-78
+216                android:value="androidx.startup" />
+216-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\lakie\.gradle\caches\8.13\transforms\31e8612a0e7fea9b973ffe3b1045fe08\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:31:17-49
+217            <meta-data
+217-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+218                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+218-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+219                android:value="androidx.startup" />
+219-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+220        </provider>
+221
+222        <meta-data
+222-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\80d9f19a1d7f1c0cb84095346163cac2\transformed\play-services-basement-18.2.0\AndroidManifest.xml:21:9-23:69
+223            android:name="com.google.android.gms.version"
+223-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\80d9f19a1d7f1c0cb84095346163cac2\transformed\play-services-basement-18.2.0\AndroidManifest.xml:22:13-58
+224            android:value="@integer/google_play_services_version" />
+224-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\80d9f19a1d7f1c0cb84095346163cac2\transformed\play-services-basement-18.2.0\AndroidManifest.xml:23:13-66
+225
+226        <receiver
+226-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+227            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+227-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+228            android:directBootAware="false"
+228-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+229            android:enabled="true"
+229-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+230            android:exported="true"
+230-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+231            android:permission="android.permission.DUMP" >
+231-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+232            <intent-filter>
+232-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+233                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+233-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+233-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+234            </intent-filter>
+235            <intent-filter>
+235-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+236                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+236-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+236-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+237            </intent-filter>
+238            <intent-filter>
+238-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+239                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+239-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+239-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+240            </intent-filter>
+241            <intent-filter>
+241-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+242                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+242-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+242-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lakie\.gradle\caches\8.13\transforms\024f50c6049b5f3e00269f38043f5f22\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+243            </intent-filter>
+244        </receiver>
+245
+246        <service
+246-->[com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:29:9-35:19
+247            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+247-->[com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:30:13-103
+248            android:exported="false" >
+248-->[com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:31:13-37
+249            <meta-data
+249-->[com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:32:13-34:39
+250                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+250-->[com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:33:17-94
+251                android:value="cct" />
+251-->[com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:34:17-36
+252        </service>
+253        <service
+253-->[com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:26:9-30:19
+254            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+254-->[com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:27:13-117
+255            android:exported="false"
+255-->[com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:28:13-37
+256            android:permission="android.permission.BIND_JOB_SERVICE" >
+256-->[com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:29:13-69
+257        </service>
+258
+259        <receiver
+259-->[com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:32:9-34:40
+260            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+260-->[com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:33:13-132
+261            android:exported="false" />
+261-->[com.google.android.datatransport:transport-runtime:2.2.3] C:\Users\lakie\.gradle\caches\8.13\transforms\54d1f1547298c8cade1d6e2306d3f5f4\transformed\transport-runtime-2.2.3\AndroidManifest.xml:34:13-37
+262    </application>
+263
+264</manifest>

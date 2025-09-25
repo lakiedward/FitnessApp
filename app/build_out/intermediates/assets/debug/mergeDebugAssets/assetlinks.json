@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.example.fitnessapp",
+    "sha256_cert_fingerprints": ["E6:D0:5D:68:A2:01:C9:48:82:53:13:55:C0:D7:B9:79:03:E6:BC:ED:ED:A5:33:B2:0D:8D:36:AD:90:4B:6B:51"]
+  }
+}] 
