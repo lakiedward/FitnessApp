@@ -115,6 +115,7 @@ import androidx.compose.animation.core.tween
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -211,13 +212,14 @@ private fun ActivityOverviewCard(activity: StravaActivity) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(24.dp),
         border = BorderStroke(1.dp, colorScheme.primary.copy(alpha = 0.12f)),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Box(
             modifier = Modifier
+                .clip(RoundedCornerShape(24.dp))
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
@@ -287,7 +289,7 @@ private fun ActivityOverviewCard(activity: StravaActivity) {
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = formatStartDate(activity.startDate),
+                        text = formatStartDate(activity.startDateLocal, activity.startDate),
                         style = MaterialTheme.typography.bodySmall,
                         color = onGradient.copy(alpha = 0.85f)
                     )
@@ -387,6 +389,7 @@ private data class KeyMetric(
 
 @Composable
 private fun ActivityCoreStatsRow(activity: StravaActivity) {
+    val type = activity.type.lowercase(Locale.getDefault())
     val metrics = buildList {
         activity.distance?.let { distance ->
             add(
@@ -406,14 +409,46 @@ private fun ActivityCoreStatsRow(activity: StravaActivity) {
             )
         )
 
-        activity.averageSpeed?.let { speed ->
-            add(
-                KeyMetric(
-                    label = "Avg Speed",
-                    value = "${String.format(Locale.getDefault(), "%.1f", speed * 3.6f)} km/h",
-                    icon = Icons.Filled.Speed
-                )
-            )
+        val distance = activity.distance ?: 0f
+        val timeSec = activity.movingTime
+        when (type) {
+            "run" -> {
+                formatPaceRunning(distance, timeSec)?.let { pace ->
+                    add(
+                        KeyMetric(
+                            label = "Running Pace",
+                            value = pace,
+                            icon = Icons.Filled.Speed
+                        )
+                    )
+                }
+            }
+
+            "swim" -> {
+                formatPaceSwim(distance, timeSec)?.let { pace ->
+                    add(
+                        KeyMetric(
+                            label = "Pace 100m",
+                            value = pace,
+                            icon = Icons.Filled.Speed
+                        )
+                    )
+                }
+            }
+
+            else -> {
+                activity.averageSpeed?.let { speed ->
+                    if (speed.isFinite()) {
+                        add(
+                            KeyMetric(
+                                label = "Avg Speed",
+                                value = "${String.format(Locale.getDefault(), "%.1f", speed * 3.6f)} km/h",
+                                icon = Icons.Filled.Speed
+                            )
+                        )
+                    }
+                }
+            }
         }
 
         activity.totalElevationGain?.let { gain ->
@@ -460,6 +495,7 @@ private fun KeyMetricChip(metric: KeyMetric, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(min = 116.dp)
                 .padding(horizontal = 16.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -474,7 +510,9 @@ private fun KeyMetricChip(metric: KeyMetric, modifier: Modifier = Modifier) {
                 text = metric.value,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = colorScheme.onSurface
+                color = colorScheme.onSurface,
+                maxLines = 1,
+                softWrap = false
             )
             Text(
                 text = metric.label,
@@ -632,7 +670,7 @@ fun StravaActivityDetailScreen(
             }
 
             val maxBpmData = stravaViewModel.getMaxBpm()
-            maxBpm = maxBpmData["max_bpm"] as? Int
+            maxBpm = (maxBpmData["max_bpm"] as? Number)?.toInt()
             Log.d("StravaActivityDetail", "Max BPM loaded: $maxBpm")
         } catch (e: Exception) {
             Log.e("StravaActivityDetail", "Error loading activity $activityId", e)
@@ -718,13 +756,7 @@ fun StravaActivityDetailScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_strava),
-                        contentDescription = "Strava logo",
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.Unspecified
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    // Strava logo removed from header for cleaner look
                     Icon(
                         imageVector = when (activity?.type?.lowercase()) {
                             "ride", "virtualride" -> Icons.Default.DirectionsBike
@@ -754,8 +786,8 @@ fun StravaActivityDetailScreen(
             Card(
                 modifier = Modifier
                     .fillMaxSize()
-                    .border(BorderStroke(1.dp, extendedColors.borderSubtle), RoundedCornerShape(20.dp)),
-                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                    .border(BorderStroke(1.dp, extendedColors.borderSubtle), RoundedCornerShape(24.dp)),
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
@@ -2062,14 +2094,53 @@ private fun FullInteractiveWebViewMapCard(htmlMapUrl: String) {
     }
 }
 
-private fun formatStartDate(isoDate: String): String {
-    return try {
-        val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
-        parser.timeZone = TimeZone.getTimeZone("UTC")
-        val date = parser.parse(isoDate)
-        val formatter = SimpleDateFormat("d MMMM yyyy", Locale.getDefault())
-        date?.let { formatter.format(it) } ?: isoDate.substringBefore("T")
-    } catch (e: Exception) {
-        isoDate.substringBefore("T") // Fallback
+private fun formatStartDate(primaryIso: String?, fallbackIso: String?): String {
+    val isoDate = when {
+        !primaryIso.isNullOrBlank() -> primaryIso
+        !fallbackIso.isNullOrBlank() -> fallbackIso
+        else -> return "Start time unavailable"
     }
+    return try {
+        val patterns = listOf(
+            "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+            "yyyy-MM-dd'T'HH:mm:ssXXX",
+            "yyyy-MM-dd'T'HH:mm:ss'Z'",
+            "yyyy-MM-dd'T'HH:mm:ss"
+        )
+        var parsed: java.util.Date? = null
+        for (pattern in patterns) {
+            try {
+                val parser = SimpleDateFormat(pattern, Locale.US)
+                parser.timeZone = TimeZone.getTimeZone("UTC")
+                parsed = parser.parse(isoDate)
+                if (parsed != null) break
+            } catch (_: Exception) {
+                // Try next pattern
+            }
+        }
+        val formatter = SimpleDateFormat("d MMM yyyy, HH:mm", Locale.getDefault())
+        parsed?.let { formatter.format(it) }
+            ?: isoDate.replace('T', ' ').take(19).ifBlank { isoDate }
+    } catch (_: Exception) {
+        isoDate
+    }
+}
+
+private fun formatPaceRunning(distanceMeters: Float, movingTimeSec: Int): String? {
+    if (distanceMeters <= 0f || movingTimeSec <= 0) return null
+    val secPerKm = movingTimeSec / (distanceMeters / 1000f)
+    if (!secPerKm.isFinite() || secPerKm <= 0f) return null
+    val minutes = (secPerKm / 60f).toInt()
+    val seconds = ((secPerKm % 60f).coerceAtLeast(0f)).toInt()
+    return String.format("%02d:%02d min/km", minutes, seconds)
+}
+
+private fun formatPaceSwim(distanceMeters: Float, movingTimeSec: Int): String? {
+    if (distanceMeters <= 0f || movingTimeSec <= 0) return null
+    val secPerMeter = movingTimeSec / distanceMeters
+    val secPer100 = secPerMeter * 100f
+    if (!secPer100.isFinite() || secPer100 <= 0f) return null
+    val minutes = (secPer100 / 60f).toInt()
+    val seconds = ((secPer100 % 60f).coerceAtLeast(0f)).toInt()
+    return String.format("%02d:%02d /100m", minutes, seconds)
 }

@@ -97,6 +97,15 @@ data class StravaActivity(
     val averageSpeed: Float?,
     @SerializedName("max_speed")
     val maxSpeed: Float?,
+    // Optional extra metrics if provided by backend/Strava
+    @SerializedName("calories")
+    val calories: Float? = null,
+    @SerializedName("kilojoules")
+    val kilojoules: Float? = null,
+    @SerializedName("average_temp")
+    val averageTemp: Float? = null,
+    @SerializedName("gear_id")
+    val gearId: String? = null,
     @SerializedName("has_heartrate")
     val hasHeartrate: Boolean,
     @SerializedName("average_heartrate")

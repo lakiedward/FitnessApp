@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Terrain
@@ -32,6 +33,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fitnessapp.model.StravaActivity
+import java.util.Locale
 
 data class StatItem(
     val icon: ImageVector,
@@ -67,6 +69,7 @@ fun ActivityStatsSection(
 private fun ActivityStatsContent(activity: StravaActivity) {
     // Create list of stats
     val stats = buildList {
+        val type = activity.type.lowercase(Locale.getDefault())
         // Distance
         activity.distance?.let { distance ->
             add(
@@ -87,26 +90,58 @@ private fun ActivityStatsContent(activity: StravaActivity) {
             )
         )
 
-        // Average speed
-        activity.averageSpeed?.let { speed ->
-            add(
-                StatItem(
-                    icon = Icons.Filled.Speed,
-                    label = "Average Speed",
-                    value = "${String.format("%.2f", speed * 3.6)} km/h"
-                )
-            )
+        // Average speed / pace (contextual by sport)
+        if (type == "run" || type == "swim") {
+            val distance = activity.distance ?: 0f
+            val timeSec = activity.movingTime
+            if (type == "run") {
+                formatPacePerKm(distance, timeSec)?.let { pace ->
+                    add(
+                        StatItem(
+                            icon = Icons.Filled.Speed,
+                            label = "Running Pace",
+                            value = pace
+                        )
+                    )
+                }
+            } else {
+                formatPacePer100m(distance, timeSec)?.let { pace ->
+                    add(
+                        StatItem(
+                            icon = Icons.Filled.Speed,
+                            label = "Pace 100m",
+                            value = pace
+                        )
+                    )
+                }
+            }
+        } else {
+            activity.averageSpeed?.let { speed ->
+                if (speed.isFinite()) {
+                    add(
+                        StatItem(
+                            icon = Icons.Filled.Speed,
+                            label = "Average Speed",
+                            value = "${String.format("%.2f", speed * 3.6)} km/h"
+                        )
+                    )
+                }
+            }
         }
 
-        // Max speed
-        activity.maxSpeed?.let { speed ->
-            add(
-                StatItem(
-                    icon = Icons.Filled.Speed,
-                    label = "Max Speed",
-                    value = "${String.format("%.2f", speed * 3.6)} km/h"
-                )
-            )
+        // Max speed (relevant mainly for cycling)
+        if (type == "ride" || type == "virtualride") {
+            activity.maxSpeed?.let { speed ->
+                if (speed.isFinite()) {
+                    add(
+                        StatItem(
+                            icon = Icons.Filled.Speed,
+                            label = "Max Speed",
+                            value = "${String.format("%.2f", speed * 3.6)} km/h"
+                        )
+                    )
+                }
+            }
         }
 
         // Elevation gain
@@ -141,6 +176,33 @@ private fun ActivityStatsContent(activity: StravaActivity) {
                 )
             )
         }
+
+        // Calories (if available), fallback to kilojoules
+        val calories = activity.calories ?: activity.kilojoules
+        calories?.let { kcalsLike ->
+            if (kcalsLike.isFinite()) {
+                add(
+                    StatItem(
+                        icon = Icons.Filled.Timer,
+                        label = "Calories",
+                        value = "${kcalsLike.toInt()} kcal"
+                    )
+                )
+            }
+        }
+
+        // Average temperature (if available)
+        activity.averageTemp?.let { temp ->
+            if (temp.isFinite()) {
+                add(
+                    StatItem(
+                        icon = Icons.Filled.Thermostat,
+                        label = "Temperature",
+                        value = "${temp.toInt()} °C"
+                    )
+                )
+            }
+        }
     }
 
     Column(
@@ -165,6 +227,25 @@ private fun ActivityStatsContent(activity: StravaActivity) {
             }
         }
     }
+}
+
+private fun formatPacePerKm(distanceMeters: Float, movingTimeSec: Int): String? {
+    if (distanceMeters <= 0f || movingTimeSec <= 0) return null
+    val secPerKm = movingTimeSec / (distanceMeters / 1000f)
+    if (!secPerKm.isFinite() || secPerKm <= 0f) return null
+    val minutes = (secPerKm / 60f).toInt()
+    val seconds = ((secPerKm % 60f).coerceAtLeast(0f)).toInt()
+    return String.format("%02d:%02d", minutes, seconds)
+}
+
+private fun formatPacePer100m(distanceMeters: Float, movingTimeSec: Int): String? {
+    if (distanceMeters <= 0f || movingTimeSec <= 0) return null
+    val secPerMeter = movingTimeSec / distanceMeters
+    val secPer100 = secPerMeter * 100f
+    if (!secPer100.isFinite() || secPer100 <= 0f) return null
+    val minutes = (secPer100 / 60f).toInt()
+    val seconds = ((secPer100 % 60f).coerceAtLeast(0f)).toInt()
+    return String.format("%02d:%02d", minutes, seconds)
 }
 
 @Composable
@@ -200,7 +281,9 @@ private fun StatRow(
                     text = value,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    softWrap = false
                 )
             }
         }

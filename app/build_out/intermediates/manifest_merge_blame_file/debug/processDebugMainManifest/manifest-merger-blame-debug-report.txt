@@ -9,97 +9,97 @@
 9        android:targetSdkVersion="34" />
 10
 11    <uses-permission android:name="android.permission.INTERNET" />
-11-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:4:5-67
-11-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:4:22-64
+11-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:4:5-67
+11-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:4:22-64
 12    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-12-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:5:5-79
-12-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:5:22-76
+12-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:5:5-79
+12-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:5:22-76
 13    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-13-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:6:5-81
-13-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:6:22-78
+13-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:6:5-81
+13-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:6:22-78
 14    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
-14-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:7:5-79
-14-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:7:22-76
+14-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:7:5-79
+14-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:7:22-76
 15    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-15-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:8:5-85
-15-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:8:22-82
+15-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:8:5-85
+15-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:8:22-82
 16    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-16-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:9:5-81
-16-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:9:22-78
+16-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:9:5-81
+16-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:9:22-78
 17    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-17-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:10:5-80
-17-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:10:22-77
+17-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:10:5-80
+17-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:10:22-77
 18
 19    <!-- Bluetooth permissions pentru conectarea la trainers -->
 20    <uses-permission android:name="android.permission.BLUETOOTH" />
-20-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:13:5-68
-20-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:13:22-65
+20-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:13:5-68
+20-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:13:22-65
 21    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-21-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:14:5-74
-21-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:14:22-71
+21-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:14:5-74
+21-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:14:22-71
 22    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-22-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:15:5-76
-22-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:15:22-73
+22-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:15:5-76
+22-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:15:22-73
 23    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-23-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:16:5-73
-23-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:16:22-70
+23-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:16:5-73
+23-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:16:22-70
 24
 25    <!-- Health Connect permissions -->
 26    <uses-permission android:name="android.permission.health.READ_STEPS" />
-26-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:19:5-76
-26-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:19:22-73
+26-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:19:5-76
+26-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:19:22-73
 27    <uses-permission android:name="android.permission.health.WRITE_STEPS" />
-27-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:20:5-77
-27-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:20:22-74
+27-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:20:5-77
+27-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:20:22-74
 28    <uses-permission android:name="android.permission.health.READ_DISTANCE" />
-28-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:21:5-79
-28-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:21:22-76
+28-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:21:5-79
+28-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:21:22-76
 29    <uses-permission android:name="android.permission.health.WRITE_DISTANCE" />
-29-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:22:5-80
-29-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:22:22-77
+29-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:22:5-80
+29-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:22:22-77
 30    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
-30-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:23:5-93
-30-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:23:22-90
+30-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:23:5-93
+30-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:23:22-90
 31    <uses-permission android:name="android.permission.health.WRITE_ACTIVE_CALORIES_BURNED" />
-31-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:24:5-94
-31-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:24:22-91
+31-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:24:5-94
+31-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:24:22-91
 32    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
-32-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:25:5-92
-32-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:25:22-89
+32-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:25:5-92
+32-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:25:22-89
 33    <uses-permission android:name="android.permission.health.WRITE_TOTAL_CALORIES_BURNED" />
-33-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:26:5-93
-33-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:26:22-90
+33-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:26:5-93
+33-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:26:22-90
 34    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
-34-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:27:5-79
-34-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:27:22-76
+34-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:27:5-79
+34-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:27:22-76
 35    <uses-permission android:name="android.permission.health.WRITE_EXERCISE" />
-35-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:28:5-80
-35-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:28:22-77
+35-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:28:5-80
+35-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:28:22-77
 36    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
-36-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:29:5-81
-36-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:29:22-78
+36-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:29:5-81
+36-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:29:22-78
 37    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />
-37-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:30:5-82
-37-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:30:22-79
+37-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:30:5-82
+37-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:30:22-79
 38    <!-- Add missing sleep permissions -->
 39    <uses-permission android:name="android.permission.health.READ_SLEEP" />
-39-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:32:5-76
-39-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:32:22-73
+39-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:32:5-76
+39-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:32:22-73
 40    <uses-permission android:name="android.permission.health.WRITE_SLEEP" />
-40-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:33:5-77
-40-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:33:22-74
+40-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:33:5-77
+40-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:33:22-74
 41
 42    <!-- Package visibility for Android 11+ -->
 43    <queries>
-43-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:36:5-40:15
+43-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:36:5-40:15
 44
 45        <!-- permite verificarea instalării Health Connect -->
 46        <package android:name="com.google.android.apps.healthdata" />
-46-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:38:9-70
-46-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:38:18-67
+46-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:38:9-70
+46-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:38:18-67
 47        <package android:name="com.google.android.healthconnect.controller" />
-47-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:39:9-79
-47-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:39:18-76
+47-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:39:9-79
+47-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:39:18-76
 48        <!-- Needs to be explicitly declared on Android R+ -->
 49        <package android:name="com.google.android.apps.maps" />
 49-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:33:9-64
@@ -133,165 +133,165 @@
 64
 65    <application
 66        android:allowBackup="true"
-66-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:43:9-35
+66-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:43:9-35
 67        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 67-->[androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:28:18-86
 68        android:dataExtractionRules="@xml/data_extraction_rules"
-68-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:44:9-65
+68-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:44:9-65
 69        android:debuggable="true"
 70        android:extractNativeLibs="false"
 71        android:fullBackupContent="@xml/backup_rules"
-71-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:45:9-54
+71-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:45:9-54
 72        android:icon="@drawable/iclogo"
-72-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:46:9-40
+72-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:46:9-40
 73        android:label="@string/app_name"
-73-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:47:9-41
+73-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:47:9-41
 74        android:networkSecurityConfig="@xml/network_security_config"
-74-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:51:9-69
+74-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:51:9-69
 75        android:roundIcon="@drawable/iclogo"
-75-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:48:9-45
+75-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:48:9-45
 76        android:supportsRtl="true"
-76-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:49:9-35
+76-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:49:9-35
 77        android:testOnly="true"
 78        android:theme="@style/Theme.FitnessApp"
-78-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:50:9-48
+78-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:50:9-48
 79        android:usesCleartextTraffic="true" >
-79-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:52:9-56
+79-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:52:9-56
 80
 81        <!-- Adaugă cheia API aici -->
 82        <meta-data
-82-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:56:9-58:71
+82-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:56:9-58:71
 83            android:name="com.google.android.geo.API_KEY"
-83-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:57:13-58
+83-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:57:13-58
 84            android:value="AIzaSyCdG-W6-clMCpl_CXHJ7yD_dmJJsTmxH3Y" />
-84-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:58:13-68
+84-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:58:13-68
 85
 86        <!-- Health Connect configuration -->
 87        <meta-data
-87-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:61:9-63:60
+87-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:61:9-63:60
 88            android:name="health_permissions"
-88-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:62:13-46
+88-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:62:13-46
 89            android:resource="@array/health_permissions" />
-89-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:63:13-57
+89-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:63:13-57
 90
 91        <activity
-91-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:65:9-79:20
+91-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:65:9-79:20
 92            android:name="com.example.fitnessapp.MainActivity"
-92-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:66:13-41
+92-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:66:13-41
 93            android:exported="true"
-93-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:67:13-36
+93-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:67:13-36
 94            android:screenOrientation="portrait" >
-94-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:68:13-49
+94-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:68:13-49
 95            <intent-filter>
-95-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:69:13-72:29
+95-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:69:13-72:29
 96                <action android:name="android.intent.action.MAIN" />
-96-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:70:17-69
-96-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:70:25-66
+96-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:70:17-69
+96-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:70:25-66
 97
 98                <category android:name="android.intent.category.LAUNCHER" />
-98-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:71:17-77
-98-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:71:27-74
+98-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:71:17-77
+98-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:71:27-74
 99            </intent-filter>
 100
 101            <!-- Health Connect permission request intent filter -->
 102            <intent-filter>
-102-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:75:13-78:29
+102-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:75:13-78:29
 103                <action android:name="androidx.health.ACTION_REQUEST_PERMISSIONS" />
-103-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:76:17-85
-103-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:76:25-82
+103-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:76:17-85
+103-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:76:25-82
 104
 105                <category android:name="android.intent.category.DEFAULT" />
-105-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
-105-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
+105-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
+105-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
 106            </intent-filter>
 107        </activity>
 108        <activity
-108-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:81:9-87:20
+108-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:81:9-87:20
 109            android:name="com.example.fitnessapp.activities.PermissionsRationaleActivity"
-109-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:82:13-68
+109-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:82:13-68
 110            android:exported="true" >
-110-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:83:13-36
+110-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:83:13-36
 111            <intent-filter>
-111-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:84:13-86:29
+111-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:84:13-86:29
 112                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-112-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:85:17-92
-112-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:85:25-89
+112-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:85:17-92
+112-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:85:25-89
 113            </intent-filter>
 114        </activity> <!-- For Android 14+ -->
 115        <activity-alias
-115-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:90:9-99:26
+115-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:90:9-99:26
 116            android:name="com.example.fitnessapp.ViewPermissionUsageActivity"
-116-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:91:13-55
+116-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:91:13-55
 117            android:exported="true"
-117-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:93:13-36
+117-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:93:13-36
 118            android:permission="android.permission.START_VIEW_PERMISSION_USAGE"
-118-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:94:13-80
+118-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:94:13-80
 119            android:targetActivity="com.example.fitnessapp.activities.PermissionsRationaleActivity" >
-119-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:92:13-78
+119-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:92:13-78
 120            <intent-filter>
-120-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:95:13-98:29
+120-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:95:13-98:29
 121                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
-121-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:96:17-86
-121-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:96:25-83
+121-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:96:17-86
+121-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:96:25-83
 122
 123                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
-123-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:97:17-87
-123-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:97:27-84
+123-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:97:17-87
+123-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:97:27-84
 124            </intent-filter>
 125        </activity-alias>
 126
 127        <activity
-127-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:101:9-124:20
+127-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:101:9-124:20
 128            android:name="com.example.fitnessapp.StravaCallbackActivity"
-128-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:102:13-51
+128-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:102:13-51
 129            android:exported="true" >
-129-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:103:13-36
+129-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:103:13-36
 130
 131            <!-- Intent filter for HTTP scheme (NO autoVerify for localhost) -->
 132            <intent-filter>
-132-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:105:13-113:29
+132-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:105:13-113:29
 133                <action android:name="android.intent.action.VIEW" />
-133-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:17-69
-133-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:25-66
+133-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:106:17-69
+133-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:106:25-66
 134
 135                <category android:name="android.intent.category.DEFAULT" />
-135-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
-135-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
+135-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
+135-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
 136                <category android:name="android.intent.category.BROWSABLE" />
-136-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:17-78
-136-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:27-75
+136-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:108:17-78
+136-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:108:27-75
 137
 138                <data
-138-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:109:17-112:61
+138-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:109:17-112:61
 139                    android:host="fitnessapp-production-60ee.up.railway.app"
-139-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:111:21-77
+139-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:111:21-77
 140                    android:pathPrefix="/strava/callback"
-140-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:112:21-58
+140-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:112:21-58
 141                    android:scheme="https" />
-141-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:110:21-43
+141-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:110:21-43
 142            </intent-filter>
 143            <!-- Intent filter for custom scheme -->
 144            <intent-filter>
-144-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:115:13-123:29
+144-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:115:13-123:29
 145                <action android:name="android.intent.action.VIEW" />
-145-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:17-69
-145-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:25-66
+145-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:106:17-69
+145-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:106:25-66
 146
 147                <category android:name="android.intent.category.DEFAULT" />
-147-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
-147-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
+147-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
+147-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
 148                <category android:name="android.intent.category.BROWSABLE" />
-148-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:17-78
-148-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:27-75
+148-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:108:17-78
+148-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:108:27-75
 149
 150                <data
-150-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:109:17-112:61
+150-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:109:17-112:61
 151                    android:host="strava"
-151-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:111:21-77
+151-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:111:21-77
 152                    android:pathPrefix="/callback"
-152-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:112:21-58
+152-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:112:21-58
 153                    android:scheme="fitnessapp" />
-153-->C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:110:21-43
+153-->C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:110:21-43
 154            </intent-filter>
 155        </activity>
 156        <activity

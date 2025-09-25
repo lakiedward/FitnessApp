@@ -1,7 +1,7 @@
 -- Merging decision tree log ---
 application
-INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:42:5-125:19
-INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:42:5-125:19
+INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:42:5-125:19
+INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:42:5-125:19
 MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:14:5-22:19
 MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:14:5-22:19
 MERGED from [androidx.health.connect:connect-client:1.1.0-rc02] C:\Users\lakie\.gradle\caches\8.13\transforms\1db808e1077052a1438d9b025c298167\transformed\connect-client-1.1.0-rc02\AndroidManifest.xml:23:5-33:19
@@ -43,37 +43,37 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\la
 MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\6998cb23adf3489cec60eb7a1337dfb9\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
 MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\lakie\.gradle\caches\8.13\transforms\6998cb23adf3489cec60eb7a1337dfb9\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
 	android:extractNativeLibs
-		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\99ff826c40c93d1008c116dc513ea85d\transformed\core-1.13.0\AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:49:9-35
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:49:9-35
 	android:label
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:47:9-41
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:47:9-41
 	android:fullBackupContent
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:45:9-54
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:45:9-54
 	android:roundIcon
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:48:9-45
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:48:9-45
 	tools:targetApi
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:53:9-29
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:53:9-29
 	android:icon
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:46:9-40
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:46:9-40
 	android:allowBackup
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:43:9-35
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:43:9-35
 	android:theme
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:50:9-48
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:50:9-48
 	android:networkSecurityConfig
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:51:9-69
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:51:9-69
 	android:dataExtractionRules
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:44:9-65
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:44:9-65
 	android:usesCleartextTraffic
-		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:52:9-56
+		INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:52:9-56
 manifest
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
-INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
-INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
-INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
+INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
+INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
+INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:1:1-127:12
 MERGED from [com.google.maps.android:maps-compose:4.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a02fabb1ab0eb3f6b3d6ea16fdb65d6a\transformed\maps-compose-4.3.0\AndroidManifest.xml:17:1-22:12
 MERGED from [com.google.maps.android:maps-ktx:5.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\86da30fccbaf84b62751d50f6b5ca6d7\transformed\maps-ktx-5.0.0\AndroidManifest.xml:18:1-23:12
 MERGED from [androidx.databinding:viewbinding:8.13.0] C:\Users\lakie\.gradle\caches\8.13\transforms\ffe0d3ec9393ed1e14b45a4e2edc2523\transformed\viewbinding-8.13.0\AndroidManifest.xml:2:1-7:12
@@ -182,17 +182,17 @@ MERGED from [androidx.print:print:1.0.0] C:\Users\lakie\.gradle\caches\8.13\tran
 MERGED from [com.android.volley:volley:1.2.1] C:\Users\lakie\.gradle\caches\8.13\transforms\ef80273e7c3ddb99d2ba28b6c2ab078e\transformed\volley-1.2.1\AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.datatransport:transport-api:2.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\dde5200382be0255b2a341a85ad8f59f\transformed\transport-api-2.2.0\AndroidManifest.xml:15:1-22:12
 	package
-		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml
 	android:versionName
-		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml
 	xmlns:tools
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:2:5-51
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:2:5-51
 	android:versionCode
-		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml
 	xmlns:android
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:1:11-69
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:1:11-69
 uses-permission#android.permission.INTERNET
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:4:5-67
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:4:5-67
 MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:12:5-67
 MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:12:5-67
 MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:24:5-67
@@ -200,221 +200,221 @@ MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.g
 MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:26:5-67
 MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\122d090f0beb652c0949919f91293fc2\transformed\transport-backend-cct-2.3.0\AndroidManifest.xml:26:5-67
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:4:22-64
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:4:22-64
 uses-permission#android.permission.ACCESS_FINE_LOCATION
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:5:5-79
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:5:5-79
 MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:10:5-79
 MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:10:5-79
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:5:22-76
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:5:22-76
 uses-permission#android.permission.ACCESS_COARSE_LOCATION
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:6:5-81
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:6:5-81
 MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:9:5-81
 MERGED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:9:5-81
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:6:22-78
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:6:22-78
 uses-permission#android.permission.ACTIVITY_RECOGNITION
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:7:5-79
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:7:5-79
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:7:22-76
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:7:22-76
 uses-permission#android.permission.ACCESS_BACKGROUND_LOCATION
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:8:5-85
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:8:5-85
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:8:22-82
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:8:22-82
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:9:5-81
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:9:5-81
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:9:22-78
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:9:22-78
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:10:5-80
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:10:5-80
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:10:22-77
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:10:22-77
 uses-permission#android.permission.BLUETOOTH
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:13:5-68
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:13:5-68
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:13:22-65
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:13:22-65
 uses-permission#android.permission.BLUETOOTH_ADMIN
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:14:5-74
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:14:5-74
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:14:22-71
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:14:22-71
 uses-permission#android.permission.BLUETOOTH_CONNECT
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:15:5-76
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:15:5-76
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:15:22-73
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:15:22-73
 uses-permission#android.permission.BLUETOOTH_SCAN
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:16:5-73
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:16:5-73
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:16:22-70
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:16:22-70
 uses-permission#android.permission.health.READ_STEPS
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:19:5-76
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:19:5-76
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:19:22-73
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:19:22-73
 uses-permission#android.permission.health.WRITE_STEPS
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:20:5-77
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:20:5-77
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:20:22-74
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:20:22-74
 uses-permission#android.permission.health.READ_DISTANCE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:21:5-79
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:21:5-79
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:21:22-76
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:21:22-76
 uses-permission#android.permission.health.WRITE_DISTANCE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:22:5-80
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:22:5-80
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:22:22-77
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:22:22-77
 uses-permission#android.permission.health.READ_ACTIVE_CALORIES_BURNED
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:23:5-93
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:23:5-93
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:23:22-90
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:23:22-90
 uses-permission#android.permission.health.WRITE_ACTIVE_CALORIES_BURNED
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:24:5-94
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:24:5-94
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:24:22-91
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:24:22-91
 uses-permission#android.permission.health.READ_TOTAL_CALORIES_BURNED
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:25:5-92
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:25:5-92
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:25:22-89
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:25:22-89
 uses-permission#android.permission.health.WRITE_TOTAL_CALORIES_BURNED
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:26:5-93
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:26:5-93
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:26:22-90
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:26:22-90
 uses-permission#android.permission.health.READ_EXERCISE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:27:5-79
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:27:5-79
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:27:22-76
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:27:22-76
 uses-permission#android.permission.health.WRITE_EXERCISE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:28:5-80
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:28:5-80
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:28:22-77
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:28:22-77
 uses-permission#android.permission.health.READ_HEART_RATE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:29:5-81
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:29:5-81
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:29:22-78
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:29:22-78
 uses-permission#android.permission.health.WRITE_HEART_RATE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:30:5-82
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:30:5-82
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:30:22-79
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:30:22-79
 uses-permission#android.permission.health.READ_SLEEP
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:32:5-76
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:32:5-76
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:32:22-73
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:32:22-73
 uses-permission#android.permission.health.WRITE_SLEEP
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:33:5-77
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:33:5-77
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:33:22-74
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:33:22-74
 queries
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:36:5-40:15
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:36:5-40:15
 MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:30:5-34:15
 MERGED from [com.google.android.gms:play-services-maps:18.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\0d4d4076b156b7c41d93a3ad3316cbb5\transformed\play-services-maps-18.2.0\AndroidManifest.xml:30:5-34:15
 package#com.google.android.apps.healthdata
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:38:9-70
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:38:9-70
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:38:18-67
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:38:18-67
 package#com.google.android.healthconnect.controller
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:39:9-79
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:39:9-79
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:39:18-76
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:39:18-76
 meta-data#com.google.android.geo.API_KEY
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:56:9-58:71
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:56:9-58:71
 	android:value
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:58:13-68
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:58:13-68
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:57:13-58
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:57:13-58
 meta-data#health_permissions
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:61:9-63:60
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:61:9-63:60
 	android:resource
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:63:13-57
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:63:13-57
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:62:13-46
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:62:13-46
 activity#com.example.fitnessapp.MainActivity
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:65:9-79:20
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:65:9-79:20
 	android:screenOrientation
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:68:13-49
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:68:13-49
 	android:exported
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:67:13-36
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:67:13-36
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:66:13-41
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:66:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:69:13-72:29
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:69:13-72:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:70:17-69
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:70:17-69
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:70:25-66
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:70:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:71:17-77
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:71:17-77
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:71:27-74
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:71:27-74
 intent-filter#action:name:androidx.health.ACTION_REQUEST_PERMISSIONS+category:name:android.intent.category.DEFAULT
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:75:13-78:29
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:75:13-78:29
 action#androidx.health.ACTION_REQUEST_PERMISSIONS
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:76:17-85
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:76:17-85
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:76:25-82
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:76:25-82
 category#android.intent.category.DEFAULT
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:77:17-76
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:77:27-73
 activity#com.example.fitnessapp.activities.PermissionsRationaleActivity
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:81:9-87:20
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:81:9-87:20
 	android:exported
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:83:13-36
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:83:13-36
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:82:13-68
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:82:13-68
 intent-filter#action:name:androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:84:13-86:29
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:84:13-86:29
 action#androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:85:17-92
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:85:17-92
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:85:25-89
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:85:25-89
 activity-alias#com.example.fitnessapp.ViewPermissionUsageActivity
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:90:9-99:26
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:90:9-99:26
 	android:exported
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:93:13-36
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:93:13-36
 	android:targetActivity
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:92:13-78
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:92:13-78
 	android:permission
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:94:13-80
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:94:13-80
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:91:13-55
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:91:13-55
 intent-filter#action:name:android.intent.action.VIEW_PERMISSION_USAGE+category:name:android.intent.category.HEALTH_PERMISSIONS
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:95:13-98:29
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:95:13-98:29
 action#android.intent.action.VIEW_PERMISSION_USAGE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:96:17-86
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:96:17-86
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:96:25-83
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:96:25-83
 category#android.intent.category.HEALTH_PERMISSIONS
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:97:17-87
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:97:17-87
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:97:27-84
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:97:27-84
 activity#com.example.fitnessapp.StravaCallbackActivity
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:101:9-124:20
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:101:9-124:20
 	android:exported
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:103:13-36
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:103:13-36
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:102:13-51
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:102:13-51
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:fitnessapp-production-60ee.up.railway.app+data:pathPrefix:/strava/callback+data:scheme:https
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:105:13-113:29
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:105:13-113:29
 action#android.intent.action.VIEW
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:17-69
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:106:17-69
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:106:25-66
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:106:25-66
 category#android.intent.category.BROWSABLE
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:17-78
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:108:17-78
 	android:name
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:108:27-75
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:108:27-75
 data
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:109:17-112:61
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:109:17-112:61
 	android:host
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:111:21-77
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:111:21-77
 	android:scheme
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:110:21-43
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:110:21-43
 	android:pathPrefix
-		ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:112:21-58
+		ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:112:21-58
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:host:strava+data:pathPrefix:/callback+data:scheme:fitnessapp
-ADDED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml:115:13-123:29
+ADDED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml:115:13-123:29
 uses-sdk
-INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
-INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml
 MERGED from [com.google.maps.android:maps-compose:4.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a02fabb1ab0eb3f6b3d6ea16fdb65d6a\transformed\maps-compose-4.3.0\AndroidManifest.xml:20:5-44
 MERGED from [com.google.maps.android:maps-compose:4.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\a02fabb1ab0eb3f6b3d6ea16fdb65d6a\transformed\maps-compose-4.3.0\AndroidManifest.xml:20:5-44
 MERGED from [com.google.maps.android:maps-ktx:5.0.0] C:\Users\lakie\.gradle\caches\8.13\transforms\86da30fccbaf84b62751d50f6b5ca6d7\transformed\maps-ktx-5.0.0\AndroidManifest.xml:21:5-44
@@ -630,9 +630,9 @@ MERGED from [com.android.volley:volley:1.2.1] C:\Users\lakie\.gradle\caches\8.13
 MERGED from [com.google.android.datatransport:transport-api:2.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\dde5200382be0255b2a341a85ad8f59f\transformed\transport-api-2.2.0\AndroidManifest.xml:18:5-20:41
 MERGED from [com.google.android.datatransport:transport-api:2.2.0] C:\Users\lakie\.gradle\caches\8.13\transforms\dde5200382be0255b2a341a85ad8f59f\transformed\transport-api-2.2.0\AndroidManifest.xml:18:5-20:41
 	android:targetSdkVersion
-		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from C:\Users\lakie\StudioProjects\FitnessApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\lakie\Desktop\fitsense\FitnessApp\app\src\main\AndroidManifest.xml
 uses-permission#android.permission.ACCESS_WIFI_STATE
 ADDED from [com.google.android.libraries.places:places:3.3.0] C:\Users\lakie\.gradle\caches\8.13\transforms\b2161b62daf30a62434c9915b751f317\transformed\places-3.3.0\AndroidManifest.xml:11:5-76
 	android:name
