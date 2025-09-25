@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -931,6 +932,30 @@ fun StravaActivityDetailScreen(
                         val heartRateData = remember(streamsFromDB) {
                             getHeartRateDataFromStreams(streamsFromDB)
                         }
+                        val runSplits = remember(
+                            streamsFromDB,
+                            currentActivity.type,
+                            currentActivity.distance
+                        ) {
+                            if (currentActivity.type.equals("run", ignoreCase = true) ||
+                                currentActivity.type.equals("trailrun", ignoreCase = true)
+                            ) {
+                                buildRunSplits(streamsFromDB, currentActivity.distance ?: 0f)
+                            } else {
+                                emptyList()
+                            }
+                        }
+                        val hasMapData = remember(mapViewData, activity) {
+                            val mapData = mapViewData
+                            when {
+                                mapData?.get("gpx_data")?.isNotEmpty() == true -> true
+                                mapData?.get("html_url")?.isNotEmpty() == true -> true
+                                mapData?.get("map_html")?.isNotEmpty() == true -> true
+                                activity?.map?.summaryPolyline?.isNotEmpty() == true -> true
+                                activity?.map?.polyline?.isNotEmpty() == true -> true
+                                else -> false
+                            }
+                        }
 
                         LazyColumn(
                             modifier = Modifier
@@ -963,7 +988,9 @@ fun StravaActivityDetailScreen(
                                     ActivityCoreStatsRow(activity = currentActivity)
                                 }
                             }
-                            if (currentActivity.averageHeartrate != null || userMaxBpm != null) {
+                            if ((currentActivity.averageHeartrate != null || userMaxBpm != null) &&
+                                (heartRateData != null && heartRateData.isNotEmpty())
+                            ) {
                                 item {
                                     AnimatedVisibility(
                                         visible = true,
@@ -986,61 +1013,51 @@ fun StravaActivityDetailScreen(
                                     ActivityStatsSection(activity = currentActivity)
                                 }
                             }
-                            // --- Section Header with Icon: Route Map ---
-                            item {
-                                AnimatedVisibility(
-                                    visible = true,
-                                    enter = fadeIn(animationSpec = tween(300, delayMillis = 300)) + slideInVertically { it / 4 }
-                                ) {
-                                    Column {
-                                        SectionHeader(Icons.Filled.Place, "Route Map")
+                            // Splits (running only)
+                            if (runSplits.isNotEmpty()) {
+                                item {
+                                    AnimatedVisibility(
+                                        visible = true,
+                                        enter = fadeIn(animationSpec = tween(300, delayMillis = 270)) + slideInVertically { it/4 }
+                                    ) {
+                                        Column {
+                                            SectionHeader(Icons.Filled.Timer, "Splits")
+                                            RunSplitsSection(runSplits)
+                                        }
+                                    }
+                                }
+                            }
+                            // --- Route Map (only when data exists) ---
+                            if (hasMapData) {
+                                item {
+                                    AnimatedVisibility(
+                                        visible = true,
+                                        enter = fadeIn(animationSpec = tween(300, delayMillis = 300)) + slideInVertically { it / 4 }
+                                    ) {
+                                        Column {
+                                            SectionHeader(Icons.Filled.Place, "Route Map")
 
-                                        val mapData = mapViewData
-                                        when {
-                                            mapData?.get("gpx_data") != null && mapData["gpx_data"]!!.isNotEmpty() -> {
-                                                val gpxData = mapData["gpx_data"]!!
-                                                RouteMapSection(gpxData = gpxData)
-                                            }
+                                            val mapData = mapViewData
+                                            when {
+                                                mapData?.get("gpx_data") != null && mapData["gpx_data"]!!.isNotEmpty() -> {
+                                                    val gpxData = mapData["gpx_data"]!!
+                                                    RouteMapSection(gpxData = gpxData)
+                                                }
 
-                                            mapData?.get("html_url") != null && mapData["html_url"]!!.isNotEmpty() -> {
-                                                RouteMapSection(htmlUrl = mapData["html_url"]!!)
-                                            }
+                                                mapData?.get("html_url") != null && mapData["html_url"]!!.isNotEmpty() -> {
+                                                    RouteMapSection(htmlUrl = mapData["html_url"]!!)
+                                                }
 
-                                            mapData?.get("map_html") != null && mapData["map_html"]!!.isNotEmpty() -> {
-                                                RouteMapSection(mapHtml = mapData["map_html"]!!)
-                                            }
+                                                mapData?.get("map_html") != null && mapData["map_html"]!!.isNotEmpty() -> {
+                                                    RouteMapSection(mapHtml = mapData["map_html"]!!)
+                                                }
 
-                                            activity?.map?.summaryPolyline != null && activity?.map?.summaryPolyline!!.isNotEmpty() -> {
-                                                RouteMapSection(polyline = activity!!.map!!.summaryPolyline!!)
-                                            }
+                                                activity?.map?.summaryPolyline != null && activity?.map?.summaryPolyline!!.isNotEmpty() -> {
+                                                    RouteMapSection(polyline = activity!!.map!!.summaryPolyline!!)
+                                                }
 
-                                            activity?.map?.polyline != null && activity?.map?.polyline!!.isNotEmpty() -> {
-                                                RouteMapSection(polyline = activity!!.map!!.polyline!!)
-                                            }
-
-                                            else -> {
-                                                Card(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(vertical = 8.dp)
-                                                        .shadow(
-                                                            elevation = 4.dp,
-                                                            shape = RoundedCornerShape(20.dp)
-                                                        ),
-                                                    shape = RoundedCornerShape(20.dp),
-                                                    border = BorderStroke(1.dp, extendedColors.borderSubtle),
-                                                    colors = CardDefaults.cardColors(
-                                                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                                                    ),
-                                                    elevation = CardDefaults.cardElevation(0.dp)
-                                                ) {
-                                                    Text(
-                                                        text = "No route data available for this activity",
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                        modifier = Modifier.padding(20.dp),
-                                                        textAlign = TextAlign.Center
-                                                    )
+                                                activity?.map?.polyline != null && activity?.map?.polyline!!.isNotEmpty() -> {
+                                                    RouteMapSection(polyline = activity!!.map!!.polyline!!)
                                                 }
                                             }
                                         }
@@ -1048,17 +1065,20 @@ fun StravaActivityDetailScreen(
                                 }
                             }
                             // --- Section Header with Icon: Charts ---
-                            item {
-                                AnimatedVisibility(
-                                    visible = true,
-                                    enter = fadeIn(animationSpec = tween(300, delayMillis = 400)) + slideInVertically { it/4 }
-                                ) {
-                                    Column {
-                                        SectionHeader(Icons.Filled.Speed, "Performance Charts")
-                                        PerformanceChartsSection(
-                                            activityId = activityId,
-                                            activity = activity
-                                        )
+                            // Performance charts only if some streams exist
+                            if (hasAnyChartStreams(streamsFromDB)) {
+                                item {
+                                    AnimatedVisibility(
+                                        visible = true,
+                                        enter = fadeIn(animationSpec = tween(300, delayMillis = 400)) + slideInVertically { it/4 }
+                                    ) {
+                                        Column {
+                                            SectionHeader(Icons.Filled.Speed, "Performance Charts")
+                                            PerformanceChartsSection(
+                                                activityId = activityId,
+                                                activity = activity
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -2049,6 +2069,167 @@ private fun formatMovingTime(movingTime: Int): String {
     return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 }
 
+// ---------- Running Splits ----------
+private data class RunSplit(
+    val kmIndex: Int,
+    val paceSec: Int,
+    val gapSec: Int,
+    val elevDelta: Int?,
+    val avgHr: Int?
+)
+
+private fun buildRunSplits(
+    streamsDb: Map<String, Any>?,
+    totalDistanceMeters: Float
+): List<RunSplit> {
+    if (streamsDb == null) return emptyList()
+    val distance = getFloatStream(streamsDb, "distance") ?: return emptyList()
+    val time = getFloatStream(streamsDb, "time") ?: return emptyList()
+    val altitude = getFloatStream(streamsDb, "altitude")
+    val heartRate = getHeartRateDataFromStreams(streamsDb) // already returns Int list if present
+
+    val n = minOf(distance.size, time.size)
+    if (n == 0) return emptyList()
+
+    val result = mutableListOf<RunSplit>()
+    var lastThreshold = 0f
+    var lastTime = time.firstOrNull() ?: 0f
+    var lastIdx = 0
+    var km = 1
+    val maxKm = (totalDistanceMeters / 1000f).toInt().coerceAtLeast(0)
+
+    var i = 1
+    while (i < n && km <= maxKm) {
+        val prevD = distance[i - 1]
+        val currD = distance[i]
+        val prevT = time[i - 1]
+        val currT = time[i]
+        val threshold = km * 1000f
+        if (currD >= threshold && currD > prevD) {
+            // Linear interpolation to find time at exact km mark
+            val ratio = ((threshold - prevD) / (currD - prevD)).coerceIn(0f, 1f)
+            val tAtKm = prevT + ratio * (currT - prevT)
+            val segTime = (tAtKm - lastTime).coerceAtLeast(0f)
+
+            // Avg HR for segment (simple average over samples in [lastIdx, i])
+            val avgHr: Int? = heartRate?.let { hrList ->
+                val from = lastIdx.coerceAtLeast(0).coerceAtMost(hrList.size)
+                val to = i.coerceAtLeast(from).coerceAtMost(hrList.size)
+                if (to > from) {
+                    val sub = hrList.subList(from, to)
+                    if (sub.isNotEmpty()) (sub.sum() / sub.size) else null
+                } else null
+            }
+
+            // Elevation delta between segment start and end if available
+            val elevDelta: Int? = altitude?.let { altList ->
+                val startAlt = altList.getOrNull(lastIdx)
+                val endAlt = altList.getOrNull(i)
+                if (startAlt != null && endAlt != null) (endAlt - startAlt).toInt() else null
+            }
+
+            result.add(
+                RunSplit(
+                    kmIndex = km,
+                    paceSec = segTime.toInt(),
+                    gapSec = segTime.toInt(), // GAP ≈ pace if grade data not available
+                    elevDelta = elevDelta,
+                    avgHr = avgHr
+                )
+            )
+
+            lastThreshold = threshold
+            lastTime = tAtKm
+            lastIdx = i
+            km += 1
+        } else {
+            i += 1
+        }
+    }
+
+    return result
+}
+
+private fun getFloatStream(streamsDb: Map<String, Any>?, key: String): List<Float>? {
+    if (streamsDb == null) return null
+    fun toFloatList(any: Any?): List<Float>? = when (any) {
+        is List<*> -> any.mapNotNull {
+            when (it) {
+                is Number -> it.toFloat()
+                else -> null
+            }
+        }.takeIf { it.isNotEmpty() }
+        is Map<*, *> -> {
+            val data = any["data"]
+            toFloatList(data)
+        }
+        else -> null
+    }
+
+    // top-level
+    toFloatList(streamsDb[key])?.let { return it }
+    // nested under "streams"
+    val nested = streamsDb["streams"] as? Map<*, *>
+    if (nested != null) {
+        toFloatList(nested[key])?.let { return it }
+    }
+    // sometimes nested under "data_points" map
+    val dp = streamsDb["data_points"] as? Map<*, *>
+    if (dp != null) {
+        toFloatList(dp[key])?.let { return it }
+    }
+    return null
+}
+
+@Composable
+private fun RunSplitsSection(splits: List<RunSplit>) {
+    val colorScheme = MaterialTheme.colorScheme
+
+    Card(
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
+        elevation = CardDefaults.cardElevation(6.dp),
+        border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.1f))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Header row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("KM", style = MaterialTheme.typography.labelMedium, color = colorScheme.onSurfaceVariant)
+                Text("Pace", style = MaterialTheme.typography.labelMedium, color = colorScheme.onSurfaceVariant)
+                Text("Avg HR", style = MaterialTheme.typography.labelMedium, color = colorScheme.onSurfaceVariant)
+                Text("Elev", style = MaterialTheme.typography.labelMedium, color = colorScheme.onSurfaceVariant)
+            }
+
+            splits.forEach { s ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(s.kmIndex.toString(), style = MaterialTheme.typography.bodyMedium, color = colorScheme.onSurface)
+                    Text(formatPaceCompact(s.paceSec), style = MaterialTheme.typography.bodyMedium, color = colorScheme.onSurface)
+                    Text(s.avgHr?.let { "$it" } ?: "—", style = MaterialTheme.typography.bodyMedium, color = colorScheme.onSurface)
+                    Text(s.elevDelta?.let { if (it >= 0) "+${it} m" else "${it} m" } ?: "—",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = colorScheme.onSurface)
+                }
+            }
+        }
+    }
+}
+
+private fun formatPaceCompact(totalSec: Int): String {
+    val m = (totalSec / 60).coerceAtLeast(0)
+    val s = (totalSec % 60).coerceAtLeast(0)
+    return String.format("%d:%02d", m, s)
+}
+
 @Composable
 private fun FullInteractiveWebViewMapCard(htmlMapUrl: String) {
     val colorScheme = MaterialTheme.colorScheme
@@ -2143,4 +2324,29 @@ private fun formatPaceSwim(distanceMeters: Float, movingTimeSec: Int): String? {
     val minutes = (secPer100 / 60f).toInt()
     val seconds = ((secPer100 % 60f).coerceAtLeast(0f)).toInt()
     return String.format("%02d:%02d /100m", minutes, seconds)
+}
+
+private fun hasAnyChartStreams(streams: Map<String, Any>?): Boolean {
+    if (streams == null) return false
+    val candidates = listOf("streams", "data_points")
+    fun hasNonEmptyList(map: Map<*, *>?, key: String): Boolean {
+        if (map == null) return false
+        val v = map[key]
+        return when (v) {
+            is List<*> -> v.isNotEmpty()
+            is Map<*, *> -> hasNonEmptyList(v as Map<*, *>, "data")
+            else -> false
+        }
+    }
+
+    // top-level direct lists
+    val topKeys = listOf("watts", "power", "heartrate", "cadence", "velocity_smooth", "speed", "altitude", "time")
+    if (topKeys.any { hasNonEmptyList(streams, it) }) return true
+
+    // nested maps
+    for (c in candidates) {
+        val nested = streams[c] as? Map<*, *> ?: continue
+        if (topKeys.any { hasNonEmptyList(nested, it) }) return true
+    }
+    return false
 }

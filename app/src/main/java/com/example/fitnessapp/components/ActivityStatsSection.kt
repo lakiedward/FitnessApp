@@ -1,4 +1,4 @@
-package com.example.fitnessapp.components
+﻿package com.example.fitnessapp.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -202,8 +202,7 @@ private fun ActivityStatsContent(activity: StravaActivity) {
                     )
                 )
             }
-        }
-    }
+        }    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -296,3 +295,6 @@ private fun formatMovingTime(movingTime: Int): String {
     val seconds = movingTime % 60
     return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 }
+
+
+

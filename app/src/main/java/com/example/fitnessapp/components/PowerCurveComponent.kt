@@ -143,6 +143,11 @@ fun PowerCurveComponent(
         }
     }
 
+    // Hide entire section when there is no data or while loading
+    if (isLoading) return
+    if (errorMessage != null && powerCurveData == null) return
+    if (!isLoading && powerCurveData == null) return
+
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         // Main Card with chart and controls
         Card(
